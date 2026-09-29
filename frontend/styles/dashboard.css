@@ -256,5 +256,6 @@
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
 .match-panel { margin-bottom: 1.5rem; }
+.overview-grid + .match-panel { margin-top: 18px; }
 .match-panel p { max-width: 50rem; }
 .match-panel #match-next-step { font-weight: 600; }
