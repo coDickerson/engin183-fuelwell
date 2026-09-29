@@ -55,8 +55,8 @@ function setActiveView(view) {
   const contextCopy = document.querySelector("[data-context-copy]");
   if (contextCopy) {
     contextCopy.textContent = caregiverView
-      ? "A shared sample space for keeping meal ideas and care details together."
-      : "Your sample dashboard is ready. Use it to keep meal ideas and care details together.";
+      ? "A quick look at your shared sample workspace. Open Meal ideas or Care team for more detail."
+      : "A quick look at your sample workspace. Open Meal ideas or Care team for more detail.";
   }
 }
 
@@ -70,12 +70,14 @@ function showMatch(match) {
   if (!match || !nextSteps[match.goal]) return;
   const role = match.role === 'caregiver' ? 'caregiver' : 'patient';
   setActiveView(role);
+  const matchPanel = document.querySelector('#match-panel');
+  if (!matchPanel) return;
   const stage = { g3b: 'G3b', g4: 'G4', unsure: 'stage not yet confirmed' }[match.stage];
   document.querySelector('#match-description').textContent =
     (role === 'caregiver' ? 'You are exploring support for someone you care for.' : 'You are exploring support for yourself.') +
     (stage ? ' Your quiz selected ' + stage + '.' : '');
   document.querySelector('#match-next-step').textContent = nextSteps[match.goal];
-  document.querySelector('#match-panel').hidden = false;
+  matchPanel.hidden = false;
 }
 
 document.querySelectorAll("[data-view]").forEach((button) => {
@@ -100,16 +102,6 @@ document.querySelector("[data-sign-out]")?.addEventListener("click", async (even
     event.currentTarget.disabled = false;
     showToast('We could not sign you out. Please try again.');
   }
-});
-
-document.querySelectorAll(".side-link").forEach((link) => {
-  link.addEventListener("click", () => {
-    document.querySelectorAll(".side-link").forEach((item) => {
-      item.classList.toggle("is-active", item === link);
-      if (item === link) item.setAttribute("aria-current", "page");
-      else item.removeAttribute("aria-current");
-    });
-  });
 });
 
 async function openDashboard() {

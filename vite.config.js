@@ -12,6 +12,8 @@ export default defineConfig({
         home: resolve(import.meta.dirname, 'frontend/index.html'),
         start: resolve(import.meta.dirname, 'frontend/start.html'),
         dashboard: resolve(import.meta.dirname, 'frontend/dashboard.html'),
+        mealIdeas: resolve(import.meta.dirname, 'frontend/meal-ideas.html'),
+        careTeam: resolve(import.meta.dirname, 'frontend/care-team.html'),
       },
     },
   },

@@ -1,6 +1,6 @@
 # FuelWell
 
-A student product demo for kidney nutrition support. The landing page, account and matching quiz, and sample dashboard are built as a Vite multi-page website. Supabase provides email/password authentication. Scheduling, messaging, lab records, and meal plans are demonstration screens only.
+A student product demo for kidney nutrition support. The landing page, account and matching quiz, overview dashboard, meal ideas, and care team are built as a Vite multi-page website. Supabase provides email/password authentication. Scheduling, messaging, lab records, and meal plans are demonstration screens only.
 
 ## Project structure
 

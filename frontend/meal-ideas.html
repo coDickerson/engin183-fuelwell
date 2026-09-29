@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f1e8" />
+    <meta name="description" content="Explore sample meal ideas and questions to bring to your care team." />
+    <title>Meal ideas | FuelWell</title>
+    <link rel="stylesheet" href="/styles/styles.css" />
+    <link rel="stylesheet" href="/styles/dashboard.css" />
+    <script type="module" src="/scripts/dashboard.js"></script>
+  </head>
+  <body class="dashboard-page detail-page" hidden>
+    <a class="skip-link" href="#main-content">Skip to meal ideas</a>
+    <header class="dash-header">
+      <a class="brand" href="/" aria-label="FuelWell home"><span class="brand-mark" aria-hidden="true">f</span><span>fuelwell</span></a>
+      <p class="workspace-label"><span class="sample-dot" aria-hidden="true"></span> Sample workspace</p>
+      <div class="header-actions"><a class="header-help" href="/#how-it-works">How FuelWell works</a><button class="sign-out-button" type="button" data-sign-out>Sign out</button></div>
+    </header>
+
+    <div class="dashboard-shell">
+      <aside class="sidebar" aria-label="Dashboard navigation">
+        <p class="sidebar-label">YOUR SPACE</p>
+        <nav class="side-nav">
+          <a class="side-link" href="/dashboard.html"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>Overview</a>
+          <a class="side-link is-active" href="/meal-ideas.html" aria-current="page"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12h16M6 12a6 6 0 0 0 12 0M12 6V4m-4 3-1.5-1.5M16 7l1.5-1.5M5 20h14"/></svg>Meal ideas</a>
+          <a class="side-link" href="/care-team.html"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20m6-9a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 7 0Zm7-4a3.5 3.5 0 0 1 0 6.8m3 6.2v-1.5a3.5 3.5 0 0 0-2.5-3.35"/></svg>Care team</a>
+        </nav>
+        <div class="sidebar-note"><span class="note-spark" aria-hidden="true">✳</span><p><strong>Small steps count.</strong><br />Bring your questions to your care team.</p></div>
+        <a class="sidebar-home" href="/">← Back to FuelWell</a>
+      </aside>
+
+      <main class="dashboard-main" id="main-content">
+        <section class="detail-hero" aria-labelledby="page-title">
+          <p class="eyebrow">YOUR SPACE / MEAL IDEAS</p>
+          <h1 class="serif" id="page-title">Ideas for the <em>table.</em></h1>
+          <p>Explore familiar flavors and everyday routines. These examples are starting points for a conversation with a qualified renal dietitian or your care team.</p>
+        </section>
+        <div class="demo-banner" role="note"><span class="banner-icon" aria-hidden="true">i</span><p><strong>Sample meal ideas.</strong> These are examples for exploration, not a prescribed meal plan.</p><span class="demo-tag">DEMO DATA</span></div>
+
+        <section class="panel match-panel" id="match-panel" aria-labelledby="match-title" hidden>
+          <div><p class="eyebrow">YOUR MATCHING QUIZ</p><h2 class="panel-title" id="match-title">Your starting point</h2><p id="match-description"></p><p id="match-next-step"></p></div>
+          <a class="text-link" href="/start.html">Update your answers <span aria-hidden="true">↗</span></a>
+        </section>
+
+        <section class="detail-grid" aria-label="Explore meal ideas">
+          <article class="panel meal-panel" aria-labelledby="meal-title">
+            <div class="panel-heading"><div><p class="eyebrow">A TWO-DAY PREVIEW</p><h2 class="panel-title" id="meal-title">Meals to explore</h2></div><span class="round-icon meal-icon" aria-hidden="true">✳</span></div>
+            <p class="panel-intro">Choose a day to see a few sample ideas. Your care team can help decide what fits your individual needs.</p>
+            <div class="day-tabs" role="group" aria-label="Choose sample meal ideas"><button class="day-tab is-active" type="button" data-day="today" aria-pressed="true">Today</button><button class="day-tab" type="button" data-day="tomorrow" aria-pressed="false">Tomorrow</button></div>
+            <div class="meal-list" aria-live="polite" aria-atomic="true">
+              <div class="meal-row"><span class="meal-time">BREAKFAST</span><div class="meal-details"><h3 data-meal="breakfast">Warm oats with pear</h3><p data-meal-note="breakfast">A cozy starting point · sample idea</p></div><span class="meal-symbol" aria-hidden="true">◒</span></div>
+              <div class="meal-row"><span class="meal-time">LUNCH</span><div class="meal-details"><h3 data-meal="lunch">Ginger-scallion rice bowl</h3><p data-meal-note="lunch">Inspired by familiar home flavors · sample idea</p></div><span class="meal-symbol" aria-hidden="true">◉</span></div>
+              <div class="meal-row"><span class="meal-time">DINNER</span><div class="meal-details"><h3 data-meal="dinner">Herbed lentil soup</h3><p data-meal-note="dinner">A comforting classic · sample idea</p></div><span class="meal-symbol" aria-hidden="true">◍</span></div>
+            </div>
+            <p class="meal-disclaimer">Food choices and portions depend on your care plan. Discuss changes with your clinician or dietitian.</p>
+            <a class="text-link" href="/start.html">Update your preferences <span aria-hidden="true">↗</span></a>
+          </article>
+
+          <div class="detail-stack">
+            <article class="panel" aria-labelledby="your-table-title">
+              <p class="eyebrow">MAKE ROOM FOR REAL LIFE</p><h2 class="panel-title" id="your-table-title">Start with your table</h2>
+              <ul class="detail-list"><li><strong>Familiar foods</strong><span>List dishes and ingredients that matter to you.</span></li><li><strong>Daily routines</strong><span>Think about who shops, cooks, and shares meals.</span></li><li><strong>Care guidance</strong><span>Bring the list to a professional who knows your health needs.</span></li></ul>
+            </article>
+            <article class="panel soft-panel" aria-labelledby="questions-title">
+              <p class="eyebrow">FOR YOUR NEXT VISIT</p><h2 class="panel-title" id="questions-title">Questions to bring</h2>
+              <ul class="question-list"><li>Which familiar meals fit my current care plan?</li><li>Are there ingredients I should ask about?</li><li>What changes would matter most for me?</li></ul>
+              <a class="text-link" href="/care-team.html">Go to care team <span aria-hidden="true">↗</span></a>
+            </article>
+          </div>
+        </section>
+        <footer class="dashboard-footer"><span>FuelWell <span aria-hidden="true">·</span> Care that meets you where you are.</span><a href="/dashboard.html">Back to overview</a></footer>
+      </main>
+    </div>
+    <div class="toast" role="status" aria-live="polite" aria-atomic="true" data-toast></div>
+  </body>
+</html>
