@@ -1,3 +1,5 @@
+import { authConfigError, getAuthenticatedUser, signOutCurrentSession } from '../auth/supabase.js';
+
 const sampleMeals = {
   today: {
     breakfast: ["Warm oats with pear", "A cozy starting point · sample idea"],
@@ -42,21 +44,25 @@ document.querySelectorAll("[data-day]").forEach((button) => {
   });
 });
 
+function setActiveView(view) {
+  const caregiverView = view === "caregiver";
+  document.querySelectorAll("[data-view]").forEach((option) => {
+    const selected = option.dataset.view === view;
+    option.classList.toggle("is-selected", selected);
+    option.setAttribute("aria-pressed", String(selected));
+  });
+
+  const contextCopy = document.querySelector("[data-context-copy]");
+  if (contextCopy) {
+    contextCopy.textContent = caregiverView
+      ? "A shared sample space for keeping meal ideas and care details together."
+      : "Your sample dashboard is ready. Use it to keep meal ideas and care details together.";
+  }
+}
+
 document.querySelectorAll("[data-view]").forEach((button) => {
   button.addEventListener("click", () => {
-    const caregiverView = button.dataset.view === "caregiver";
-    document.querySelectorAll("[data-view]").forEach((option) => {
-      const selected = option === button;
-      option.classList.toggle("is-selected", selected);
-      option.setAttribute("aria-pressed", String(selected));
-    });
-
-    const contextCopy = document.querySelector("[data-context-copy]");
-    if (contextCopy) {
-      contextCopy.textContent = caregiverView
-        ? "A shared sample space for keeping meal ideas and care details together."
-        : "Your sample dashboard is ready. Use it to keep meal ideas and care details together.";
-    }
+    setActiveView(button.dataset.view);
   });
 });
 
@@ -66,8 +72,16 @@ document.querySelectorAll("[data-coming-soon]").forEach((button) => {
   });
 });
 
-document.querySelector("[data-sign-out]")?.addEventListener("click", () => {
-  showToast("Sign-out will connect during account integration. This sample dashboard has no active session.");
+document.querySelector("[data-sign-out]")?.addEventListener("click", async (event) => {
+  event.currentTarget.disabled = true;
+  try {
+    await signOutCurrentSession();
+    try { sessionStorage.removeItem('fuelwell.match.v1'); } catch { /* Storage may be unavailable. */ }
+    location.replace('/start.html#sign-in');
+  } catch {
+    event.currentTarget.disabled = false;
+    showToast('We could not sign you out. Please try again.');
+  }
 });
 
 document.querySelectorAll(".side-link").forEach((link) => {
@@ -79,3 +93,26 @@ document.querySelectorAll(".side-link").forEach((link) => {
     });
   });
 });
+
+async function openDashboard() {
+  if (authConfigError) {
+    location.replace('/start.html#sign-in');
+    return;
+  }
+  try {
+    const user = await getAuthenticatedUser();
+    if (!user) {
+      location.replace('/start.html#sign-in');
+      return;
+    }
+    try {
+      const match = JSON.parse(sessionStorage.getItem('fuelwell.match.v1') || 'null');
+      if (match?.role === 'caregiver') setActiveView('caregiver');
+    } catch { /* The sample dashboard does not need stored quiz answers. */ }
+    document.body.hidden = false;
+  } catch {
+    location.replace('/start.html#sign-in');
+  }
+}
+
+openDashboard();
