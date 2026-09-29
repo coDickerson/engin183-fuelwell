@@ -1,18 +1,140 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f4f1e8" />
-    <title>Get started | FuelWell</title>
-    <link rel="stylesheet" href="/styles.css" />
-  </head>
-  <body>
-    <main class="wrap" style="padding-block: 6rem">
-      <p class="eyebrow">Get started</p>
-      <h1 class="serif" style="font-size: clamp(3rem, 7vw, 5rem)">Your next step starts here.</h1>
-      <p>The account and matching quiz flow will be added here.</p>
-      <p><a class="button" href="/dashboard.html">Explore sample dashboard</a></p>
-    </main>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f4f1e8" />
+  <meta name="description" content="Create an account and take a short FuelWell matching quiz." />
+  <title>Get started | FuelWell</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/start.css" />
+  <script type="module" src="/start.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="wordmark" href="/" aria-label="FuelWell home">Fuel<span>Well</span><span class="wordmark-dot">.</span></a>
+      <a class="header-link" href="/">Back to home <span aria-hidden="true">↗</span></a>
+    </div>
+  </header>
+
+  <main id="main" class="wrap start-layout">
+    <div class="intro-column">
+      <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span> A thoughtful place to begin</p>
+      <h1 class="serif">Food support that starts with <em>your story.</em></h1>
+      <p class="lead">Make an account, then answer a few short questions. We’ll show you a starting point you can explore at your own pace.</p>
+      <div class="journey" aria-label="Getting started steps">
+        <div class="journey-step"><span class="step-number">01</span><span>Create or sign in to your account</span></div>
+        <div class="journey-step"><span class="step-number">02</span><span>Tell us what matters to you</span></div>
+        <div class="journey-step"><span class="step-number">03</span><span>See your next step</span></div>
+      </div>
+      <p class="privacy-note">Your answers stay in this browser session for this demo. Please don’t enter medical records or other sensitive details.</p>
+    </div>
+
+    <div class="flow-column">
+      <div id="config-notice" class="notice notice--warning" role="alert" hidden>
+        <strong>Account setup is needed.</strong>
+        <p>FuelWell sign-in is not configured yet. Add the Supabase project URL and publishable key to your local environment or deployment settings, then reload this page.</p>
+      </div>
+      <div id="status" class="status" role="status" aria-live="polite" hidden></div>
+
+      <section id="account-panel" class="flow-card" aria-labelledby="account-heading">
+        <div class="panel-kicker"><span class="small-circle" aria-hidden="true"></span> Step 01 / Account</div>
+        <h2 id="account-heading" class="serif panel-title">Let’s get acquainted.</h2>
+        <p class="panel-copy">An account is required before the matching quiz begins.</p>
+        <div class="auth-tabs" role="group" aria-label="Account options">
+          <button id="show-sign-up" type="button" class="auth-tab is-active" aria-pressed="true">Create account</button>
+          <button id="show-sign-in" type="button" class="auth-tab" aria-pressed="false">Sign in</button>
+        </div>
+
+        <form id="sign-up-form" class="auth-form">
+          <label for="sign-up-email">Email address</label>
+          <input id="sign-up-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required />
+          <label for="sign-up-password">Password</label>
+          <input id="sign-up-password" name="password" type="password" autocomplete="new-password" minlength="6" required aria-describedby="password-hint" />
+          <p id="password-hint" class="field-hint">At least 6 characters. A longer, unique password is safer.</p>
+          <button class="button form-submit" type="submit">Create my account <span aria-hidden="true">→</span></button>
+        </form>
+
+        <form id="sign-in-form" class="auth-form" hidden>
+          <label for="sign-in-email">Email address</label>
+          <input id="sign-in-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required />
+          <label for="sign-in-password">Password</label>
+          <input id="sign-in-password" name="password" type="password" autocomplete="current-password" required />
+          <button class="button form-submit" type="submit">Sign in and continue <span aria-hidden="true">→</span></button>
+          <button id="show-reset" class="text-button" type="button">Forgot your password?</button>
+        </form>
+
+        <form id="reset-form" class="auth-form" hidden>
+          <p class="form-intro">Enter your account email and we’ll send a reset link if an account exists.</p>
+          <label for="reset-email">Email address</label>
+          <input id="reset-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required />
+          <button class="button form-submit" type="submit">Send reset link <span aria-hidden="true">→</span></button>
+          <button class="text-button back-to-sign-in" type="button">Back to sign in</button>
+        </form>
+
+        <form id="new-password-form" class="auth-form" hidden>
+          <p class="form-intro">Choose a new password for your account.</p>
+          <label for="new-password">New password</label>
+          <input id="new-password" name="password" type="password" autocomplete="new-password" minlength="6" required />
+          <button class="button form-submit" type="submit">Save new password <span aria-hidden="true">→</span></button>
+        </form>
+      </section>
+
+      <section id="quiz-panel" class="flow-card" aria-labelledby="quiz-heading" hidden>
+        <div class="panel-topline">
+          <div class="panel-kicker"><span class="small-circle" aria-hidden="true"></span> Step 02 / Matching quiz</div>
+          <button id="sign-out" class="text-button" type="button">Sign out</button>
+        </div>
+        <h2 id="quiz-heading" class="serif panel-title">What matters most to you?</h2>
+        <p class="panel-copy">There are no wrong answers. This helps shape a helpful first step.</p>
+        <p id="signed-in-as" class="signed-in-as"></p>
+        <form id="quiz-form" class="quiz-form">
+          <fieldset>
+            <legend><span class="question-number">01</span> Who are you exploring FuelWell for?</legend>
+            <div class="choice-grid">
+              <label class="choice"><input type="radio" name="role" value="patient" required /><span>For myself</span></label>
+              <label class="choice"><input type="radio" name="role" value="caregiver" /><span>For someone I care for</span></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend><span class="question-number">02</span> Which kidney stage has your care team mentioned?</legend>
+            <div class="choice-grid choice-grid--three">
+              <label class="choice"><input type="radio" name="stage" value="g3b" required /><span>G3b</span></label>
+              <label class="choice"><input type="radio" name="stage" value="g4" /><span>G4</span></label>
+              <label class="choice"><input type="radio" name="stage" value="unsure" /><span>I’m not sure</span></label>
+            </div>
+            <p class="field-hint">If you’re unsure, that’s okay. Your care team can help confirm it.</p>
+          </fieldset>
+          <div class="field-group">
+            <label for="food-traditions"><span class="question-number">03</span> What foods or traditions feel like home?</label>
+            <textarea id="food-traditions" name="traditions" rows="3" maxlength="240" placeholder="Family recipes, favorite ingredients, or foods you avoid"></textarea>
+            <p class="field-hint">Optional. Keep this broad; please don’t enter medical details.</p>
+          </div>
+          <fieldset>
+            <legend><span class="question-number">04</span> What would help most right now?</legend>
+            <div class="choice-stack">
+              <label class="choice"><input type="radio" name="goal" value="familiar-meals" required /><span>Make familiar meals easier to plan</span></label>
+              <label class="choice"><input type="radio" name="goal" value="understand-options" /><span>Understand my food options</span></label>
+              <label class="choice"><input type="radio" name="goal" value="prepare-conversation" /><span>Prepare for a care-team conversation</span></label>
+            </div>
+          </fieldset>
+          <button class="button form-submit" type="submit">See my next step <span aria-hidden="true">→</span></button>
+        </form>
+      </section>
+
+      <section id="result-panel" class="flow-card result-card" aria-labelledby="result-heading" hidden>
+        <div class="panel-kicker"><span class="small-circle" aria-hidden="true"></span> Step 03 / Your starting point</div>
+        <div class="result-icon" aria-hidden="true">✳</div>
+        <h2 id="result-heading" class="serif panel-title" tabindex="-1">A good place to begin.</h2>
+        <p id="result-intro" class="panel-copy"></p>
+        <div class="result-detail"><span class="eyebrow">Your next step</span><p id="result-next-step"></p></div>
+        <p class="result-disclaimer">This is a demo starting point, not medical advice or a diet prescription. A qualified care professional can help with personal guidance.</p>
+        <a class="button form-submit" href="/dashboard.html">Explore the sample dashboard <span aria-hidden="true">→</span></a>
+        <button id="retake-quiz" class="text-button" type="button">Change my answers</button>
+      </section>
+    </div>
+  </main>
+</body>
 </html>
