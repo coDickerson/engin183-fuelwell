@@ -1,4 +1,4 @@
-import { authConfigError, getAuthenticatedUser, signOutCurrentSession } from '../auth/supabase.js';
+import { authConfigError, getAuthenticatedUser, signOutCurrentSession, supabase } from '../auth/supabase.js';
 
 const sampleMeals = {
   today: {
@@ -60,6 +60,24 @@ function setActiveView(view) {
   }
 }
 
+const nextSteps = {
+  'familiar-meals': 'Start with familiar meals you enjoy and discuss changes with a qualified renal dietitian.',
+  'understand-options': 'Bring your food questions to a qualified renal dietitian or your care team.',
+  'prepare-conversation': 'Write down the food questions you want to discuss at your next care-team visit.',
+};
+
+function showMatch(match) {
+  if (!match || !nextSteps[match.goal]) return;
+  const role = match.role === 'caregiver' ? 'caregiver' : 'patient';
+  setActiveView(role);
+  const stage = { g3b: 'G3b', g4: 'G4', unsure: 'stage not yet confirmed' }[match.stage];
+  document.querySelector('#match-description').textContent =
+    (role === 'caregiver' ? 'You are exploring support for someone you care for.' : 'You are exploring support for yourself.') +
+    (stage ? ' Your quiz selected ' + stage + '.' : '');
+  document.querySelector('#match-next-step').textContent = nextSteps[match.goal];
+  document.querySelector('#match-panel').hidden = false;
+}
+
 document.querySelectorAll("[data-view]").forEach((button) => {
   button.addEventListener("click", () => {
     setActiveView(button.dataset.view);
@@ -106,9 +124,14 @@ async function openDashboard() {
       return;
     }
     try {
-      const match = JSON.parse(sessionStorage.getItem('fuelwell.match.v1') || 'null');
-      if (match?.role === 'caregiver') setActiveView('caregiver');
-    } catch { /* The sample dashboard does not need stored quiz answers. */ }
+      const { data } = await supabase
+        .from('quiz_results')
+        .select('role,stage,goal,has_traditions')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      const sessionMatch = JSON.parse(sessionStorage.getItem('fuelwell.match.v1') || 'null');
+      showMatch(data || sessionMatch);
+    } catch { /* The sample dashboard still works without a saved quiz result. */ }
     document.body.hidden = false;
   } catch {
     location.replace('/start.html#sign-in');

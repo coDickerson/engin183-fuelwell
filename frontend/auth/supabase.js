@@ -24,13 +24,15 @@ export const supabase = authConfigError ? null : createClient(url, key);
 
 export async function getAuthenticatedUser() {
   if (!supabase) return null;
-  const { data, error } = await supabase.auth.getUser();
-  if (error) {
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const { data, error } = await supabase.auth.getUser();
+    if (!error) {
+      const user = data.user;
+      return user?.email && !user.is_anonymous ? user : null;
+    }
     if (error.name === 'AuthSessionMissingError' || error.status === 401) return null;
-    throw error;
+    if (attempt === 1) throw error;
   }
-  const user = data.user;
-  return user?.email && !user.is_anonymous ? user : null;
 }
 
 export async function signOutCurrentSession() {

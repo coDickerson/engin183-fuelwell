@@ -1,5 +1,5 @@
 # Backend scope
 
-FuelWell currently uses hosted Supabase Auth for email/password accounts. There is no application database table, server route, or edge function in this demo. Quiz answers stay in same-origin browser session storage. The dashboard shows synthetic information only.
+FuelWell uses hosted Supabase Auth for email/password accounts. The `quiz_results` table stores each signed-in user's role, stage, goal, and whether they mentioned food traditions. The free-text answer stays out of the database. Row Level Security limits reads and writes to the user's own row. The dashboard's meals, labs, appointments, and care team remain synthetic examples.
 
-If profile persistence is added later, create a migration here and enable Row Level Security so users can access only their own records. See `auth-setup.md` for the current Auth and redirect configuration.
+Apply `migrations/001_quiz_results.sql` to the Supabase project before deploying the matching quiz flow. See `auth-setup.md` for Auth and redirect configuration.

@@ -1,10 +1,11 @@
-import { authConfigError, getAuthenticatedUser, signOutCurrentSession, supabase } from './supabase.js';
+import { authConfigError, getAuthenticatedUser, supabase } from './supabase.js';
 
 const byId = (id) => document.getElementById(id);
 const accountPanel = byId('account-panel');
 const quizPanel = byId('quiz-panel');
 const resultPanel = byId('result-panel');
 const status = byId('status');
+const matchKey = 'fuelwell.match.v1';
 const forms = {
   signUp: byId('sign-up-form'),
   signIn: byId('sign-in-form'),
@@ -25,58 +26,61 @@ function showPanel(panel) {
   resultPanel.hidden = panel !== resultPanel;
 }
 
+function readMatch() {
+  try {
+    const match = JSON.parse(sessionStorage.getItem(matchKey) || 'null');
+    return match && ['patient', 'caregiver'].includes(match.role)
+      && ['g3b', 'g4', 'unsure'].includes(match.stage)
+      && ['familiar-meals', 'understand-options', 'prepare-conversation'].includes(match.goal)
+      ? match : null;
+  } catch { return null; }
+}
+
 function showMode(mode) {
   showPanel(accountPanel);
   accountPanel.dataset.mode = mode;
   for (const [name, form] of Object.entries(forms)) form.hidden = name !== mode;
-  const isSignIn = mode === 'signIn';
   byId('show-sign-up').classList.toggle('is-active', mode === 'signUp');
   byId('show-sign-up').setAttribute('aria-pressed', String(mode === 'signUp'));
-  byId('show-sign-in').classList.toggle('is-active', isSignIn);
-  byId('show-sign-in').setAttribute('aria-pressed', String(isSignIn));
+  byId('show-sign-in').classList.toggle('is-active', mode === 'signIn');
+  byId('show-sign-in').setAttribute('aria-pressed', String(mode === 'signIn'));
+  byId('account-copy').textContent = readMatch()
+    ? 'Your result is ready. Create an account or sign in to save it and open your dashboard.'
+    : 'Sign in or create an account to open your dashboard.';
 }
 
-function showQuiz(user) {
-  if (!user) return;
-  byId('signed-in-as').textContent = user.email ? 'Signed in as ' + user.email : 'You are signed in.';
-  showStatus('');
-  showPanel(quizPanel);
+async function saveMatch(user) {
+  const match = readMatch();
+  if (!match) return;
+  const { error } = await supabase.from('quiz_results').upsert({
+    user_id: user.id,
+    role: match.role,
+    stage: match.stage,
+    goal: match.goal,
+    has_traditions: Boolean(match.hasTraditions),
+    updated_at: new Date().toISOString(),
+  }, { onConflict: 'user_id' });
+  if (error) throw new Error('Your account is ready, but the quiz result could not be saved. Please try again.');
 }
 
-function clearMatch() {
-  try { sessionStorage.removeItem('fuelwell.match.v1'); } catch { /* Storage may be unavailable. */ }
-}
-
-async function refreshUser() {
-  if (!supabase || recoveryInProgress) return;
-  try {
-    const user = await getAuthenticatedUser();
-    if (recoveryInProgress) return;
-    if (user) showQuiz(user);
-    else showMode(location.hash === '#sign-in' ? 'signIn' : 'signUp');
-  } catch {
-    showMode('signIn');
-    showStatus('We could not check your account right now. Please try signing in again.', true);
-  }
+async function finishAuthentication(user) {
+  await saveMatch(user);
+  location.assign('/dashboard.html');
 }
 
 async function withBusy(form, action) {
   const controls = [...form.querySelectorAll('button, input, textarea')];
   controls.forEach((control) => { control.disabled = true; });
   showStatus('');
-  try {
-    await action();
-  } catch (error) {
-    showStatus(error?.message || 'Something went wrong. Please try again.', true);
-  } finally {
-    controls.forEach((control) => { control.disabled = false; });
-  }
+  try { await action(); }
+  catch (error) { showStatus(error?.message || 'Something went wrong. Please try again.', true); }
+  finally { controls.forEach((control) => { control.disabled = false; }); }
 }
 
 byId('show-sign-up').addEventListener('click', () => {
   showStatus('');
   showMode('signUp');
-  if (location.hash) history.replaceState(null, '', location.pathname);
+  location.hash = 'sign-up';
 });
 byId('show-sign-in').addEventListener('click', () => {
   showStatus('');
@@ -97,22 +101,20 @@ forms.signUp.addEventListener('submit', (event) => {
   event.preventDefault();
   if (!supabase) return;
   withBusy(forms.signUp, async () => {
-    const email = byId('sign-up-email').value.trim();
-    const password = byId('sign-up-password').value;
     const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
+      email: byId('sign-up-email').value.trim(),
+      password: byId('sign-up-password').value,
       options: { emailRedirectTo: new URL('/start.html', location.origin).href },
     });
     if (error) throw error;
     forms.signUp.reset();
-    if (data.session) {
-      const user = await getAuthenticatedUser();
-      if (user) showQuiz(user);
-      else showStatus('Your account was created. Please sign in to continue.');
-    } else {
-      showStatus('Check your email for a confirmation link. After confirming, return here to take the quiz.');
+    if (!data.session) {
+      showStatus('Check your email for the confirmation link. Once confirmed, your result will be saved and your dashboard will open.');
+      return;
     }
+    const user = await getAuthenticatedUser();
+    if (!user) throw new Error('Your account was created. Please sign in to open the dashboard.');
+    await finishAuthentication(user);
   });
 });
 
@@ -128,7 +130,7 @@ forms.signIn.addEventListener('submit', (event) => {
     forms.signIn.reset();
     const user = await getAuthenticatedUser();
     if (!user) throw new Error('We could not confirm your sign-in. Please try again.');
-    showQuiz(user);
+    await finishAuthentication(user);
   });
 });
 
@@ -154,20 +156,8 @@ forms.newPassword.addEventListener('submit', (event) => {
     forms.newPassword.reset();
     recoveryInProgress = false;
     showMode('signIn');
-    showStatus('Password updated. Sign in to continue to the quiz.');
+    showStatus('Password updated. Sign in to open your dashboard.');
   });
-});
-
-byId('sign-out').addEventListener('click', async () => {
-  try {
-    await signOutCurrentSession();
-    clearMatch();
-    byId('quiz-form').reset();
-    showMode('signIn');
-    showStatus('You have signed out.');
-  } catch {
-    showStatus('We could not sign you out. Please try again.', true);
-  }
 });
 
 const nextSteps = {
@@ -176,54 +166,46 @@ const nextSteps = {
   'prepare-conversation': 'Write down the food questions you would like to discuss at your next care-team visit.',
 };
 
-byId('quiz-form').addEventListener('submit', async (event) => {
+byId('quiz-form').addEventListener('submit', (event) => {
   event.preventDefault();
+  const answers = new FormData(event.currentTarget);
+  const role = answers.get('role');
+  const stage = answers.get('stage');
+  const goal = answers.get('goal');
+  if (!role || !stage || !goal) return;
+  const hasTraditions = Boolean(String(answers.get('traditions') || '').trim());
+  const audience = role === 'caregiver' ? 'someone you care for' : 'you';
+  const stageLine = stage === 'unsure'
+    ? 'It is okay not to know the kidney stage yet. Your care team can help confirm it.'
+    : 'A qualified care professional can help connect food decisions to the kidney stage your care team has discussed.';
+  byId('result-intro').textContent = 'You are exploring support for ' + audience + '. ' +
+    (hasTraditions ? 'The foods and traditions you value deserve a place in the conversation. ' : '') + stageLine;
+  byId('result-next-step').textContent = nextSteps[goal];
+  try { sessionStorage.setItem(matchKey, JSON.stringify({ role, stage, goal, hasTraditions })); }
+  catch { showStatus('This browser could not keep your result. Please enable session storage and try again.', true); return; }
+  showStatus('');
+  showPanel(resultPanel);
+  byId('result-heading').focus();
+});
+
+byId('save-result').addEventListener('click', async (event) => {
+  event.currentTarget.disabled = true;
   try {
     const user = await getAuthenticatedUser();
-    if (!user) {
-      showMode('signIn');
-      showStatus('Please sign in again before continuing.', true);
-      return;
+    if (user) await finishAuthentication(user);
+    else {
+      showStatus('');
+      showMode('signUp');
+      location.hash = 'sign-up';
     }
-    const answers = new FormData(event.currentTarget);
-    const role = answers.get('role');
-    const stage = answers.get('stage');
-    const goal = answers.get('goal');
-    if (!role || !stage || !goal) return;
-    const hasTraditions = Boolean(String(answers.get('traditions') || '').trim());
-    const audience = role === 'caregiver' ? 'someone you care for' : 'you';
-    const stageLine = stage === 'unsure'
-      ? 'It is okay not to know the kidney stage yet. Your care team can help confirm it.'
-      : 'A qualified care professional can help connect food decisions to the kidney stage your care team has discussed.';
-    byId('result-intro').textContent = 'You are exploring support for ' + audience + '. ' +
-      (hasTraditions ? 'The foods and traditions you value deserve a place in the conversation. ' : '') + stageLine;
-    byId('result-next-step').textContent = nextSteps[goal];
-    // The dashboard team can read this same-origin, session-only summary during integration.
-    try {
-      sessionStorage.setItem('fuelwell.match.v1', JSON.stringify({ role, stage, goal, hasTraditions }));
-    } catch {
-      // The result still works when browser storage is unavailable.
-    }
-    showStatus('');
-    showPanel(resultPanel);
-    byId('result-heading').focus();
-  } catch {
-    showStatus('We could not confirm your sign-in. Please try again.', true);
-    showMode('signIn');
-  }
+  } catch (error) {
+    showStatus(error?.message || 'We could not save your result. Please try again.', true);
+  } finally { event.currentTarget.disabled = false; }
 });
 
-byId('retake-quiz').addEventListener('click', async () => {
-  const user = await getAuthenticatedUser().catch(() => null);
-  if (user) showQuiz(user);
-  else {
-    showMode('signIn');
-    showStatus('Please sign in again before continuing.', true);
-  }
-});
-
-window.addEventListener('hashchange', () => {
-  if (location.hash === '#sign-in' && !recoveryInProgress && !accountPanel.hidden) showMode('signIn');
+byId('retake-quiz').addEventListener('click', () => {
+  showStatus('');
+  showPanel(quizPanel);
 });
 
 if (authConfigError) {
@@ -231,19 +213,31 @@ if (authConfigError) {
   byId('config-notice').querySelector('p').textContent = authConfigError +
     ' Use a browser-safe publishable/anon key; never use a service role key.';
   accountPanel.querySelectorAll('form button, form input').forEach((control) => { control.disabled = true; });
-  showMode(location.hash === '#sign-in' ? 'signIn' : 'signUp');
-} else {
+}
+
+if (supabase) {
   supabase.auth.onAuthStateChange((event) => {
     if (event === 'PASSWORD_RECOVERY') {
       recoveryInProgress = true;
       setTimeout(() => { showStatus(''); showMode('newPassword'); }, 0);
-    } else if (event === 'SIGNED_OUT') {
-      setTimeout(() => {
-        clearMatch();
-        showMode('signIn');
-      }, 0);
     }
   });
-  showMode(location.hash === '#sign-in' ? 'signIn' : 'signUp');
-  refreshUser();
 }
+
+async function initialize() {
+  if (location.hash === '#sign-in') showMode('signIn');
+  else if (location.hash === '#sign-up') showMode('signUp');
+  else showPanel(quizPanel);
+  if (!supabase) return;
+  try {
+    const user = await getAuthenticatedUser();
+    if (user && !recoveryInProgress) {
+      if (readMatch()) await saveMatch(user);
+      if (location.hash === '#sign-in' || location.hash === '#sign-up') location.assign('/dashboard.html');
+    }
+  } catch (error) {
+    showStatus(error?.message || 'We could not check your account right now. Please try again.', true);
+  }
+}
+
+initialize();

@@ -229,3 +229,6 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
+.match-panel { margin-bottom: 1.5rem; }
+.match-panel p { max-width: 50rem; }
+.match-panel #match-next-step { font-weight: 600; }
