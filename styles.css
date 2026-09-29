@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap');
+
+:root {
+  font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  color: #1a1d14;
+  background: #f4f1e8;
+  font-synthesis: none;
+  --ground: #f4f1e8;
+  --ground-alt: #ebe7da;
+  --surface: #fffdf8;
+  --ink: #1a1d14;
+  --ink-2: #4a4f3e;
+  --ink-3: #797e6b;
+  --line: #dcd7c6;
+  --accent: #47613f;
+  --accent-2: #6f8c63;
+  --wash: #e4eadc;
+  --warn: #a2582a;
+  --serif: 'Instrument Serif', Georgia, serif;
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --wrap: 1120px;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; line-height: 1.6; }
+button, input, select, textarea { font: inherit; }
+a { color: inherit; }
+img, svg { max-width: 100%; }
+.wrap { width: min(100% - 48px, var(--wrap)); margin-inline: auto; }
+.eyebrow { font: 500 .72rem var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--ink-3); }
+.serif { font-family: var(--serif); font-weight: 400; line-height: 1.05; letter-spacing: -.015em; }
+.serif em { color: var(--accent); }
+.button { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 11px 22px; border: 1px solid var(--ink); border-radius: 999px; background: var(--ink); color: var(--surface); text-decoration: none; font-weight: 600; cursor: pointer; }
+.button--secondary { background: transparent; color: var(--ink); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; }
+:focus-visible { outline: 3px solid var(--accent-2); outline-offset: 3px; }
+@media (max-width: 640px) { .wrap { width: min(100% - 32px, var(--wrap)); } }

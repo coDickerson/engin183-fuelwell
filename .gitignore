@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env
+.env.local
+.DS_Store
+TEAM_PLAN.md
+team_plan.md
