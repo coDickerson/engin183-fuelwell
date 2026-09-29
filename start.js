@@ -43,10 +43,15 @@ function showQuiz(user) {
   showPanel(quizPanel);
 }
 
+function clearMatch() {
+  try { sessionStorage.removeItem('fuelwell.match.v1'); } catch { /* Storage may be unavailable. */ }
+}
+
 async function refreshUser() {
   if (!supabase || recoveryInProgress) return;
   try {
     const user = await getAuthenticatedUser();
+    if (recoveryInProgress) return;
     if (user) showQuiz(user);
     else showMode(location.hash === '#sign-in' ? 'signIn' : 'signUp');
   } catch {
@@ -156,7 +161,7 @@ forms.newPassword.addEventListener('submit', (event) => {
 byId('sign-out').addEventListener('click', async () => {
   try {
     await signOutCurrentSession();
-    sessionStorage.removeItem('fuelwell.match.v1');
+    clearMatch();
     byId('quiz-form').reset();
     showMode('signIn');
     showStatus('You have signed out.');
@@ -234,7 +239,7 @@ if (authConfigError) {
       setTimeout(() => { showStatus(''); showMode('newPassword'); }, 0);
     } else if (event === 'SIGNED_OUT') {
       setTimeout(() => {
-        sessionStorage.removeItem('fuelwell.match.v1');
+        clearMatch();
         showMode('signIn');
       }, 0);
     }
