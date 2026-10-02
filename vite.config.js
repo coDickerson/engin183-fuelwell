@@ -10,6 +10,10 @@ export default defineConfig({
     rollupOptions: {
       input: {
         home: resolve(import.meta.dirname, 'frontend/index.html'),
+        howItWorks: resolve(import.meta.dirname, 'frontend/how-it-works.html'),
+        families: resolve(import.meta.dirname, 'frontend/families.html'),
+        mealPlanning: resolve(import.meta.dirname, 'frontend/meal-planning.html'),
+        questions: resolve(import.meta.dirname, 'frontend/questions.html'),
         start: resolve(import.meta.dirname, 'frontend/start.html'),
         dashboard: resolve(import.meta.dirname, 'frontend/dashboard.html'),
         mealIdeas: resolve(import.meta.dirname, 'frontend/meal-ideas.html'),

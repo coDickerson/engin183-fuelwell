@@ -1,13 +1,13 @@
 # FuelWell
 
-A student product demo for kidney nutrition support. The landing page, account and matching quiz, overview dashboard, meal ideas, and care team are built as a Vite multi-page website. Supabase provides email/password authentication. Scheduling, messaging, lab records, and meal plans are demonstration screens only.
+A student product demo for kidney nutrition support. The public site includes a short landing page and separate How it works, For families, Meal planning, and Questions pages. The account and matching quiz, overview dashboard, meal ideas, and care team are also built as a Vite multi-page website. Supabase provides email/password authentication. Scheduling, messaging, lab records, and meal plans are demonstration screens only.
 
 ## Project structure
 
 - `frontend/`: public HTML entry points, styles, and page scripts
 - `frontend/auth/`: Supabase browser client and account/quiz flow
 - `backend/`: hosted Supabase setup notes and the RLS-protected quiz result migration
-- `vite.config.js`: builds the three pages into `dist/` for Vercel
+- `vite.config.js`: builds the public and product pages into `dist/` for Vercel
 
 ## Run locally
 
