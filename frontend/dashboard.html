@@ -28,7 +28,7 @@
       <aside class="sidebar" aria-label="Dashboard navigation">
         <p class="sidebar-label">YOUR SPACE</p>
         <nav class="side-nav">
-          <a class="side-link is-active" href="/dashboard.html" aria-current="page">
+          <a class="side-link is-active" href="#overview" aria-current="page">
             <svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>
             Overview
           </a>
@@ -39,6 +39,14 @@
           <a class="side-link" href="/care-team.html">
             <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20m6-9a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm7-4a3.5 3.5 0 0 1 0 6.8m3 6.2v-1.5a3.5 3.5 0 0 0-2.5-3.35"/></svg>
             Care team
+          </a>
+          <a class="side-link" href="#appointments">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M7.5 3.5v3M16.5 3.5v3M3.5 9.5h17m-12 4h3m-3 3h7"/></svg>
+            Appointments
+          </a>
+          <a class="side-link" href="#lab-results">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M9 3.5h6M10 3.5v6l-5.3 8.2A2 2 0 0 0 6.4 21h11.2a2 2 0 0 0 1.7-3.3L14 9.5v-6M8 15h8"/></svg>
+            Lab results
           </a>
         </nav>
         <div class="sidebar-note">
@@ -52,7 +60,10 @@
         <section class="welcome-section" id="overview" aria-labelledby="welcome-title">
           <div class="welcome-copy">
             <p class="eyebrow">YOUR OVERVIEW</p>
-            <h1 class="serif" id="welcome-title">A little more <em>clarity,</em><br class="desktop-break" /> one day at a time.</h1>
+            <h1 class="serif" id="welcome-title">
+              <span data-view-copy="patient">Your care, <em>one step</em><br class="desktop-break" /> at a time.</span>
+              <span data-view-copy="caregiver" hidden>A little more <em>clarity,</em><br class="desktop-break" /> one day at a time.</span>
+            </h1>
             <p class="welcome-description" data-context-copy>A quick look at your sample workspace. Open Meal ideas or Care team for more detail.</p>
           </div>
           <div class="view-switch-wrap">
@@ -69,6 +80,63 @@
           <p><strong>Sample dashboard.</strong> All details and values on this page are examples for demonstration only.</p>
           <span class="demo-tag">DEMO DATA</span>
         </div>
+
+        <section class="match-panel" id="match-panel" aria-labelledby="match-title" hidden>
+          <div class="match-heading">
+            <div>
+              <p class="eyebrow">YOUR QUIZ SNAPSHOT</p>
+              <h2 class="serif match-title" id="match-title">A starting point, shaped by your answers.</h2>
+              <p class="match-description" id="match-description"></p>
+            </div>
+            <a class="text-link match-edit" href="/start.html">Edit answers <span aria-hidden="true">↗</span></a>
+          </div>
+
+          <div class="match-layout">
+            <div class="match-score-column">
+              <div class="match-score-circle" id="match-score-visual" role="img" aria-label="Your quiz stage response">
+                <span class="match-score-kicker">STAGE RESPONSE</span>
+                <strong class="match-score-value" id="match-score">G3b</strong>
+                <span class="match-score-caption">from your quiz</span>
+              </div>
+              <p class="match-score-note">This is a quiz response, not a clinical score or diagnosis.</p>
+            </div>
+
+            <div class="match-takeaways" aria-label="What your quiz answers tell us">
+              <article class="match-takeaway">
+                <span class="takeaway-number">01</span>
+                <div>
+                  <p class="eyebrow">STAGE YOU SELECTED</p>
+                  <h3 id="match-stage-title">G3b</h3>
+                  <p id="match-stage-copy"></p>
+                </div>
+              </article>
+              <article class="match-takeaway">
+                <span class="takeaway-number">02</span>
+                <div>
+                  <p class="eyebrow">YOUR FOCUS</p>
+                  <h3 id="match-focus-title">Familiar meals</h3>
+                  <p id="match-focus-copy"></p>
+                </div>
+              </article>
+              <article class="match-takeaway">
+                <span class="takeaway-number">03</span>
+                <div>
+                  <p class="eyebrow">FOOD TRADITIONS</p>
+                  <h3 id="match-traditions-title">Part of the conversation</h3>
+                  <p id="match-traditions-copy"></p>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <div class="match-next-step">
+            <span class="next-step-icon" aria-hidden="true">↗</span>
+            <div>
+              <p class="eyebrow">A HELPFUL NEXT STEP</p>
+              <p id="match-next-step"></p>
+            </div>
+          </div>
+        </section>
 
         <section class="overview-grid" aria-label="Your care overview">
           <article class="panel overview-card" aria-labelledby="meal-title">
@@ -97,7 +165,7 @@
             <a class="text-link" href="/care-team.html">Open care team <span aria-hidden="true">↗</span></a>
           </article>
 
-          <article class="panel overview-card overview-card-compact" aria-labelledby="appointment-title">
+          <article class="panel overview-card overview-card-compact" id="appointments" aria-labelledby="appointment-title">
             <div class="panel-heading">
               <div>
                 <p class="eyebrow">YOUR SCHEDULE</p>
@@ -109,7 +177,7 @@
             <a class="text-link" href="/care-team.html">See care details <span aria-hidden="true">↗</span></a>
           </article>
 
-          <article class="panel overview-card overview-card-compact" aria-labelledby="labs-title">
+          <article class="panel overview-card overview-card-compact" id="lab-results" aria-labelledby="labs-title">
             <div class="panel-heading">
               <div>
                 <p class="eyebrow">FOR DEMONSTRATION ONLY</p>
@@ -121,16 +189,6 @@
             <p class="overview-feature"><span>Example eGFR</span><strong>38 <small>mL/min</small></strong></p>
             <a class="text-link" href="/care-team.html">See care details <span aria-hidden="true">↗</span></a>
           </article>
-        </section>
-
-        <section class="panel match-panel" id="match-panel" aria-labelledby="match-title" hidden>
-          <div>
-            <p class="eyebrow">YOUR MATCHING QUIZ</p>
-            <h2 class="panel-title" id="match-title">Your starting point</h2>
-            <p id="match-description"></p>
-            <p id="match-next-step"></p>
-          </div>
-          <a class="text-link" href="/start.html">Update your answers <span aria-hidden="true">↗</span></a>
         </section>
 
         <footer class="dashboard-footer">

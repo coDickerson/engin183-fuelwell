@@ -52,30 +52,88 @@ function setActiveView(view) {
     option.setAttribute("aria-pressed", String(selected));
   });
 
+  document.querySelectorAll("[data-view-copy]").forEach((copy) => {
+    copy.hidden = copy.dataset.viewCopy !== view;
+  });
+
   const contextCopy = document.querySelector("[data-context-copy]");
   if (contextCopy) {
     contextCopy.textContent = caregiverView
       ? "A quick look at your shared sample workspace. Open Meal ideas or Care team for more detail."
-      : "A quick look at your sample workspace. Open Meal ideas or Care team for more detail.";
+      : "Find meal ideas, care-team details, and sample lab information here. Your care team can help you decide what applies to you.";
   }
 }
 
 const nextSteps = {
-  'familiar-meals': 'Start with familiar meals you enjoy and discuss changes with a qualified renal dietitian.',
-  'understand-options': 'Bring your food questions to a qualified renal dietitian or your care team.',
-  'prepare-conversation': 'Write down the food questions you want to discuss at your next care-team visit.',
+  'familiar-meals': 'Make a short list of familiar meals to discuss with a qualified renal dietitian.',
+  'understand-options': 'Bring questions about food choices to a qualified renal dietitian or your care team.',
+  'prepare-conversation': 'Write down food questions to bring to your next care-team visit.',
+};
+
+const focusDetails = {
+  'familiar-meals': {
+    title: 'Familiar meals',
+    copy: 'Explore meal ideas that keep familiar foods and flavors in the conversation.',
+  },
+  'understand-options': {
+    title: 'Food questions',
+    copy: 'Bring questions about food choices to a renal dietitian or care team.',
+  },
+  'prepare-conversation': {
+    title: 'Care conversation',
+    copy: 'Gather the questions you want to bring to a care-team visit.',
+  },
+};
+
+const stageDetails = {
+  g3b: {
+    score: 'G3b',
+    title: 'G3b was selected',
+    patientCopy: 'This is the stage you entered in the quiz. Your care team can explain what it means for you.',
+    caregiverCopy: 'This is the stage entered in the quiz. The patient’s care team can explain what it means for them.',
+  },
+  g4: {
+    score: 'G4',
+    title: 'G4 was selected',
+    patientCopy: 'This is the stage you entered in the quiz. Your care team can explain what it means for you.',
+    caregiverCopy: 'This is the stage entered in the quiz. The patient’s care team can explain what it means for them.',
+  },
+  unsure: {
+    score: 'Unsure',
+    title: 'Not confirmed yet',
+    patientCopy: 'You selected “not sure.” Your care team can help confirm which stage applies.',
+    caregiverCopy: 'The quiz response is “not sure.” The patient’s care team can help confirm which stage applies.',
+  },
 };
 
 function showMatch(match) {
-  if (!match || !nextSteps[match.goal]) return;
+  if (!match || !nextSteps[match.goal] || !focusDetails[match.goal] || !stageDetails[match.stage]) return;
   const role = match.role === 'caregiver' ? 'caregiver' : 'patient';
+  const caregiverView = role === 'caregiver';
+  const stage = stageDetails[match.stage];
+  const focus = focusDetails[match.goal];
+  const hasTraditions = Boolean(match.has_traditions ?? match.hasTraditions);
   setActiveView(role);
   const matchPanel = document.querySelector('#match-panel');
   if (!matchPanel) return;
-  const stage = { g3b: 'G3b', g4: 'G4', unsure: 'stage not yet confirmed' }[match.stage];
-  document.querySelector('#match-description').textContent =
-    (role === 'caregiver' ? 'You are exploring support for someone you care for.' : 'You are exploring support for yourself.') +
-    (stage ? ' Your quiz selected ' + stage + '.' : '');
+  document.querySelector('#match-description').textContent = caregiverView
+    ? 'You’re exploring support for someone you care for. Here are the priorities captured in the quiz.'
+    : 'Here are the priorities captured in your quiz. Use them as a starting point for a conversation with your care team.';
+  document.querySelector('#match-score').textContent = stage.score;
+  document.querySelector('#match-score').classList.toggle('is-word', stage.score === 'Unsure');
+  document.querySelector('#match-score-visual').setAttribute(
+    'aria-label', `Quiz stage response: ${stage.score}. This is not a clinical score.`
+  );
+  document.querySelector('#match-stage-title').textContent = stage.title;
+  document.querySelector('#match-stage-copy').textContent = caregiverView ? stage.caregiverCopy : stage.patientCopy;
+  document.querySelector('#match-focus-title').textContent = focus.title;
+  document.querySelector('#match-focus-copy').textContent = focus.copy;
+  document.querySelector('#match-traditions-title').textContent = hasTraditions
+    ? 'Include familiar foods'
+    : 'Preferences can be added later';
+  document.querySelector('#match-traditions-copy').textContent = hasTraditions
+    ? 'You shared that food traditions matter. Bring favorite meals and flavors into future care conversations.'
+    : 'Favorite foods and traditions can be included whenever you’re ready.';
   document.querySelector('#match-next-step').textContent = nextSteps[match.goal];
   matchPanel.hidden = false;
 }
@@ -91,6 +149,19 @@ document.querySelectorAll("[data-coming-soon]").forEach((button) => {
     showToast(`${button.dataset.comingSoon} is a preview and isn’t connected yet.`);
   });
 });
+
+const sectionLinks = [...document.querySelectorAll('.side-link[href^="#"]')];
+function syncSectionNav() {
+  const currentHash = location.hash || "#overview";
+  sectionLinks.forEach((link) => {
+    const selected = link.hash === currentHash;
+    link.classList.toggle("is-active", selected);
+    if (selected) link.setAttribute("aria-current", "page");
+    else link.removeAttribute("aria-current");
+  });
+}
+window.addEventListener("hashchange", syncSectionNav);
+syncSectionNav();
 
 document.querySelector("[data-sign-out]")?.addEventListener("click", async (event) => {
   event.currentTarget.disabled = true;
