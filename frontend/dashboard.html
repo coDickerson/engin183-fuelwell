@@ -3,139 +3,55 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f4f1e8" />
-    <meta name="description" content="A quick overview of your sample FuelWell workspace." />
-    <title>Your overview | FuelWell</title>
+    <meta name="theme-color" content="#fbf7f1" />
+    <meta name="description" content="Today's sample nutrition, meals and care-team updates for Mom in FuelWell." />
+    <title>Today | FuelWell</title>
     <link rel="stylesheet" href="/styles/styles.css" />
     <link rel="stylesheet" href="/styles/dashboard.css" />
     <script type="module" src="/scripts/dashboard.js"></script>
   </head>
-  <body class="dashboard-page" hidden>
-    <a class="skip-link" href="#main-content">Skip to dashboard</a>
-    <header class="dash-header">
-      <a class="brand" href="/" aria-label="FuelWell home">
-        <span class="brand-mark" aria-hidden="true">f</span>
-        <span>fuelwell</span>
-      </a>
-      <p class="workspace-label"><span class="sample-dot" aria-hidden="true"></span> Sample workspace</p>
-      <div class="header-actions">
-        <a class="header-help" href="/#how-it-works">How FuelWell works</a>
-        <button class="sign-out-button" type="button" data-sign-out>Sign out</button>
+  <body class="app-page is-loading">
+    <a class="skip-link" href="#main-content">Skip to today</a>
+    <div class="app-loader" data-app-loader role="status" aria-live="polite">
+      <span class="sr-only">Loading Mom's workspace…</span>
+      <div class="sk-rail" aria-hidden="true"><div class="sk sk-logo"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div></div>
+      <div class="sk-body" aria-hidden="true">
+        <div class="sk sk-top"></div>
+        <div class="sk sk-title"></div>
+        <div class="sk sk-line"></div>
+        <div class="sk-grid"><div class="sk sk-tile"></div><div class="sk sk-tile"></div><div class="sk sk-tile"></div><div class="sk sk-tile"></div></div>
+        <div class="sk-grid sk-grid--2"><div class="sk sk-card"></div><div class="sk sk-card"></div></div>
       </div>
-    </header>
-
-    <div class="dashboard-shell">
-      <aside class="sidebar" aria-label="Dashboard navigation">
-        <p class="sidebar-label">YOUR SPACE</p>
-        <nav class="side-nav">
-          <a class="side-link is-active" href="/dashboard.html" aria-current="page">
-            <svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>
-            Overview
-          </a>
-          <a class="side-link" href="/meal-ideas.html">
-            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12h16M6 12a6 6 0 0 0 12 0M12 6V4m-4 3-1.5-1.5M16 7l1.5-1.5M5 20h14"/></svg>
-            Meal ideas
-          </a>
-          <a class="side-link" href="/care-team.html">
-            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20m6-9a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm7-4a3.5 3.5 0 0 1 0 6.8m3 6.2v-1.5a3.5 3.5 0 0 0-2.5-3.35"/></svg>
-            Care team
-          </a>
-        </nav>
-        <div class="sidebar-note">
-          <span class="note-spark" aria-hidden="true">✳</span>
-          <p><strong>Small steps count.</strong><br />Bring your questions to your care team.</p>
-        </div>
-        <a class="sidebar-home" href="/">← Back to FuelWell</a>
-      </aside>
-
-      <main class="dashboard-main" id="main-content">
-        <section class="welcome-section" id="overview" aria-labelledby="welcome-title">
-          <div class="welcome-copy">
-            <p class="eyebrow">YOUR OVERVIEW</p>
-            <h1 class="serif" id="welcome-title">A little more <em>clarity,</em><br class="desktop-break" /> one day at a time.</h1>
-            <p class="welcome-description" data-context-copy>A quick look at your sample workspace. Open Meal ideas or Care team for more detail.</p>
-          </div>
-          <div class="view-switch-wrap">
-            <span class="switch-label" id="view-label">VIEWING AS</span>
-            <div class="view-switch" role="group" aria-labelledby="view-label">
-              <button type="button" class="view-option is-selected" data-view="patient" aria-pressed="true">Patient</button>
-              <button type="button" class="view-option" data-view="caregiver" aria-pressed="false">Caregiver</button>
-            </div>
-          </div>
-        </section>
-
-        <div class="demo-banner" role="note">
-          <span class="banner-icon" aria-hidden="true">i</span>
-          <p><strong>Sample dashboard.</strong> All details and values on this page are examples for demonstration only.</p>
-          <span class="demo-tag">DEMO DATA</span>
-        </div>
-
-        <section class="overview-grid" aria-label="Your care overview">
-          <article class="panel overview-card" aria-labelledby="meal-title">
-            <div class="panel-heading">
-              <div>
-                <p class="eyebrow">A LOOK AT YOUR DAY</p>
-                <h2 class="panel-title" id="meal-title">Meal ideas</h2>
-              </div>
-              <span class="round-icon meal-icon" aria-hidden="true">✳</span>
-            </div>
-            <p class="panel-intro">A few familiar flavors to explore with your care team.</p>
-            <p class="overview-feature"><span>Sample idea for today</span><strong>Ginger-scallion rice bowl</strong></p>
-            <a class="text-link" href="/meal-ideas.html">Explore meal ideas <span aria-hidden="true">↗</span></a>
-          </article>
-
-          <article class="panel overview-card" aria-labelledby="care-title">
-            <div class="panel-heading">
-              <div>
-                <p class="eyebrow">A PLACE FOR YOUR QUESTIONS</p>
-                <h2 class="panel-title" id="care-title">Care team</h2>
-              </div>
-              <span class="round-icon care-icon" aria-hidden="true">✉</span>
-            </div>
-            <p class="panel-intro">Keep questions in mind for your next care conversation.</p>
-            <p class="overview-feature"><span>Messages</span><strong>Preview only · no conversations yet</strong></p>
-            <a class="text-link" href="/care-team.html">Open care team <span aria-hidden="true">↗</span></a>
-          </article>
-
-          <article class="panel overview-card overview-card-compact" aria-labelledby="appointment-title">
-            <div class="panel-heading">
-              <div>
-                <p class="eyebrow">YOUR SCHEDULE</p>
-                <h2 class="panel-title" id="appointment-title">Appointments</h2>
-              </div>
-              <span class="round-icon appointment-icon" aria-hidden="true">↗</span>
-            </div>
-            <p class="panel-intro">No appointments yet. Scheduling is a preview in this demo.</p>
-            <a class="text-link" href="/care-team.html">See care details <span aria-hidden="true">↗</span></a>
-          </article>
-
-          <article class="panel overview-card overview-card-compact" aria-labelledby="labs-title">
-            <div class="panel-heading">
-              <div>
-                <p class="eyebrow">FOR DEMONSTRATION ONLY</p>
-                <h2 class="panel-title" id="labs-title">Lab snapshot</h2>
-              </div>
-              <span class="round-icon labs-icon" aria-hidden="true">＋</span>
-            </div>
-            <p class="panel-intro">Example values only, not a real health record.</p>
-            <p class="overview-feature"><span>Example eGFR</span><strong>38 <small>mL/min</small></strong></p>
-            <a class="text-link" href="/care-team.html">See care details <span aria-hidden="true">↗</span></a>
-          </article>
-        </section>
-
-        <section class="panel match-panel" id="match-panel" aria-labelledby="match-title" hidden>
+    </div>
+    <div class="app-frame" data-app-frame hidden>
+      <main class="app-main" id="main-content" tabindex="-1">
+        <div class="page-head">
           <div>
-            <p class="eyebrow">YOUR MATCHING QUIZ</p>
-            <h2 class="panel-title" id="match-title">Your starting point</h2>
-            <p id="match-description"></p>
-            <p id="match-next-step"></p>
+            <p class="eyebrow" data-today-date>Today</p>
+            <h1 data-greeting>Good day</h1>
+            <p class="page-sub">Here's how Mom's day is looking.</p>
           </div>
-          <a class="text-link" href="/start.html">Update your answers <span aria-hidden="true">↗</span></a>
+          <div class="page-head-meta" data-patient-meta></div>
+        </div>
+        <section class="kpi-section" aria-labelledby="kpi-title">
+          <div class="section-head"><h2 id="kpi-title">Today's nutrients</h2><p class="muted">Sample meals compared with daily targets</p></div>
+          <div class="kpi-grid" data-kpis></div>
         </section>
-
-        <footer class="dashboard-footer">
-          <span>FuelWell <span aria-hidden="true">·</span> Care that meets you where you are.</span>
-          <a href="/">Visit FuelWell home</a>
+        <div class="today-grid">
+          <section class="card today-meals" aria-labelledby="meals-title">
+            <div class="panel-title"><h2 id="meals-title">Mom's meals today</h2><a class="link-arrow" href="/meals.html#week">See the week <span data-icon="arrow"></span></a></div>
+            <ol class="meal-list" data-today-meals></ol>
+          </section>
+          <div class="today-side">
+            <section class="card appt-card" aria-labelledby="appt-title" data-next-appt></section>
+            <section class="card card--tint next-step" aria-labelledby="next-title" data-next-step></section>
+            <section class="card quiz-card" aria-labelledby="quiz-title" data-quiz hidden></section>
+          </div>
+          <section class="card msg-preview" aria-labelledby="msg-title" data-msg-preview></section>
+        </div>
+        <footer class="app-footer">
+          <span>FuelWell · Student product demo · Sample data only</span>
+          <span>Not medical advice. Talk with your care team before changing a diet. <a href="/how-it-works.html">How FuelWell works</a></span>
         </footer>
       </main>
     </div>
