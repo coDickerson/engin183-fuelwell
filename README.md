@@ -5,7 +5,7 @@
 It is a student product demo. All health data is sample data, and nothing in it is medical advice.
 
 - **Live demo:** `<VERCEL_URL>`. Use the one-click demo at `<VERCEL_URL>/start.html?demo=1`
-- **Demo login:** `heidi_demo@fuelwell.app` / `FuelWell-Demo-2026` (a public, pre-confirmed account holding sample data only)
+- **Demo login:** `heidi_demo@fuelwell.app` / `FuelwellDemo` (a public, pre-confirmed account holding sample data only)
 - **How it was built:** `<VERCEL_URL>/how-it-was-built.html`
 
 ## Features by tab
