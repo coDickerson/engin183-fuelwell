@@ -105,7 +105,7 @@ function renderResult(r) {
   const ai = r.source === 'ai';
   const swapsRows = (r.swaps || []).map((s) => `<tr><td data-label="From">${esc(s.from)}</td><td data-label="To"><strong>${esc(s.to)}</strong></td><td data-label="Why">${esc(s.why)}</td></tr>`).join('');
   const ingredients = (r.ingredients || []).map((i) => `<li class="ing">
-      <span class="ing-name">${esc(i.name)}${i.swapped_from ? ` <span class="chip chip--clay">was ${esc(i.swapped_from)}</span>` : ''}</span>
+      <span class="ing-name">${esc(i.name)}${i.swapped_from && i.swapped_from.toLowerCase() !== i.name.toLowerCase() ? ` <span class="chip chip--clay">was ${esc(i.swapped_from)}</span>` : ''}</span>
       <span class="ing-amt">${Math.round(Number(i.amount_g) || 0)} g</span>
       <span class="ing-nutri muted">K ${Math.round(i.k_mg)} · P ${Math.round(i.p_mg)} · Na ${Math.round(i.na_mg)} mg</span>
     </li>`).join('');
