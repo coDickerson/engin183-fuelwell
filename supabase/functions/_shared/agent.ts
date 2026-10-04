@@ -45,8 +45,8 @@ function getClient(): Anthropic | null {
   const apiKey = Deno.env.get('ANTHROPIC_API_KEY') ?? Deno.env.get('Claude_FuelWell_API_key');
   if (!apiKey) return null;
   // Per-request timeout is set below from the remaining deadline; one SDK retry for 429/5xx.
-  // Keys not scoped to a workspace must name one; set ANTHROPIC_WORKSPACE_ID for those.
-  const workspaceId = Deno.env.get('ANTHROPIC_WORKSPACE_ID');
+  // Organization-scoped keys must name a workspace (hosted project: Claude_FuelWell_Workspace_ID).
+  const workspaceId = Deno.env.get('ANTHROPIC_WORKSPACE_ID') ?? Deno.env.get('Claude_FuelWell_Workspace_ID');
   client ??= new Anthropic({
     apiKey,
     maxRetries: 1,
