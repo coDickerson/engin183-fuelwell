@@ -19,7 +19,7 @@ disables the forms. It never pretends a sign-in worked.
 
 | | |
 |---|---|
-| Email | `heidi.demo@fuelwell.app` |
+| Email | `heidi_demo@fuelwell.app` |
 | Password | `FuelWell-Demo-2026` |
 | Persona | Heidi, who manages meals for her mom Fung (78, CKD G3b, eGFR 38, Cantonese home cooking). Her sister Joyce has view-only access. |
 

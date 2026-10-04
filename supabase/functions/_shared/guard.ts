@@ -10,7 +10,7 @@
 import { createClient, type SupabaseClient, type User } from 'npm:@supabase/supabase-js@2.117.2';
 import { HttpError } from './http.ts';
 
-export const DEMO_EMAIL = 'heidi.demo@fuelwell.app';
+export const DEMO_EMAIL = 'heidi_demo@fuelwell.app';
 export const DAILY_LIMIT = 40;
 export const DEMO_DAILY_LIMIT = 300; // shared reviewer account, so a larger pool
 

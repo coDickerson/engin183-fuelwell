@@ -41,10 +41,17 @@ export type LoopResult<T> =
 let client: Anthropic | null = null;
 
 function getClient(): Anthropic | null {
-  const apiKey = Deno.env.get('ANTHROPIC_API_KEY');
+  // The hosted project stores the key as Claude_FuelWell_API_key; ANTHROPIC_API_KEY also works.
+  const apiKey = Deno.env.get('ANTHROPIC_API_KEY') ?? Deno.env.get('Claude_FuelWell_API_key');
   if (!apiKey) return null;
   // Per-request timeout is set below from the remaining deadline; one SDK retry for 429/5xx.
-  client ??= new Anthropic({ apiKey, maxRetries: 1 });
+  // Keys not scoped to a workspace must name one; set ANTHROPIC_WORKSPACE_ID for those.
+  const workspaceId = Deno.env.get('ANTHROPIC_WORKSPACE_ID');
+  client ??= new Anthropic({
+    apiKey,
+    maxRetries: 1,
+    defaultHeaders: workspaceId ? { 'anthropic-workspace-id': workspaceId } : undefined,
+  });
   return client;
 }
 
