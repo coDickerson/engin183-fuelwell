@@ -1,0 +1,11 @@
+# Supabase CLI config for FuelWell (hosted project ref: gytnfklrewquiaellopf).
+# Link once with: supabase link --project-ref gytnfklrewquiaellopf
+project_id = "engin183-fuelwell"
+
+# Both AI functions require a signed-in user's JWT at the gateway.
+# The functions also resolve the user and reject the anon key / anonymous users.
+[functions.recipe-adapter]
+verify_jwt = true
+
+[functions.inquiry-triage]
+verify_jwt = true

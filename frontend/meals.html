@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#fbf7f1" />
+    <meta name="description" content="Mom's sample kidney-friendly week, the family recipe helper, smart swaps and a grocery list." />
+    <title>Meals | FuelWell</title>
+    <link rel="stylesheet" href="/styles/styles.css" />
+    <link rel="stylesheet" href="/styles/dashboard.css" />
+    <script type="module" src="/scripts/app-meals.js"></script>
+    <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+    <script defer src="/_vercel/insights/script.js"></script>
+  </head>
+  <body class="app-page is-loading">
+    <a class="skip-link" href="#main-content">Skip to meals</a>
+    <div class="app-loader" data-app-loader role="status" aria-live="polite">
+      <span class="sr-only">Loading Mom's workspace…</span>
+      <div class="sk-rail" aria-hidden="true"><div class="sk sk-logo"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div></div>
+      <div class="sk-body" aria-hidden="true">
+        <div class="sk sk-top"></div>
+        <div class="sk sk-title"></div>
+        <div class="sk sk-line"></div>
+        <div class="sk-grid"><div class="sk sk-tile"></div><div class="sk sk-tile"></div><div class="sk sk-tile"></div><div class="sk sk-tile"></div></div>
+        <div class="sk-grid sk-grid--2"><div class="sk sk-card"></div><div class="sk sk-card"></div></div>
+      </div>
+    </div>
+    <div class="app-frame" data-app-frame hidden>
+      <main class="app-main" id="main-content" tabindex="-1">
+        <div class="page-head">
+          <div>
+            <p class="eyebrow">Meals for Mom</p>
+            <h1>Meals</h1>
+            <p class="page-sub">Cantonese home cooking, adjusted for stage G3b. Sample plan only.</p>
+          </div>
+        </div>
+        <div class="subtabs" role="tablist" aria-label="Meals sections">
+          <button class="subtab" type="button" role="tab" id="tab-week" data-tab="week" aria-controls="panel-week" aria-selected="false" tabindex="-1"><span data-icon="week"></span>This week</button>
+          <button class="subtab" type="button" role="tab" id="tab-helper" data-tab="helper" aria-controls="panel-helper" aria-selected="false" tabindex="-1"><span data-icon="sparkle"></span>Family recipe helper</button>
+          <button class="subtab" type="button" role="tab" id="tab-swaps" data-tab="swaps" aria-controls="panel-swaps" aria-selected="false" tabindex="-1"><span data-icon="swap"></span>Smart swaps</button>
+          <button class="subtab" type="button" role="tab" id="tab-grocery" data-tab="grocery" aria-controls="panel-grocery" aria-selected="false" tabindex="-1"><span data-icon="list"></span>Grocery list</button>
+        </div>
+        <section class="tabpanel" role="tabpanel" id="panel-week" aria-labelledby="tab-week" tabindex="0" hidden>
+          <div class="day-picker" role="group" aria-label="Choose a day" data-day-picker></div>
+          <div class="day-summary" data-day-summary></div>
+          <div class="meal-grid" data-week-meals></div>
+        </section>
+        <section class="tabpanel" role="tabpanel" id="panel-helper" aria-labelledby="tab-helper" tabindex="0" hidden>
+          <div class="helper-grid">
+            <form class="card helper-form" data-helper-form novalidate>
+              <div class="panel-title"><h2>Family recipe helper</h2><span class="chip chip--clay"><span data-icon="sparkle"></span>AI</span></div>
+              <div class="field">
+                <label for="dish">Which family dish would you like to make kidney-friendly?</label>
+                <textarea id="dish" name="dish" rows="3" maxlength="400" placeholder="For example: Mom's lo mein with oyster sauce and char siu" aria-describedby="dish-hint dish-error"></textarea>
+                <p class="hint" id="dish-hint">Name the dish and any sauces you use. No personal health details, please.</p>
+                <p class="field-error" id="dish-error" hidden>Please describe a dish first.</p>
+              </div>
+              <div class="example-chips" aria-label="Examples"><span class="muted">Try:</span><span data-recipe-examples></span></div>
+              <div class="helper-actions">
+                <div class="field field--inline">
+                  <label for="cuisine">Cuisine</label>
+                  <select id="cuisine" name="cuisine">
+                    <option value="chinese">Chinese</option>
+                    <option value="korean">Korean</option>
+                    <option value="vietnamese">Vietnamese</option>
+                  </select>
+                </div>
+                <button class="button" type="submit" data-helper-submit><span data-icon="sparkle"></span>Make it kidney-friendly</button>
+              </div>
+            </form>
+            <section class="card helper-result" aria-live="polite" aria-busy="false" data-helper-result></section>
+          </div>
+        </section>
+        <section class="tabpanel" role="tabpanel" id="panel-swaps" aria-labelledby="tab-swaps" tabindex="0" hidden>
+          <div class="card">
+            <div class="panel-title"><h2>Smart swaps</h2>
+              <div class="filter-group" role="group" aria-label="Filter by cuisine" data-swap-filter>
+                <button class="filter" type="button" data-cuisine="all" aria-pressed="true">All</button>
+                <button class="filter" type="button" data-cuisine="chinese" aria-pressed="false">Chinese</button>
+                <button class="filter" type="button" data-cuisine="korean" aria-pressed="false">Korean</button>
+                <button class="filter" type="button" data-cuisine="vietnamese" aria-pressed="false">Vietnamese</button>
+              </div>
+            </div>
+            <p class="muted swaps-intro">Familiar ingredients that are high in sodium, potassium or phosphorus, and what to reach for instead.</p>
+            <div class="table-wrap">
+              <table class="data-table swap-table">
+                <caption class="sr-only">Limit, choose instead, and why it matters</caption>
+                <thead><tr><th scope="col">Limit</th><th scope="col">Choose instead</th><th scope="col">Why it matters</th></tr></thead>
+                <tbody data-swap-rows></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <section class="tabpanel" role="tabpanel" id="panel-grocery" aria-labelledby="tab-grocery" tabindex="0" hidden>
+          <div class="card print-area" data-grocery>
+            <div class="panel-title"><div><h2>Grocery list</h2><p class="muted grocery-sub">For Mom's sample week · <span data-grocery-count></span></p></div>
+              <button class="button button--secondary no-print" type="button" data-print><span data-icon="print"></span>Print list</button>
+            </div>
+            <div class="aisle-grid" data-aisles></div>
+            <p class="print-only print-note">FuelWell sample grocery list for a student demo. Not medical advice.</p>
+          </div>
+        </section>
+        <footer class="app-footer">
+          <span>FuelWell · Student product demo · Sample data only</span>
+          <span>Not medical advice. Talk with your care team before changing a diet. <a href="/how-it-works.html">How FuelWell works</a></span>
+        </footer>
+      </main>
+    </div>
+    <div class="toast" role="status" aria-live="polite" aria-atomic="true" data-toast></div>
+  </body>
+</html>

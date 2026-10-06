@@ -2,137 +2,267 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#f4f1e8" />
-  <meta name="description" content="Take a short FuelWell matching quiz, then save your result with an account." />
-  <title>Get started | FuelWell</title>
+  <meta name="theme-color" content="#123f3d" />
+  <meta name="description" content="Sign in to FuelWell, create an account, or explore the demo as Heidi, who helps her mom Fung eat well for her kidneys." />
+  <title>Sign in | FuelWell</title>
+  <script>
+    // Show the demo loading screen before first paint when the shareable ?demo=1 link is used.
+    if (/[?&]demo=1(&|$)/.test(location.search)) document.documentElement.classList.add('is-demo-loading');
+  </script>
   <link rel="stylesheet" href="/styles/styles.css" />
   <link rel="stylesheet" href="/styles/start.css" />
   <script type="module" src="/auth/start.js"></script>
-</head>
-<body>
-  <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header">
-    <div class="wrap header-inner">
-      <a class="wordmark" href="/" aria-label="FuelWell home">Fuel<span>Well</span><span class="wordmark-dot">.</span></a>
-      <a class="header-link" href="/">Back to home <span aria-hidden="true">↗</span></a>
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+    <script defer src="/_vercel/insights/script.js"></script>
+  </head>
+
+<body class="start-page">
+  <a class="skip-link" href="#main">Skip to sign-in form</a>
+
+  <div id="demo-loading" class="demo-loading" role="status" aria-live="polite">
+    <div class="demo-loading-inner">
+      <span class="brand-mark demo-loading-mark" aria-hidden="true"></span>
+      <span class="spinner" aria-hidden="true"></span>
+      <p class="demo-loading-title">Opening Heidi’s demo…</p>
+      <p class="demo-loading-copy">Signing in to the sample account. This takes a moment.</p>
     </div>
-  </header>
+  </div>
 
-  <main id="main" class="wrap start-layout">
-    <div class="intro-column">
-      <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span> A thoughtful place to begin</p>
-      <h1 class="serif">Food support that starts with <em>your story.</em></h1>
-      <p class="lead">Answer a few short questions first. We’ll show you a starting point, then you can make an account to save it.</p>
-      <div class="journey" aria-label="Getting started steps">
-        <div class="journey-step"><span class="step-number">01</span><span>Tell us what matters to you</span></div>
-        <div class="journey-step"><span class="step-number">02</span><span>See your next step</span></div>
-        <div class="journey-step"><span class="step-number">03</span><span>Create an account to save it</span></div>
+  <div class="start-shell">
+    <!-- Left: a peek into the product, plus the first question -->
+    <section class="start-aside" aria-labelledby="role-heading">
+      <div class="aside-top">
+        <a class="brand brand--light" href="/" aria-label="FuelWell home"><span class="brand-mark" aria-hidden="true"></span>FuelWell</a>
+        <a class="aside-back" href="/">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+          Home
+        </a>
       </div>
-      <p class="privacy-note">Your answers stay in this browser session for this demo. Please don’t enter medical records or other sensitive details.</p>
-    </div>
 
-    <div class="flow-column">
-      <div id="config-notice" class="notice notice--warning" role="alert" hidden>
-        <strong>Account setup is needed.</strong>
-        <p>FuelWell sign-in is not configured yet. Add the Supabase project URL and publishable key to your local environment or deployment settings, then reload this page.</p>
-      </div>
-      <div id="status" class="status" role="status" aria-live="polite" hidden></div>
-
-      <section id="account-panel" class="flow-card" aria-labelledby="account-heading">
-        <div class="panel-kicker"><span class="small-circle" aria-hidden="true"></span> Your account</div>
-        <h2 id="account-heading" class="serif panel-title">Let’s get acquainted.</h2>
-        <p id="account-copy" class="panel-copy">Sign in or create an account to open your dashboard.</p>
-        <div class="auth-tabs" role="group" aria-label="Account options">
-          <button id="show-sign-up" type="button" class="auth-tab is-active" aria-pressed="true">Create account</button>
-          <button id="show-sign-in" type="button" class="auth-tab" aria-pressed="false">Sign in</button>
-        </div>
-
-        <form id="sign-up-form" class="auth-form">
-          <label for="sign-up-email">Email address</label>
-          <input id="sign-up-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required />
-          <label for="sign-up-password">Password</label>
-          <input id="sign-up-password" name="password" type="password" autocomplete="new-password" minlength="6" required aria-describedby="password-hint" />
-          <p id="password-hint" class="field-hint">At least 6 characters. A longer, unique password is safer.</p>
-          <button class="button form-submit" type="submit">Create account and open dashboard <span aria-hidden="true">→</span></button>
-        </form>
-
-        <form id="sign-in-form" class="auth-form" hidden>
-          <label for="sign-in-email">Email address</label>
-          <input id="sign-in-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required />
-          <label for="sign-in-password">Password</label>
-          <input id="sign-in-password" name="password" type="password" autocomplete="current-password" required />
-          <button class="button form-submit" type="submit">Sign in to dashboard <span aria-hidden="true">→</span></button>
-          <button id="show-reset" class="text-button" type="button">Forgot your password?</button>
-        </form>
-
-        <form id="reset-form" class="auth-form" hidden>
-          <p class="form-intro">Enter your account email and we’ll send a reset link if an account exists.</p>
-          <label for="reset-email">Email address</label>
-          <input id="reset-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required />
-          <button class="button form-submit" type="submit">Send reset link <span aria-hidden="true">→</span></button>
-          <button class="text-button back-to-sign-in" type="button">Back to sign in</button>
-        </form>
-
-        <form id="new-password-form" class="auth-form" hidden>
-          <p class="form-intro">Choose a new password for your account.</p>
-          <label for="new-password">New password</label>
-          <input id="new-password" name="password" type="password" autocomplete="new-password" minlength="6" required />
-          <button class="button form-submit" type="submit">Save new password <span aria-hidden="true">→</span></button>
-        </form>
-      </section>
-
-      <section id="quiz-panel" class="flow-card" aria-labelledby="quiz-heading">
-        <div class="panel-topline">
-          <div class="panel-kicker"><span class="small-circle" aria-hidden="true"></span> Step 01 / Matching quiz</div>
-        </div>
-        <h2 id="quiz-heading" class="serif panel-title">What matters most to you?</h2>
-        <p class="panel-copy">There are no wrong answers. This helps shape a helpful first step.</p>
-        <form id="quiz-form" class="quiz-form">
-          <fieldset>
-            <legend><span class="question-number">01</span> Who are you exploring FuelWell for?</legend>
-            <div class="choice-grid">
-              <label class="choice"><input type="radio" name="role" value="patient" required /><span>For myself</span></label>
-              <label class="choice"><input type="radio" name="role" value="caregiver" /><span>For someone I care for</span></label>
-            </div>
-          </fieldset>
-          <fieldset>
-            <legend><span class="question-number">02</span> Which kidney stage has your care team mentioned?</legend>
-            <div class="choice-grid choice-grid--three">
-              <label class="choice"><input type="radio" name="stage" value="g3b" required /><span>G3b</span></label>
-              <label class="choice"><input type="radio" name="stage" value="g4" /><span>G4</span></label>
-              <label class="choice"><input type="radio" name="stage" value="unsure" /><span>I’m not sure</span></label>
-            </div>
-            <p class="field-hint">If you’re unsure, that’s okay. Your care team can help confirm it.</p>
-          </fieldset>
-          <div class="field-group">
-            <label for="food-traditions"><span class="question-number">03</span> What foods or traditions feel like home?</label>
-            <textarea id="food-traditions" name="traditions" rows="3" maxlength="240" placeholder="Family recipes, favorite ingredients, or foods you avoid"></textarea>
-            <p class="field-hint">Optional. Keep this broad; please don’t enter medical details.</p>
+      <div class="preview" aria-hidden="true">
+        <div class="pv-window">
+          <div class="pv-bar">
+            <span class="pv-dots"><i></i><i></i><i></i></span>
+            <span class="chip pv-viewing">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+              Viewing: Mom (Fung)
+            </span>
           </div>
-          <fieldset>
-            <legend><span class="question-number">04</span> What would help most right now?</legend>
-            <div class="choice-stack">
-              <label class="choice"><input type="radio" name="goal" value="familiar-meals" required /><span>Make familiar meals easier to plan</span></label>
-              <label class="choice"><input type="radio" name="goal" value="understand-options" /><span>Understand my food options</span></label>
-              <label class="choice"><input type="radio" name="goal" value="prepare-conversation" /><span>Prepare for a care-team conversation</span></label>
+          <div class="pv-body">
+            <p class="pv-hello">Good afternoon, Heidi</p>
+            <p class="pv-sub">Mom’s plan for Thursday · CKD G3b</p>
+            <div class="pv-grid">
+              <div class="pv-card">
+                <p class="pv-card-title">Today so far</p>
+                <div class="pv-row"><span>Potassium</span><span class="badge badge--low">On track</span></div>
+                <div class="pv-meter"><i style="--fill: 46%"></i></div>
+                <div class="pv-row"><span>Phosphorus</span><span class="badge badge--mid">Watch</span></div>
+                <div class="pv-meter pv-meter--mid"><i style="--fill: 72%"></i></div>
+                <div class="pv-row"><span>Sodium</span><span class="badge badge--low">On track</span></div>
+                <div class="pv-meter"><i style="--fill: 38%"></i></div>
+              </div>
+              <div class="pv-card pv-meal">
+                <div class="pv-meal-photo"></div>
+                <p class="pv-card-title">Dinner</p>
+                <p class="pv-meal-name">Steamed fish with ginger and scallion</p>
+                <span class="badge badge--low">Kidney-friendly</span>
+              </div>
             </div>
-          </fieldset>
-          <button class="button form-submit" type="submit">See my next step <span aria-hidden="true">→</span></button>
-        </form>
-      </section>
+          </div>
+        </div>
+      </div>
 
-      <section id="result-panel" class="flow-card result-card" aria-labelledby="result-heading" hidden>
-        <div class="panel-kicker"><span class="small-circle" aria-hidden="true"></span> Step 02 / Your starting point</div>
-        <div class="result-icon" aria-hidden="true">✳</div>
-        <h2 id="result-heading" class="serif panel-title" tabindex="-1">A good place to begin.</h2>
-        <p id="result-intro" class="panel-copy"></p>
-        <div class="result-detail"><span class="eyebrow">Your next step</span><p id="result-next-step"></p></div>
-        <p class="result-disclaimer">This is a demo starting point, not medical advice or a diet prescription. A qualified care professional can help with personal guidance.</p>
-        <button id="save-result" class="button form-submit" type="button">Save my result and open dashboard <span aria-hidden="true">→</span></button>
-        <button id="retake-quiz" class="text-button" type="button">Change my answers</button>
-      </section>
-    </div>
-  </main>
+      <div class="role-picker">
+        <p class="eyebrow eyebrow--light" id="role-question">First, who is this for?</p>
+        <h1 id="role-heading">Helping your parent eat well for their kidneys.</h1>
+        <div class="role-cards" role="group" aria-labelledby="role-question">
+          <button type="button" class="role-card role-card--primary" data-role="caregiver" aria-pressed="false">
+            <span class="role-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16 14.2a5 5 0 0 1 6 4.8"/></svg>
+            </span>
+            <span class="role-text">
+              <span class="role-title">Helping someone else</span>
+              <span class="role-sub">A parent, partner or relative</span>
+            </span>
+            <span class="role-check" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+            </span>
+          </button>
+          <button type="button" class="role-card" data-role="patient" aria-pressed="false">
+            <span class="role-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7.5" r="3.5"/><path d="M5 20.5a7 7 0 0 1 14 0"/></svg>
+            </span>
+            <span class="role-text">
+              <span class="role-title">For myself</span>
+              <span class="role-sub">My own kidney diet</span>
+            </span>
+            <span class="role-check" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+            </span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right: the account card -->
+    <main id="main" class="start-main">
+      <div class="auth-card" id="auth-card" data-mode="signIn">
+        <div id="config-notice" class="notice auth-notice" role="alert" hidden>
+          <p><strong>Account setup is needed.</strong> <span class="config-text">Sign-in is not configured yet.</span></p>
+        </div>
+
+        <div class="segmented" role="group" aria-label="Account options">
+          <button id="show-sign-in" type="button" class="segmented-option" aria-pressed="true">Sign in</button>
+          <button id="show-sign-up" type="button" class="segmented-option" aria-pressed="false">Create account</button>
+        </div>
+
+        <div id="form-error" class="form-error auth-message" role="alert" aria-live="assertive" hidden></div>
+        <div id="status" class="form-success auth-message" role="status" aria-live="polite" hidden></div>
+
+        <!-- Sign in -->
+        <section class="auth-view" data-view="signIn" aria-labelledby="sign-in-heading">
+          <h2 id="sign-in-heading" class="auth-title" tabindex="-1">Welcome back</h2>
+          <p class="auth-copy">Sign in to see today’s meals and nutrient check.</p>
+          <form id="sign-in-form" novalidate>
+            <div class="field">
+              <label for="sign-in-email">Email</label>
+              <input id="sign-in-email" name="email" type="email" autocomplete="email" inputmode="email" required />
+            </div>
+            <div class="field">
+              <div class="label-row">
+                <label for="sign-in-password">Password</label>
+                <button id="show-reset" class="link-button" type="button">Forgot password?</button>
+              </div>
+              <div class="password-wrap">
+                <input id="sign-in-password" name="password" type="password" autocomplete="current-password" required />
+                <button class="password-toggle" type="button" aria-controls="sign-in-password" aria-pressed="false" aria-label="Show password">Show</button>
+              </div>
+            </div>
+            <button class="button button--block" type="submit">Sign in</button>
+          </form>
+        </section>
+
+        <!-- Forgot password -->
+        <section class="auth-view" data-view="reset" aria-labelledby="reset-heading" hidden>
+          <h2 id="reset-heading" class="auth-title" tabindex="-1">Reset your password</h2>
+          <p class="auth-copy">Enter your account email. If it has an account, we’ll send a reset link.</p>
+          <form id="reset-form" novalidate>
+            <div class="field">
+              <label for="reset-email">Email</label>
+              <input id="reset-email" name="email" type="email" autocomplete="email" inputmode="email" required />
+            </div>
+            <button class="button button--block" type="submit">Send reset link</button>
+            <button class="link-button back-to-sign-in" type="button">Back to sign in</button>
+          </form>
+        </section>
+
+        <!-- New password after a recovery link -->
+        <section class="auth-view" data-view="newPassword" aria-labelledby="new-password-heading" hidden>
+          <h2 id="new-password-heading" class="auth-title" tabindex="-1">Choose a new password</h2>
+          <form id="new-password-form" novalidate>
+            <div class="field">
+              <label for="new-password">New password</label>
+              <div class="password-wrap">
+                <input id="new-password" name="password" type="password" autocomplete="new-password" minlength="8" required aria-describedby="new-password-hint" />
+                <button class="password-toggle" type="button" aria-controls="new-password" aria-pressed="false" aria-label="Show password">Show</button>
+              </div>
+              <p id="new-password-hint" class="hint">At least 8 characters.</p>
+            </div>
+            <button class="button button--block" type="submit">Save new password</button>
+          </form>
+        </section>
+
+        <!-- Create account: one short step per screen -->
+        <section class="auth-view" data-view="signUp" aria-labelledby="sign-up-heading" hidden>
+          <p class="step-count" id="step-count">Step 1 of 3</p>
+          <div class="step-track" aria-hidden="true"><i data-step="1"></i><i data-step="2"></i><i data-step="3"></i></div>
+
+          <form id="quiz-step-1" class="quiz-step" data-step="1" novalidate>
+            <h2 id="sign-up-heading" class="auth-title" tabindex="-1">A little about your situation</h2>
+            <fieldset class="choice-set">
+              <legend>Who are you setting this up for?</legend>
+              <div class="choice-grid">
+                <label class="choice"><input type="radio" name="role" value="caregiver" required /><span>Someone I care for</span></label>
+                <label class="choice"><input type="radio" name="role" value="patient" /><span>Myself</span></label>
+              </div>
+            </fieldset>
+            <fieldset class="choice-set">
+              <legend data-copy-caregiver="Which kidney stage has their care team mentioned?" data-copy-patient="Which kidney stage has your care team mentioned?">Which kidney stage has their care team mentioned?</legend>
+              <div class="choice-grid choice-grid--three">
+                <label class="choice"><input type="radio" name="stage" value="g3b" required /><span>G3b</span></label>
+                <label class="choice"><input type="radio" name="stage" value="g4" /><span>G4</span></label>
+                <label class="choice"><input type="radio" name="stage" value="unsure" /><span>Not sure</span></label>
+              </div>
+            </fieldset>
+            <button class="button button--block" type="submit">Continue</button>
+          </form>
+
+          <form id="quiz-step-2" class="quiz-step" data-step="2" novalidate hidden>
+            <h2 id="step-2-heading" class="auth-title" tabindex="-1">What would help most?</h2>
+            <fieldset class="choice-set">
+              <legend class="sr-only">What would help most right now?</legend>
+              <div class="choice-stack">
+                <label class="choice"><input type="radio" name="goal" value="familiar-meals" required /><span>Plan familiar meals that fit the diet</span></label>
+                <label class="choice"><input type="radio" name="goal" value="understand-options" /><span>Understand which foods are okay</span></label>
+                <label class="choice"><input type="radio" name="goal" value="prepare-conversation" /><span>Prepare for the next care-team visit</span></label>
+              </div>
+            </fieldset>
+            <div class="field">
+              <label for="food-traditions" data-copy-caregiver="Foods that feel like home to them (optional)" data-copy-patient="Foods that feel like home to you (optional)">Foods that feel like home to them (optional)</label>
+              <input id="food-traditions" name="traditions" type="text" maxlength="240" aria-describedby="traditions-hint" />
+              <p id="traditions-hint" class="hint">For example: Cantonese home cooking, congee, steamed fish.</p>
+            </div>
+            <div class="step-actions">
+              <button class="button button--ghost step-back" type="button" data-back="1">Back</button>
+              <button class="button" type="submit">Continue</button>
+            </div>
+          </form>
+
+          <div id="account-step" class="quiz-step" data-step="3" hidden>
+            <h2 id="account-heading" class="auth-title" tabindex="-1">Save your starting point</h2>
+            <div class="result-box">
+              <p id="result-intro"></p>
+              <p class="result-next"><strong>Next step:</strong> <span id="result-next-step"></span></p>
+            </div>
+            <form id="sign-up-form" novalidate>
+              <div class="field">
+                <label for="sign-up-email">Email</label>
+                <input id="sign-up-email" name="email" type="email" autocomplete="email" inputmode="email" required />
+              </div>
+              <div class="field">
+                <label for="sign-up-password">Password</label>
+                <div class="password-wrap">
+                  <input id="sign-up-password" name="password" type="password" autocomplete="new-password" minlength="8" required aria-describedby="password-hint" />
+                  <button class="password-toggle" type="button" aria-controls="sign-up-password" aria-pressed="false" aria-label="Show password">Show</button>
+                </div>
+                <p id="password-hint" class="hint">At least 8 characters.</p>
+              </div>
+              <div class="step-actions">
+                <button class="button button--ghost step-back" type="button" data-back="2">Back</button>
+                <button class="button" type="submit">Create account</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <div class="demo-block" id="demo-block">
+          <div class="divider" aria-hidden="true"><span>or</span></div>
+          <button id="demo-button" class="button button--accent button--block demo-button" type="button">
+            Explore the demo as Heidi <span aria-hidden="true">→</span>
+          </button>
+          <p class="demo-creds" id="demo-creds">
+            Or type the demo login: <span class="creds"><code id="demo-email">heidi_demo@fuelwell.app</code> / <code id="demo-password">FuelwellDemo</code></span>
+          </p>
+        </div>
+      </div>
+
+      <footer class="start-footer">
+        <p class="disclaimer">FuelWell is a student project (ENGIN 183), not a medical service. Please don’t enter real health information.</p>
+        <p class="photo-note">Preview photo: <a href="https://www.pexels.com/photo/11830200/" rel="noopener">Jan Kao / Pexels</a></p>
+      </footer>
+    </main>
+  </div>
 </body>
 </html>

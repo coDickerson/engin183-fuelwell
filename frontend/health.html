@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#fbf7f1" />
+    <meta name="description" content="Sample kidney lab trends and results for Mom, explained in plain language." />
+    <title>Health & labs | FuelWell</title>
+    <link rel="stylesheet" href="/styles/styles.css" />
+    <link rel="stylesheet" href="/styles/dashboard.css" />
+    <script type="module" src="/scripts/app-health.js"></script>
+    <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+    <script defer src="/_vercel/insights/script.js"></script>
+  </head>
+  <body class="app-page is-loading">
+    <a class="skip-link" href="#main-content">Skip to health and labs</a>
+    <div class="app-loader" data-app-loader role="status" aria-live="polite">
+      <span class="sr-only">Loading Mom's workspace…</span>
+      <div class="sk-rail" aria-hidden="true"><div class="sk sk-logo"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div></div>
+      <div class="sk-body" aria-hidden="true">
+        <div class="sk sk-top"></div>
+        <div class="sk sk-title"></div>
+        <div class="sk sk-line"></div>
+        <div class="sk-grid"><div class="sk sk-tile"></div><div class="sk sk-tile"></div><div class="sk sk-tile"></div><div class="sk sk-tile"></div></div>
+        <div class="sk-grid sk-grid--2"><div class="sk sk-card"></div><div class="sk sk-card"></div></div>
+      </div>
+    </div>
+    <div class="app-frame" data-app-frame hidden>
+      <main class="app-main" id="main-content" tabindex="-1">
+        <div class="page-head">
+          <div>
+            <p class="eyebrow">Health &amp; labs</p>
+            <h1>Health &amp; labs</h1>
+            <p class="page-sub">Sample results for Fung over the last 12 months.</p>
+          </div>
+        </div>
+        <div class="subtabs" role="tablist" aria-label="Health sections">
+          <button class="subtab" type="button" role="tab" id="tab-trends" data-tab="trends" aria-controls="panel-trends" aria-selected="false" tabindex="-1"><span data-icon="chart"></span>Trends</button>
+          <button class="subtab" type="button" role="tab" id="tab-labs" data-tab="labs" aria-controls="panel-labs" aria-selected="false" tabindex="-1"><span data-icon="table"></span>Lab results</button>
+        </div>
+        <section class="tabpanel" role="tabpanel" id="panel-trends" aria-labelledby="tab-trends" tabindex="0" hidden>
+          <div class="chart-grid" data-charts></div>
+          <div class="meaning-grid">
+            <section class="card card--tint meaning" aria-labelledby="meaning-title">
+              <h2 id="meaning-title">What these numbers mean</h2>
+              <ul class="meaning-list">
+                <li><strong>eGFR</strong> estimates how well the kidneys filter. Fung's has eased from 44 to 38, which is still stage G3b. Keeping it steady is the goal.</li>
+                <li><strong>Potassium</strong> rose to 5.2 in May and came back to 4.6 after swapping long-boiled soups and bananas.</li>
+                <li><strong>Phosphorus</strong> is near the top of the goal range, so watch dairy, dried seafood and packaged foods with "phos" additives.</li>
+              </ul>
+            </section>
+            <aside class="notice talk-note">
+              <span data-icon="info"></span>
+              <p><strong>Talk to your care team.</strong> These are sample numbers for a demo. Only Fung's own doctor or dietitian can explain her results or change her diet.</p>
+            </aside>
+          </div>
+        </section>
+        <section class="tabpanel" role="tabpanel" id="panel-labs" aria-labelledby="tab-labs" tabindex="0" hidden>
+          <section class="card" aria-labelledby="labs-title">
+            <div class="panel-title"><h2 id="labs-title">Latest lab results</h2><span class="chip" data-lab-date></span></div>
+            <div class="table-wrap">
+              <table class="data-table lab-table">
+                <caption class="sr-only">Sample lab results with goal range and status</caption>
+                <thead><tr><th scope="col">Test</th><th scope="col">Result</th><th scope="col">Typical range</th><th scope="col">Status</th><th scope="col">Date</th></tr></thead>
+                <tbody data-lab-rows></tbody>
+              </table>
+            </div>
+            <p class="notice talk-note"><span data-icon="info"></span><span><strong>Talk to your care team.</strong> Ranges vary by lab. These are sample values, not Fung's real record.</span></p>
+          </section>
+        </section>
+        <footer class="app-footer">
+          <span>FuelWell · Student product demo · Sample data only</span>
+          <span>Not medical advice. Talk with your care team before changing a diet. <a href="/how-it-works.html">How FuelWell works</a></span>
+        </footer>
+      </main>
+    </div>
+    <div class="toast" role="status" aria-live="polite" aria-atomic="true" data-toast></div>
+  </body>
+</html>

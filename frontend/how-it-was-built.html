@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#fbf7f1" />
+<meta name="description" content="How FuelWell was built: two tool-calling Claude agents with code-enforced safety, a multi-agent Claude Code workflow, a token-based design system and the research behind it." />
+<title>How it was built | FuelWell</title>
+<link rel="stylesheet" href="/styles/styles.css" />
+<link rel="stylesheet" href="/styles/build-story.css" />
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+    <script defer src="/_vercel/insights/script.js"></script>
+  </head>
+
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="bs-header">
+  <nav class="wrap bs-nav" aria-label="Main navigation">
+    <a class="brand" href="/" aria-label="FuelWell home"><span class="brand-mark" aria-hidden="true"></span>FuelWell</a>
+    <div class="bs-nav-links">
+      <a href="/">Home</a>
+      <a href="/start.html#sign-in">Sign in</a>
+      <a class="button" href="/start.html?demo=1">Try the demo <span aria-hidden="true">&rarr;</span></a>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+  <section class="bs-hero">
+    <div class="wrap">
+      <p class="eyebrow">How it was built</p>
+      <h1>Agents that call tools, and code that <em>keeps them honest.</em></h1>
+      <p class="lead">FuelWell helps an adult child cook familiar Chinese, Korean and Vietnamese meals for a parent with kidney disease. Behind two small features sit two Claude agents with real tool loops, and the whole product was built by an orchestrated team of Claude Code subagents.</p>
+      <p class="muted">A student project. All data is sample data, and nothing here is medical advice.</p>
+      <div class="chips" aria-label="Highlights">
+        <span class="chip">2 tool-calling agents</span>
+        <span class="chip">Code-enforced red flags</span>
+        <span class="chip">Rules fallback, never a blank error</span>
+        <span class="chip chip--clay">Custom Claude Code skill</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="bs-tabs">
+    <div class="wrap">
+      <div class="bs-tablist" role="tablist" aria-label="Build story sections">
+        <button class="bs-tab" role="tab" id="tab-agents" aria-controls="panel-agents" aria-selected="true" type="button"><span class="num">01</span>Runtime AI agents</button>
+        <button class="bs-tab" role="tab" id="tab-workflow" aria-controls="panel-workflow" aria-selected="false" tabindex="-1" type="button"><span class="num">02</span>Multi-agent workflow</button>
+        <button class="bs-tab" role="tab" id="tab-design" aria-controls="panel-design" aria-selected="false" tabindex="-1" type="button"><span class="num">03</span>Design system</button>
+        <button class="bs-tab" role="tab" id="tab-research" aria-controls="panel-research" aria-selected="false" tabindex="-1" type="button"><span class="num">04</span>Research &rarr; decisions</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 01 Runtime agents -->
+  <section class="bs-panel" role="tabpanel" id="panel-agents" aria-labelledby="tab-agents" tabindex="0">
+    <div class="wrap">
+      <header>
+        <p class="eyebrow">01 / Runtime AI agents</p>
+        <h2>Two agents, one hardened pattern</h2>
+        <p class="bs-intro">Each feature is a Supabase Edge Function that runs a Claude tool-use loop. The model plans and writes; code looks things up, does the maths, enforces safety and validates the final JSON. If anything fails, the same endpoint answers from a deterministic rules engine.</p>
+      </header>
+
+      <figure class="bs-figure">
+        <div class="scroll">
+          <svg viewBox="0 0 980 372" role="img" aria-labelledby="dg1-title dg1-desc">
+            <title id="dg1-title">Recipe adapter tool loop</title>
+            <desc id="dg1-desc">The dashboard sends a dish to the recipe-adapter Edge Function, which checks the JWT, validates input and counts the daily quota. Claude Sonnet 5.5 calls lookup_nutrients and compute_totals, which run as code, then submits. Code validators accept the result or send it back once for repair. Validated JSON returns to the UI. If the key is missing, the API errors, or output stays invalid, a rules engine answers instead.</desc>
+            <defs><marker id="ah1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="dg-head" d="M0 0L10 5L0 10z"/></marker></defs>
+            <rect class="dg-box" x="10" y="140" width="130" height="80" rx="14"/>
+            <text class="dg-title" x="75" y="174" text-anchor="middle">Caregiver</text>
+            <text class="dg-text" x="75" y="194" text-anchor="middle">Meals tab</text>
+            <rect class="dg-box dg-box--guard" x="180" y="105" width="170" height="150" rx="14"/>
+            <text class="dg-title" x="265" y="134" text-anchor="middle">Edge Function</text>
+            <text class="dg-text" x="265" y="160" text-anchor="middle">verify JWT (signed in)</text>
+            <text class="dg-text" x="265" y="182" text-anchor="middle">validate input (&le; 600 chars)</text>
+            <text class="dg-text" x="265" y="204" text-anchor="middle">daily quota, atomic SQL</text>
+            <text class="dg-text" x="265" y="226" text-anchor="middle">timeouts + capped tokens</text>
+            <rect class="dg-box dg-box--model" x="400" y="20" width="190" height="100" rx="14"/>
+            <text class="dg-title" x="495" y="52" text-anchor="middle">Claude Sonnet 5.5</text>
+            <text class="dg-text" x="495" y="74" text-anchor="middle">plans swaps, writes copy</text>
+            <text class="dg-text" x="495" y="96" text-anchor="middle">&le; 8 turns &middot; 45 s budget</text>
+            <rect class="dg-box dg-box--code" x="400" y="180" width="190" height="140" rx="14"/>
+            <text class="dg-title" x="495" y="206" text-anchor="middle">Tools (plain code)</text>
+            <text class="dg-mono" x="495" y="234" text-anchor="middle">lookup_nutrients</text>
+            <text class="dg-mono" x="495" y="258" text-anchor="middle">compute_totals</text>
+            <text class="dg-text" x="495" y="284" text-anchor="middle">88 foods, USDA FDC</text>
+            <text class="dg-text" x="495" y="304" text-anchor="middle">levels from thresholds</text>
+            <rect class="dg-box dg-box--guard" x="640" y="105" width="180" height="150" rx="14"/>
+            <text class="dg-title" x="730" y="134" text-anchor="middle">Code validators</text>
+            <text class="dg-mono" x="730" y="158" text-anchor="middle">submit_adaptation</text>
+            <text class="dg-text" x="730" y="182" text-anchor="middle">every food in the table</text>
+            <text class="dg-text" x="730" y="204" text-anchor="middle">totals recomputed by code</text>
+            <text class="dg-text" x="730" y="226" text-anchor="middle">sodium may not rise</text>
+            <rect class="dg-box" x="855" y="140" width="115" height="80" rx="14"/>
+            <text class="dg-title" x="912" y="174" text-anchor="middle">JSON &rarr; UI</text>
+            <text class="dg-mono" x="912" y="196" text-anchor="middle">source: 'ai'</text>
+            <rect class="dg-box dg-box--rules" x="640" y="282" width="330" height="58" rx="14"/>
+            <text class="dg-title" x="805" y="306" text-anchor="middle">Rules fallback: dish library + swap map</text>
+            <text class="dg-text" x="805" y="327" text-anchor="middle">no key, error, timeout or invalid &rarr; source: 'rules'</text>
+            <path class="dg-arrow" d="M140 180H176" marker-end="url(#ah1)"/>
+            <path class="dg-arrow" d="M350 150H372V70H396" marker-end="url(#ah1)"/>
+            <path class="dg-arrow" d="M470 120V176" marker-end="url(#ah1)"/>
+            <path class="dg-arrow" d="M520 180V124" marker-end="url(#ah1)"/>
+            <text class="dg-label" x="462" y="152" text-anchor="end">tool_use</text>
+            <text class="dg-label" x="528" y="152">tool_result</text>
+            <path class="dg-arrow" d="M590 100H615V150H636" marker-end="url(#ah1)"/>
+            <path class="dg-arrow dg-arrow--dash dg-arrow--accent" d="M730 105V40H594" marker-end="url(#ah1)"/>
+            <text class="dg-label" x="740" y="58">invalid: is_error, one repair</text>
+            <path class="dg-arrow" d="M820 180H851" marker-end="url(#ah1)"/>
+            <path class="dg-arrow dg-arrow--dash" d="M265 255V360H805V344" marker-end="url(#ah1)"/>
+            <path class="dg-arrow dg-arrow--dash" d="M730 255V278" marker-end="url(#ah1)"/>
+            <path class="dg-arrow dg-arrow--dash" d="M912 282V224" marker-end="url(#ah1)"/>
+          </svg>
+        </div>
+        <figcaption>Agent 1, <code>recipe-adapter</code>. Input: a family dish such as "my mom's doenjang jjigae". Output: a kidney-friendlier version with per-ingredient K/P/Na, before and after totals, low/mid/high levels, swaps and tips.</figcaption>
+      </figure>
+
+      <figure class="bs-figure">
+        <div class="scroll">
+          <svg viewBox="0 0 980 372" role="img" aria-labelledby="dg2-title dg2-desc">
+            <title id="dg2-title">Caregiver question triage tool loop</title>
+            <desc id="dg2-desc">A caregiver question goes to the inquiry-triage Edge Function with the same auth, validation and quota checks. Claude calls check_red_flags, search_care_faq and get_open_slots, then submits a triage. Code validates the category, the slots and the wording, and code re-runs the red-flag rules on the raw message and overrides urgency if any match. If the model path fails, keyword rules produce the triage.</desc>
+            <defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="dg-head" d="M0 0L10 5L0 10z"/></marker></defs>
+            <rect class="dg-box" x="10" y="140" width="130" height="80" rx="14"/>
+            <text class="dg-title" x="75" y="174" text-anchor="middle">Caregiver</text>
+            <text class="dg-text" x="75" y="194" text-anchor="middle">Care team tab</text>
+            <rect class="dg-box dg-box--guard" x="180" y="105" width="170" height="150" rx="14"/>
+            <text class="dg-title" x="265" y="134" text-anchor="middle">Edge Function</text>
+            <text class="dg-text" x="265" y="160" text-anchor="middle">verify JWT (signed in)</text>
+            <text class="dg-text" x="265" y="182" text-anchor="middle">validate input (&le; 600 chars)</text>
+            <text class="dg-text" x="265" y="204" text-anchor="middle">daily quota, atomic SQL</text>
+            <text class="dg-text" x="265" y="226" text-anchor="middle">timeouts + capped tokens</text>
+            <rect class="dg-box dg-box--model" x="400" y="20" width="190" height="100" rx="14"/>
+            <text class="dg-title" x="495" y="52" text-anchor="middle">Claude Sonnet 5.5</text>
+            <text class="dg-text" x="495" y="74" text-anchor="middle">classifies, drafts reply</text>
+            <text class="dg-text" x="495" y="96" text-anchor="middle">&le; 6 turns &middot; 40 s budget</text>
+            <rect class="dg-box dg-box--code" x="400" y="180" width="190" height="140" rx="14"/>
+            <text class="dg-title" x="495" y="206" text-anchor="middle">Tools (plain code)</text>
+            <text class="dg-mono" x="495" y="232" text-anchor="middle">check_red_flags</text>
+            <text class="dg-mono" x="495" y="254" text-anchor="middle">search_care_faq</text>
+            <text class="dg-mono" x="495" y="276" text-anchor="middle">get_open_slots</text>
+            <text class="dg-text" x="495" y="302" text-anchor="middle">regex rules &middot; BM25 &middot; calendar</text>
+            <rect class="dg-box dg-box--guard" x="640" y="105" width="180" height="150" rx="14"/>
+            <text class="dg-title" x="730" y="134" text-anchor="middle">Code validators</text>
+            <text class="dg-mono" x="730" y="158" text-anchor="middle">submit_triage</text>
+            <text class="dg-text" x="730" y="182" text-anchor="middle">slots must be offered</text>
+            <text class="dg-text" x="730" y="204" text-anchor="middle">no dose instructions</text>
+            <text class="dg-text" x="730" y="226" text-anchor="middle">red flags override urgency</text>
+            <rect class="dg-box" x="855" y="140" width="115" height="80" rx="14"/>
+            <text class="dg-title" x="912" y="174" text-anchor="middle">JSON &rarr; UI</text>
+            <text class="dg-text" x="912" y="196" text-anchor="middle">+ step log</text>
+            <rect class="dg-box dg-box--rules" x="640" y="282" width="330" height="58" rx="14"/>
+            <text class="dg-title" x="805" y="306" text-anchor="middle">Rules fallback: keywords + FAQ + slots</text>
+            <text class="dg-text" x="805" y="327" text-anchor="middle">red-flag check still runs &rarr; source: 'rules'</text>
+            <path class="dg-arrow" d="M140 180H176" marker-end="url(#ah2)"/>
+            <path class="dg-arrow" d="M350 150H372V70H396" marker-end="url(#ah2)"/>
+            <path class="dg-arrow" d="M470 120V176" marker-end="url(#ah2)"/>
+            <path class="dg-arrow" d="M520 180V124" marker-end="url(#ah2)"/>
+            <text class="dg-label" x="462" y="152" text-anchor="end">tool_use</text>
+            <text class="dg-label" x="528" y="152">tool_result</text>
+            <path class="dg-arrow" d="M590 100H615V150H636" marker-end="url(#ah2)"/>
+            <path class="dg-arrow dg-arrow--dash dg-arrow--accent" d="M730 105V40H594" marker-end="url(#ah2)"/>
+            <text class="dg-label" x="740" y="58">invalid: is_error, one repair</text>
+            <path class="dg-arrow" d="M820 180H851" marker-end="url(#ah2)"/>
+            <path class="dg-arrow dg-arrow--dash" d="M265 255V360H805V344" marker-end="url(#ah2)"/>
+            <path class="dg-arrow dg-arrow--dash" d="M730 255V278" marker-end="url(#ah2)"/>
+            <path class="dg-arrow dg-arrow--dash" d="M912 282V224" marker-end="url(#ah2)"/>
+          </svg>
+        </div>
+        <figcaption>Agent 2, <code>inquiry-triage</code>. Input: a caregiver's message. Output: category, urgency, red flag and escalation, a draft reply for staff to review, up to three bookable dietitian slots, and a step-by-step log the UI shows as "How the agent handled this".</figcaption>
+      </figure>
+
+      <div class="bs-grid bs-grid--3">
+        <article class="card">
+          <h3>Red flags live in code</h3>
+          <p>Chest pain, trouble breathing, confusion, no urine, severe swelling, muscle weakness, irregular heartbeat and fainting are regex rules. The model can call them, but the function also runs them on the raw message and forces <code>urgency: 'urgent'</code>, <code>red_flag: true</code> and a call-911-or-care-team message, whatever the model said. The rules are deliberately over-inclusive.</p>
+        </article>
+        <article class="card">
+          <h3>The model never does maths</h3>
+          <p>Language models are unreliable at arithmetic, and a wrong sodium total is worse than none. Claude chooses ingredients and grams; <code>compute_totals</code> multiplies USDA values and code assigns low/mid/high from documented per-meal thresholds. Final totals are always recomputed from the submitted ingredients.</p>
+        </article>
+        <article class="card">
+          <h3>Never a blank error</h3>
+          <p>No API key, an API error, a timeout, a refusal or output that fails validation twice all lead to the same place: a deterministic rules answer with <code>source: 'rules'</code>. Quota storage being down also routes to rules rather than to the paid model.</p>
+        </article>
+      </div>
+
+      <div class="bs-callout">
+        <h3>Same shape as leasing-inquiry triage and tour booking</h3>
+        <p>Swap "caregiver" for "prospective tenant" and the triage agent is a leasing assistant: classify the inquiry (pricing, availability, maintenance, emergency), retrieve the property FAQ, enforce hard rules in code (a gas leak or flooding escalates no matter what the model thinks), offer real tour slots from a calendar tool, and hand staff a validated draft plus an audit trail of tool calls. The pieces that make it production-safe carry over: auth at the edge, per-user quotas, input limits, strict tool schemas, validated structured output, and a fallback path.</p>
+      </div>
+
+      <div class="bs-grid bs-grid--2">
+        <article class="card">
+          <h3>Hardening checklist</h3>
+          <ul class="bs-list">
+            <li><code>verify_jwt</code> on, plus a server-side user lookup that rejects the anon key and anonymous users.</li>
+            <li>Input: JSON only, 8 KB body cap, 600-character text cap, enum checks, control characters stripped.</li>
+            <li>Quota: <code>ai_usage</code> table with RLS and no client policies, written by an atomic <code>INSERT &hellip; ON CONFLICT DO UPDATE &hellip; WHERE calls &lt; limit</code>. 40 calls a day per user, 300 for the shared demo account.</li>
+            <li>Model calls: capped <code>max_tokens</code>, per-request timeout from a wall-clock budget, one SDK retry, turn cap, server-side refusal fallback.</li>
+            <li>Strict tool schemas (<code>strict: true</code>), then semantic validation in code, with one repair round.</li>
+            <li>User text is wrapped as data, and the prompts tell the model to ignore instructions inside it.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Where the knowledge comes from</h3>
+          <ul class="bs-list">
+            <li>88 ingredients common in Chinese, Korean and Vietnamese home cooking, in mg per 100 g from USDA FoodData Central (SR Legacy / FNDDS), with FDC IDs. Approximations are marked as such.</li>
+            <li>Per-meal thresholds (K &lt; 400 / &le; 700, P &lt; 200 / &le; 300, Na &lt; 400 / &le; 700 mg) derived from NKF and KDOQI 2020 daily ranges and labelled as demo heuristics.</li>
+            <li>15 plain-language FAQ entries on diet, scheduling, insurance, labs and the caregiver role.</li>
+            <li>One shared file, <code>renal-data.mjs</code>, feeds both the Edge Function and the developer skill, so they cannot drift.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 Workflow -->
+  <section class="bs-panel" role="tabpanel" id="panel-workflow" aria-labelledby="tab-workflow" tabindex="0">
+    <div class="wrap">
+      <header>
+        <p class="eyebrow">02 / Built with Claude Code</p>
+        <h2>An orchestrator and six parallel subagents</h2>
+        <p class="bs-intro">One orchestrating Claude Code session planned the work, wrote the shared contracts, and fanned out research and build tasks to subagents that ran in parallel. A human owner made the product calls and reviewed the result.</p>
+      </header>
+
+      <ol class="bs-phases" style="list-style:none;padding:0;margin:0">
+        <li class="bs-phase">
+          <span class="bs-phase-num" aria-hidden="true">1</span>
+          <div class="card">
+            <h3>Research: three subagents in parallel</h3>
+            <div class="bs-agents">
+              <div class="bs-agent"><strong>Competitor audit</strong><p>Visual and UX audit of DaVita, Fresenius, Nourish, Fay, Season, Foodsmart, Kidney Ally and NKF.</p></div>
+              <div class="bs-agent"><strong>People and access</strong><p>Accessibility for older readers, the adult-child caregiver role, and auth constraints.</p></div>
+              <div class="bs-agent"><strong>Codebase and fit</strong><p>Audit of the existing app, plus what the work should demonstrate for an AI-agent engineering role.</p></div>
+            </div>
+          </div>
+        </li>
+        <li class="bs-phase">
+          <span class="bs-phase-num" aria-hidden="true">2</span>
+          <div class="card">
+            <h3>Contracts before code</h3>
+            <p>The orchestrator wrote two contracts that every builder had to honour: the design-system tokens and components in <code>styles.css</code>, and a typed AI client (<code>ai-client.js</code>) whose JSDoc return shapes are exactly what the Edge Functions return and the dashboard renders. That let the UI and the agents be built at the same time without waiting on each other.</p>
+          </div>
+        </li>
+        <li class="bs-phase">
+          <span class="bs-phase-num" aria-hidden="true">3</span>
+          <div class="card">
+            <h3>Build: three subagents with strict file ownership</h3>
+            <div class="bs-agents">
+              <div class="bs-agent"><strong>Sign-in and public site</strong><p>Landing pages, sign-in, and a one-click demo login.</p><p class="owns">Owns public pages and auth UI.</p></div>
+              <div class="bs-agent"><strong>Tabbed dashboard</strong><p>Overview, meals and care-team tabs built on the AI client contract.</p><p class="owns">Owns dashboard pages, scripts and sample data.</p></div>
+              <div class="bs-agent"><strong>AI functions and docs</strong><p>Both Edge Functions, the quota migration, the custom skill, this page and the README.</p><p class="owns">Owns <code>supabase/</code>, the skill and docs.</p></div>
+            </div>
+            <p class="muted" style="margin-top:var(--space-3);margin-bottom:0">Each agent had an explicit allow-list of files, could not commit or deploy, and had to pass a build check. Nobody edited anyone else's files, so there were no merge conflicts to untangle.</p>
+          </div>
+        </li>
+        <li class="bs-phase">
+          <span class="bs-phase-num" aria-hidden="true">4</span>
+          <div class="card">
+            <h3>Integration and review</h3>
+            <p>The orchestrator merged the work, ran the build, reviewed the diffs against the contracts, applied the database migration and deployed the functions, then checked the live demo end to end.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="bs-grid bs-grid--3" style="margin-top:var(--space-6)">
+        <article class="card">
+          <h3>MCP tool integrations</h3>
+          <ul class="bs-list">
+            <li><strong>Supabase MCP</strong>: inspect the project and tables, apply migrations, deploy Edge Functions, read logs and security advisors.</li>
+            <li><strong>GitHub</strong>: repository, branches and pull requests.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Skills used</h3>
+          <ul class="bs-list">
+            <li><code>claude-api</code>: current model IDs, the tool-use loop, strict tools and refusal fallbacks.</li>
+            <li><code>supabase</code>: Edge Function and RLS conventions and the security checklist.</li>
+            <li><code>artifact-design</code>: page design guidance.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Custom skill: <code>renal-recipe-check</code></h3>
+          <p>Triggers whenever a developer adds or edits meal data. It runs a Node script against the same nutrient table and thresholds the agent uses, flags unrealistic values, badge mismatches, unknown ingredients and missing disclaimers, and suggests culturally faithful swaps.</p>
+        </article>
+      </div>
+
+      <figure class="bs-figure" style="margin-top:var(--space-6)">
+        <pre class="bs-code" aria-label="Example skill output"><code>$ node .claude/skills/renal-recipe-check/scripts/check-meals.mjs --dish "kimchi jjigae"
+
+== dish library: kimchi jjigae
+  - Kimchi jjigae with rice (kimchi jjigae) K 965 · P 368 · Na 1780 mg (computed) [K high / P high / Na high]
+      swap  kimchi -> kimchi, rinsed: A quick rinse and a slightly smaller amount keep the
+            sour kimchi taste with less salt.
+      swap  anchovy stock -> homemade low-sodium stock: Same long-simmered base, made without
+            added salt.
+      swap  gochujang -> 50% of the amount: Half the paste with a pinch of gochugaru keeps
+            colour and heat with less sodium.
+
+Summary: 1 meals, 0 errors, 0 warnings. Table: 88 ingredients (USDA FDC).</code></pre>
+        <figcaption>The skill's script, run on one of the dish-library entries the rules fallback also uses.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 03 Design system -->
+  <section class="bs-panel" role="tabpanel" id="panel-design" aria-labelledby="tab-design" tabindex="0">
+    <div class="wrap">
+      <header>
+        <p class="eyebrow">03 / Design system</p>
+        <h2>Clay &amp; Teal, rendered live</h2>
+        <p class="bs-intro">Everything below is drawn from the real <code>styles.css</code> on this page, not screenshots. Pages build on the same layers, the pattern of a reusable dashboard template.</p>
+        <ul class="bs-layers" aria-label="Stylesheet layers">
+          <li>Tokens</li><li>Base</li><li>Components</li><li>Page styles</li>
+        </ul>
+      </header>
+
+      <h3>Color tokens</h3>
+      <div class="bs-swatches">
+        <div class="bs-swatch"><span style="background:var(--primary)"></span><div><strong>Primary</strong><br><code>--primary</code></div></div>
+        <div class="bs-swatch"><span style="background:var(--primary-strong)"></span><div><strong>Primary strong</strong><br><code>--primary-strong</code></div></div>
+        <div class="bs-swatch"><span style="background:var(--primary-soft)"></span><div><strong>Primary soft</strong><br><code>--primary-soft</code></div></div>
+        <div class="bs-swatch"><span style="background:var(--accent)"></span><div><strong>Accent (clay)</strong><br><code>--accent</code></div></div>
+        <div class="bs-swatch"><span style="background:var(--accent-soft)"></span><div><strong>Accent soft</strong><br><code>--accent-soft</code></div></div>
+        <div class="bs-swatch"><span style="background:var(--ground)"></span><div><strong>Ground</strong><br><code>--ground</code></div></div>
+        <div class="bs-swatch"><span style="background:var(--ink)"></span><div><strong>Ink</strong><br><code>--ink</code></div></div>
+        <div class="bs-swatch"><span style="background:var(--ink-3)"></span><div><strong>Ink 3 (min text)</strong><br><code>--ink-3</code></div></div>
+        <div class="bs-swatch"><span style="background:var(--ok)"></span><div><strong>Low</strong><br><code>--ok</code></div></div>
+        <div class="bs-swatch"><span style="background:var(--mid)"></span><div><strong>Mid</strong><br><code>--mid</code></div></div>
+        <div class="bs-swatch"><span style="background:var(--high)"></span><div><strong>High</strong><br><code>--high</code></div></div>
+        <div class="bs-swatch"><span style="background:var(--focus)"></span><div><strong>Focus ring</strong><br><code>--focus</code></div></div>
+      </div>
+
+      <div class="bs-grid bs-grid--2" style="margin-top:var(--space-6)">
+        <article class="card">
+          <h3>Type scale</h3>
+          <div class="bs-type-row"><code>--text-3xl</code><span class="serif" style="font-size:var(--text-3xl);line-height:1.1">Familiar food</span></div>
+          <div class="bs-type-row"><code>--text-2xl</code><span class="serif" style="font-size:var(--text-2xl)">Thoughtful care</span></div>
+          <div class="bs-type-row"><code>--text-xl</code><span class="serif" style="font-size:var(--text-xl)">Doenjang jjigae</span></div>
+          <div class="bs-type-row"><code>--text-base</code><span style="font-size:var(--text-base)">18px body in Atkinson Hyperlegible</span></div>
+          <div class="bs-type-row"><code>--text-sm</code><span style="font-size:var(--text-sm)">16px floor: nothing smaller</span></div>
+        </article>
+        <article class="card">
+          <h3>Components</h3>
+          <div class="bs-demo-row">
+            <button class="button" type="button">Primary</button>
+            <button class="button button--accent" type="button">Accent</button>
+            <button class="button button--secondary" type="button">Secondary</button>
+            <button class="button button--ghost" type="button">Ghost</button>
+          </div>
+          <div class="bs-demo-row">
+            <span class="chip">Chinese</span><span class="chip">Korean</span><span class="chip chip--clay">Vietnamese</span>
+          </div>
+          <div class="bs-demo-row">
+            <span class="badge badge--low">Potassium low</span>
+            <span class="badge badge--mid">Phosphorus mid</span>
+            <span class="badge badge--high">Sodium high</span>
+          </div>
+          <p class="notice"><span><strong>Sample data.</strong> Nutrient status always pairs color with a text label.</span></p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 Research -->
+  <section class="bs-panel" role="tabpanel" id="panel-research" aria-labelledby="tab-research" tabindex="0">
+    <div class="wrap">
+      <header>
+        <p class="eyebrow">04 / Research &rarr; decisions</p>
+        <h2>What we saw, and what we changed</h2>
+        <p class="bs-intro">Findings from the research subagents' audit of kidney-nutrition and dietitian-booking products, and the product decision each one drove.</p>
+      </header>
+
+      <div class="bs-decision">
+        <div class="card"><p class="eyebrow">Finding</p><p>Most kidney-diet tools speak to the patient. In immigrant families, the adult child often researches, translates and cooks.</p></div>
+        <span class="arrow" aria-hidden="true">&rarr;</span>
+        <div class="card card--tint"><p class="eyebrow">Decision</p><p>The adult child is the primary user. Copy, the triage agent's replies and the recipe tips are written to the caregiver about their parent.</p></div>
+      </div>
+      <div class="bs-decision">
+        <div class="card"><p class="eyebrow">Finding</p><p>Large provider sites (DaVita, Fresenius) carry deep recipe and education libraries in long, scrolling pages that are hard to scan.</p></div>
+        <span class="arrow" aria-hidden="true">&rarr;</span>
+        <div class="card card--tint"><p class="eyebrow">Decision</p><p>Tabs instead of long scroll: the dashboard and this page use one accessible tablist with focused panels.</p></div>
+      </div>
+      <div class="bs-decision">
+        <div class="card"><p class="eyebrow">Finding</p><p>NKF's "instead of this, try this" swap lists are the most usable advice format we saw: concrete and easy to act on.</p></div>
+        <span class="arrow" aria-hidden="true">&rarr;</span>
+        <div class="card card--tint"><p class="eyebrow">Decision</p><p>NKF-style swap tables. The recipe agent returns <em>from &rarr; to &rarr; why</em> rows and keeps the dish recognisable.</p></div>
+      </div>
+      <div class="bs-decision">
+        <div class="card"><p class="eyebrow">Finding</p><p>Kidney Ally shows potassium, phosphorus and sodium as simple bars, which reads faster than tables of milligrams.</p></div>
+        <span class="arrow" aria-hidden="true">&rarr;</span>
+        <div class="card card--tint"><p class="eyebrow">Decision</p><p>Kidney Ally-style nutrient bars with low/mid/high text labels, never color alone, set by code-owned thresholds.</p></div>
+      </div>
+      <div class="bs-decision">
+        <div class="card"><p class="eyebrow">Finding</p><p>Dietitian services (Nourish, Fay, Season, Foodsmart) lead with booking and insurance, but say little about family food traditions.</p></div>
+        <span class="arrow" aria-hidden="true">&rarr;</span>
+        <div class="card card--tint"><p class="eyebrow">Decision</p><p>Booking lives inside the question flow: the triage agent offers real slots when they help, and cultural dishes are first-class.</p></div>
+      </div>
+      <div class="bs-decision">
+        <div class="card"><p class="eyebrow">Finding</p><p>Supabase's default email service only delivers to project team members, so outside reviewers could never confirm an account.</p></div>
+        <span class="arrow" aria-hidden="true">&rarr;</span>
+        <div class="card card--tint"><p class="eyebrow">Decision</p><p>A pre-confirmed shared demo login with sample data only, and its own larger AI quota so reviewers do not hit limits.</p></div>
+      </div>
+      <div class="bs-decision">
+        <div class="card"><p class="eyebrow">Finding</p><p>Many readers are older or reading in a second language; small grey text and color-only status fail them.</p></div>
+        <span class="arrow" aria-hidden="true">&rarr;</span>
+        <div class="card card--tint"><p class="eyebrow">Decision</p><p>18px body text with a 16px floor, Atkinson Hyperlegible, AA contrast on every text pair, and 48px touch targets.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="bs-footer">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="FuelWell home"><span class="brand-mark" aria-hidden="true"></span>FuelWell</a>
+    <p class="disclaimer">A student project. Sample data only. FuelWell does not provide medical advice; talk to your kidney care team.</p>
+  </div>
+</footer>
+
+<script type="module">
+  const tabs = [...document.querySelectorAll('[role="tab"]')];
+  const panels = tabs.map((t) => document.getElementById(t.getAttribute('aria-controls')));
+  const slug = (tab) => tab.id.replace('tab-', '');
+
+  function select(tab, { focus = false, updateHash = true } = {}) {
+    tabs.forEach((t, i) => {
+      const on = t === tab;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      panels[i].hidden = !on;
+    });
+    const list = tab.parentElement;
+    list.scrollLeft = Math.max(0, tab.offsetLeft - list.offsetLeft - 16);
+    if (focus) tab.focus();
+    if (updateHash) history.replaceState(null, '', `#${slug(tab)}`);
+  }
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => select(tab));
+    tab.addEventListener('keydown', (e) => {
+      const keys = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 };
+      if (!(e.key in keys)) return;
+      e.preventDefault();
+      select(tabs[(keys[e.key] + tabs.length) % tabs.length], { focus: true });
+    });
+  });
+
+  const fromHash = tabs.find((t) => `#${slug(t)}` === location.hash);
+  select(fromHash ?? tabs[0], { updateHash: false });
+</script>
+</body>
+</html>
