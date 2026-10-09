@@ -1,14 +1,14 @@
-// Shared app shell for the four signed-in tabs: auth gate, header, navigation, demo banner.
+// Shared app shell for signed-in pages: auth gate, header, navigation, demo banner.
 import { authConfigError, getAuthenticatedUser, signOutCurrentSession, supabase } from '../auth/supabase.js';
 import { isDemoUser } from '../auth/demo.js';
 import { persona } from '../data/fung.js';
 import { esc, icon, storage, toast } from './app-ui.js';
+import { languages, initLanguagePreference } from './language-preference.js';
 
 const NAV = [
   { key: 'today', href: '/dashboard.html', label: 'Today', short: 'Today', icon: 'today' },
   { key: 'meals', href: '/meals.html', label: 'Meals', short: 'Meals', icon: 'meals' },
   { key: 'care', href: '/care-team.html', label: 'Care team', short: 'Care team', icon: 'care' },
-  { key: 'health', href: '/health.html', label: 'Health & labs', short: 'Health', icon: 'health' },
 ];
 const BANNER_KEY = 'fuelwell.banner.dismissed.v1';
 const BRAND = '<a class="brand" href="/" aria-label="FuelWell home"><span class="brand-mark" aria-hidden="true"></span>FuelWell</a>';
@@ -73,6 +73,13 @@ function buildShell(frame, page, user) {
         <a class="chip share-chip" href="/care-team.html#circle">${icon('users')}<span><span class="share-long">Shared with </span>${esc(sister.name)}</span></a>
       </div>
       <div class="top-account">
+        <div class="language-picker">
+          <label for="preferred-language">Preferred language</label>
+          <select id="preferred-language" data-language aria-describedby="language-status">
+            ${languages.map(({ code, label }) => `<option value="${code}" lang="${code}">${esc(label)}</option>`).join('')}
+          </select>
+          <span class="language-status" id="language-status" data-language-status role="status" aria-live="polite"></span>
+        </div>
         <span class="sample-pill"><span class="sample-dot" aria-hidden="true"></span><span class="sample-long">Sample workspace</span><span class="sample-short" aria-hidden="true">Sample</span></span>
         <span class="top-email" title="Signed in as ${esc(user.email)}"><span class="sr-only">Signed in as </span>${esc(user.email)}</span>
         <button class="button button--secondary signout" type="button" data-sign-out>${icon('logout')}<span>Sign out</span></button>
@@ -97,6 +104,7 @@ function buildShell(frame, page, user) {
   frame.append(bottom);
 
   wirePersonMenu(top);
+  initLanguagePreference(top, storage());
   banner.querySelector('[data-dismiss-banner]').addEventListener('click', () => {
     banner.hidden = true;
     storage().set(BANNER_KEY, true);

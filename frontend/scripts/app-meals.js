@@ -1,8 +1,9 @@
-// Meals tab: weekly plan, AI family recipe helper, smart swaps and a printable grocery list.
+// Meals tab: weekly plan, AI recipe finder, smart swaps and a printable grocery list.
 import { initShell, hydrateIcons } from './app-shell.js';
 import { badge, esc, icon, initTabs, nutrientNames, nutrientRow, storage, toast } from './app-ui.js';
-import { grocery, mealSlots, recipeExamples, swaps, targets, week } from '../data/fung.js';
+import { grocery, mealSlots, recipeExamples, swaps, week } from '../data/fung.js';
 import { adaptRecipe } from './ai-client.js';
+import { initStoreFinder } from './store-finder.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const todayIndex = (new Date().getDay() + 6) % 7;
@@ -31,15 +32,6 @@ function renderWeek() {
 function showDay(index) {
   document.querySelectorAll('[data-day]').forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.day) === index)));
   const plan = week[index];
-  const totals = { k: 0, p: 0, na: 0 };
-  mealSlots.forEach(({ key }) => ['k', 'p', 'na'].forEach((n) => { totals[n] += plan[key][n]; }));
-  const label = new Date(weekDates()[index]).toLocaleDateString('en-US', { weekday: 'long' });
-  $('[data-day-summary]').innerHTML = `<p class="day-summary-title"><strong>${label}</strong> · day total</p>
-    <ul class="day-totals">${['k', 'p', 'na'].map((n) => {
-      const pct = Math.round((totals[n] / targets[n].target) * 100);
-      const st = pct > 100 ? ['high', 'Over'] : pct >= 75 ? ['mid', 'Watch'] : ['low', 'OK'];
-      return `<li><span>${nutrientNames[n]}</span> <strong>${totals[n].toLocaleString()} mg</strong> <span class="muted">of ${targets[n].target.toLocaleString()}</span> <span class="badge badge--${st[0]}">${st[1]}</span></li>`;
-    }).join('')}</ul>`;
   $('[data-week-meals]').innerHTML = mealSlots.map((slot) => {
     const meal = plan[slot.key];
     return `<article class="card meal-card">
@@ -51,7 +43,7 @@ function showDay(index) {
   }).join('');
 }
 
-/* ---------- Family recipe helper ---------- */
+/* ---------- Recipe finder ---------- */
 const result = () => $('[data-helper-result]');
 let lastInput = null;
 
@@ -183,13 +175,12 @@ const cuisineLabel = { chinese: 'Chinese', korean: 'Korean', vietnamese: 'Vietna
 
 function renderSwaps(filter = 'all') {
   document.querySelectorAll('[data-cuisine]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cuisine === filter)));
-  $('[data-swap-rows]').innerHTML = swaps
+  $('[data-swap-list]').innerHTML = swaps
     .filter((s) => filter === 'all' || s.cuisine === filter)
-    .map((s) => `<tr>
-      <td data-label="Limit"><span class="swap-limit">${icon('x')}<strong>${esc(s.limit)}</strong></span><span class="chip swap-cuisine">${cuisineLabel[s.cuisine]}</span></td>
-      <td data-label="Choose instead"><span class="swap-choose">${icon('check')}${esc(s.choose)}</span></td>
-      <td data-label="Why it matters">${esc(s.why)}</td>
-    </tr>`).join('');
+    .map((s) => `<li class="swap-item">
+      <p class="swap-item-title"><strong>${esc(s.limit)}</strong> <span class="chip">${cuisineLabel[s.cuisine]}</span></p>
+      <p><strong>Try instead:</strong> ${esc(s.choose)}</p>
+    </li>`).join('');
 }
 
 /* ---------- Grocery list ---------- */
@@ -228,6 +219,7 @@ initShell({ page: 'meals' }).then((ctx) => {
     if (b) renderSwaps(b.dataset.cuisine);
   });
   renderGrocery();
+  initStoreFinder();
   hydrateIcons(document);
   initTabs($('[role="tablist"]'));
   if (new URLSearchParams(location.search).get('dish')) toast('We filled in the dish for you. Press “Make it kidney-friendly” when ready.');
