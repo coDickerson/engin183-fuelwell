@@ -8,22 +8,6 @@ const errorBox = byId('form-error');
 const submitButton = form.querySelector('[type="submit"]');
 const params = new URLSearchParams(location.search);
 
-// Optional tap questions. `type: 'radio'` allows one answer (tap again to clear).
-const chipGroups = [
-  { name: 'interests', type: 'checkbox', legend: 'interests_legend',
-    options: [['meal_planning', 'i_meals'], ['health_records', 'i_records'], ['dietitian', 'i_dietitian'], ['care_team', 'i_care_team']] },
-  { name: 'kidney_stage', type: 'radio', legend: { self: 'stage_legend_self', other: 'stage_legend_other' },
-    options: [['stage_3', 'stage_3'], ['stage_4', 'stage_4'], ['stage_2', 'stage_earlier'], ['dialysis', 'stage_dialysis'], ['not_sure', 'stage_not_sure']] },
-  { name: 'conditions', type: 'checkbox', legend: 'conditions_legend',
-    options: [['diabetes', 'cond_diabetes'], ['high_blood_pressure', 'cond_hbp']] },
-  { name: 'cuisines', type: 'checkbox', legend: { self: 'cuisines_legend_self', other: 'cuisines_legend_other' }, hint: 'cuisines_hint',
-    options: ['chinese', 'vietnamese', 'korean', 'japanese', 'filipino', 'south_asian', 'mexican_latin', 'caribbean', 'soul_food', 'middle_eastern', 'american', 'other'].map((v) => [v, `c_${v}`]) },
-  { name: 'challenge', type: 'radio', legend: 'challenge_legend',
-    options: ['safe_foods', 'family_recipes', 'cooking_for_all', 'labs', 'groceries', 'other'].map((v) => [v, `ch_${v}`]) },
-  { name: 'heard_from', type: 'radio', legend: 'heard_legend',
-    options: ['reddit', 'facebook', 'friend', 'clinic', 'other'].map((v) => [v, `h_${v}`]) },
-];
-
 /* ---------- Language ---------- */
 
 function storage(action, value) {
@@ -63,10 +47,6 @@ function role() {
   return form.elements.role.value || null;
 }
 
-function legendKey(legend) {
-  if (typeof legend === 'string') return legend;
-  return role() === 'patient' ? legend.self : legend.other;
-}
 
 function applyLocale(next, { save = true } = {}) {
   locale = next;
@@ -77,8 +57,9 @@ function applyLocale(next, { save = true } = {}) {
   document.querySelectorAll('[data-i18n-html]').forEach((el) => { el.innerHTML = t(el.dataset.i18nHtml); });
   document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => { el.placeholder = t(el.dataset.i18nPlaceholder); });
   document.querySelectorAll('[data-i18n-aria]').forEach((el) => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
-  document.querySelectorAll('[data-legend]').forEach((el) => {
-    el.textContent = t(legendKey(chipGroups.find((g) => g.name === el.dataset.legend).legend));
+  // "Your" vs "their" wording follows the chosen role.
+  document.querySelectorAll('[data-i18n-role]').forEach((el) => {
+    el.textContent = t(`${el.dataset.i18nRole}_${role() === 'patient' ? 'self' : 'other'}`);
   });
 
   const isChinese = next.startsWith('zh');
@@ -99,63 +80,10 @@ document.querySelectorAll('.lang-option').forEach((button) => button.addEventLis
 }));
 document.querySelectorAll('.script-option').forEach((button) => button.addEventListener('click', () => applyLocale(button.dataset.script)));
 
-/* ---------- Optional tap questions ---------- */
-
-function buildChips() {
-  const root = document.querySelector('[data-chip-groups]');
-  for (const group of chipGroups) {
-    const fieldset = document.createElement('fieldset');
-    fieldset.className = 'chip-group';
-    const legend = document.createElement('legend');
-    legend.dataset.legend = group.name;
-    fieldset.append(legend);
-    if (group.hint) {
-      const hint = document.createElement('p');
-      hint.className = 'hint';
-      hint.dataset.i18n = group.hint;
-      fieldset.append(hint);
-    }
-    const chips = document.createElement('div');
-    chips.className = 'chips';
-    for (const [value, key] of group.options) {
-      const label = document.createElement('label');
-      label.className = 'tap-chip';
-      const input = document.createElement('input');
-      input.type = group.type;
-      input.name = group.name;
-      input.value = value;
-      const text = document.createElement('span');
-      text.dataset.i18n = key;
-      label.append(input, text);
-      chips.append(label);
-    }
-    fieldset.append(chips);
-    root.append(fieldset);
-  }
-
-  // Optional single-choice questions: tapping the chosen chip again clears it.
-  root.querySelectorAll('input[type="radio"]').forEach((input) => {
-    let wasChecked = false;
-    input.addEventListener('pointerdown', () => { wasChecked = input.checked; });
-    input.addEventListener('click', () => {
-      if (wasChecked) input.checked = false;
-      wasChecked = false;
-    });
-  });
-
-  const other = root.querySelector('input[name="cuisines"][value="other"]');
-  other.addEventListener('change', () => {
-    byId('cuisine-other-field').hidden = !other.checked;
-    if (other.checked) byId('cuisine-other').focus();
-  });
-}
-
-buildChips();
-
 // Pre-select "How did you hear about us?" from ?ref=reddit / ?ref=facebook links.
 const ref = params.get('ref')?.toLowerCase();
-const refInput = ref && form.querySelector(`input[name="heard_from"][value="${CSS.escape(ref)}"]`);
-if (refInput) refInput.checked = true;
+const heardFrom = byId('heard-from');
+if ([...heardFrom.options].some((o) => o.value && o.value === ref)) heardFrom.value = ref;
 
 // Wording of "your" vs "their" questions follows the chosen role.
 form.querySelectorAll('input[name="role"]').forEach((input) => input.addEventListener('change', () => {
@@ -184,7 +112,6 @@ let submitted = { name: '', phone: false };
 function readForm() {
   const data = new FormData(form);
   const text = (name) => (data.get(name) || '').toString().trim();
-  const cuisines = data.getAll('cuisines');
   return {
     first_name: text('first_name'),
     email: text('email').toLowerCase(),
@@ -193,9 +120,6 @@ function readForm() {
     kidney_stage: text('kidney_stage') || null,
     interests: data.getAll('interests'),
     conditions: data.getAll('conditions'),
-    cuisines,
-    cuisine_other: cuisines.includes('other') ? text('cuisine_other') || null : null,
-    challenge: text('challenge') || null,
     heard_from: text('heard_from') || null,
     language: locale,
   };
