@@ -104,7 +104,7 @@ function readMatch() {
   try {
     const match = JSON.parse(sessionStorage.getItem(matchKey) || 'null');
     return match && ['patient', 'caregiver'].includes(match.role)
-      && ['g3b', 'g4', 'unsure'].includes(match.stage)
+      && ['g3', 'g3b', 'g4', 'unsure'].includes(match.stage)
       && ['familiar-meals', 'understand-options', 'prepare-conversation'].includes(match.goal)
       ? match : null;
   } catch { return null; }

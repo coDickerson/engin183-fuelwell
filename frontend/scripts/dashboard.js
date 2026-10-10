@@ -107,7 +107,7 @@ function renderMessage() {
 }
 
 const roleText = { caregiver: 'Caregiver', patient: 'Patient' };
-const stageText = { g3b: 'Stage G3b', g4: 'Stage G4', unsure: 'Stage not confirmed yet' };
+const stageText = { g3: 'Stage G3', g3b: 'Stage G3b', g4: 'Stage G4', unsure: 'Stage not confirmed yet' };
 const goalText = {
   'familiar-meals': 'Start with familiar meals you enjoy and discuss changes with a renal dietitian.',
   'understand-options': 'Bring your food questions to a renal dietitian or your care team.',

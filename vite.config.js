@@ -20,6 +20,7 @@ export default defineConfig({
         careTeam: resolve(import.meta.dirname, 'frontend/care-team.html'),
         health: resolve(import.meta.dirname, 'frontend/health.html'),
         howItWasBuilt: resolve(import.meta.dirname, 'frontend/how-it-was-built.html'),
+        waitlist: resolve(import.meta.dirname, 'frontend/waitlist.html'),
       },
     },
   },

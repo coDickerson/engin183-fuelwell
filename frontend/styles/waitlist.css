@@ -1,0 +1,130 @@
+/*
+  Waitlist page (/waitlist). Builds on styles.css tokens.
+  Mobile first: intro → form → culture. On wide screens the form sits on the
+  right and stays in view while the intro and culture column scrolls.
+*/
+
+/* Header with language switch */
+.wl-header { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--ground) 94%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.wl-header-inner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-height: 72px; flex-wrap: wrap; padding-block: var(--space-2); }
+.lang-switch { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; justify-content: flex-end; }
+.lang-group, .script-group { display: inline-flex; padding: 3px; border: 2px solid var(--line-strong); border-radius: var(--radius-pill); background: var(--surface); }
+.lang-option, .script-option { min-height: 40px; padding: 4px 14px; border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--ink-2); font-weight: 700; font-size: var(--text-sm); cursor: pointer; }
+.lang-option:hover, .script-option:hover { background: var(--primary-soft); color: var(--primary-strong); }
+.lang-option[aria-pressed="true"], .script-option[aria-pressed="true"] { background: var(--primary); color: var(--white); }
+.script-option { min-height: 36px; padding-inline: 12px; }
+
+/* Layout */
+.wl-main { padding: var(--space-6) 0 var(--space-8); }
+.wl-grid { display: grid; gap: var(--space-6); grid-template-areas: "intro" "form" "culture"; }
+.wl-intro { grid-area: intro; }
+.wl-form-card { grid-area: form; }
+.wl-culture { grid-area: culture; }
+@media (min-width: 960px) {
+  .wl-grid { grid-template-columns: 1.05fr 1fr; grid-template-rows: auto 1fr; grid-template-areas: "intro form" "culture form"; column-gap: clamp(32px, 5vw, 72px); align-items: start; }
+  .wl-form-card { position: sticky; top: 96px; }
+}
+
+.pill { display: inline-flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-4); padding: 6px 14px; border: 1px solid var(--line); border-radius: var(--radius-pill); background: var(--surface); color: var(--ink-2); font-size: var(--text-sm); font-weight: 700; }
+.pill-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.wl-intro h1 { max-width: 16ch; font-size: clamp(2.125rem, 2.6vw + 1.2rem, 3.25rem); }
+.wl-lead { font-size: var(--text-lg); color: var(--ink-2); }
+.wl-intro h1, .wl-thanks-card h1, .wl-share h2 { text-wrap: balance; }
+:lang(zh) .wl-intro h1 { max-width: 12em; }
+
+/* Form card */
+.wl-form-card { padding: clamp(20px, 3vw, 32px); box-shadow: var(--shadow-2); }
+.wl-form-card h2 { margin-bottom: var(--space-1); }
+.wl-form-sub { font-size: var(--text-sm); }
+.wl-fieldset { border: 0; padding: 0; margin: 0 0 var(--space-4); min-width: 0; }
+.wl-legend { padding: 0; margin-bottom: var(--space-2); font-weight: 700; font-size: var(--text-base); }
+.tag { display: inline-block; margin-left: 4px; padding: 0 8px; border-radius: var(--radius-pill); background: var(--ground-alt); color: var(--ink-3); font-size: var(--text-sm); font-weight: 700; vertical-align: 1px; }
+.tag--req { background: var(--accent-soft); color: var(--accent); }
+.wl-row { display: grid; gap: 0 var(--space-4); }
+@media (min-width: 560px) { .wl-row { grid-template-columns: 1fr 1fr; align-items: end; } }
+
+/* "Who are you?" tiles: real radio inputs, styled as large tap targets */
+.role-tiles { display: grid; gap: var(--space-2); }
+.role-tile { position: relative; display: flex; align-items: center; gap: var(--space-3); min-height: 64px; padding: var(--space-3) var(--space-4); border: 2px solid var(--line-strong); border-radius: var(--radius); background: var(--surface); cursor: pointer; }
+.role-tile:hover { border-color: var(--primary); background: var(--surface-tint); }
+.role-tile input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.role-tile-icon { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: 50%; background: var(--primary-soft); color: var(--primary-strong); }
+.role-tile-text { display: grid; gap: 1px; }
+.role-tile-text strong { font-size: var(--text-base); }
+.role-tile-text span { font-size: var(--text-sm); color: var(--ink-3); }
+.role-tile:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 2px var(--accent) inset; }
+.role-tile:has(input:checked) .role-tile-icon { background: var(--accent); color: var(--white); }
+.role-tile:has(input:focus-visible) { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+/* Optional section and tap chips */
+.wl-optional { margin: var(--space-5) 0 var(--space-4); padding-top: var(--space-5); border-top: 1px dashed var(--line-strong); }
+.wl-optional-title { margin-bottom: var(--space-1); font-size: var(--text-lg); }
+.wl-optional > .hint { margin-bottom: var(--space-4); font-size: var(--text-sm); color: var(--ink-3); }
+.wl-legend-hint { font-weight: 400; font-size: var(--text-sm); color: var(--ink-3); }
+
+/* "What would help most?": big tiles, 2 x 2 */
+.need-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
+.need-tile { position: relative; display: flex; align-items: center; gap: var(--space-3); min-height: 64px; padding: var(--space-3); border: 2px solid var(--line-strong); border-radius: var(--radius); background: var(--surface); font-weight: 700; line-height: 1.25; cursor: pointer; }
+.need-tile:hover { border-color: var(--primary); background: var(--surface-tint); }
+.need-tile input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.need-icon { display: grid; place-items: center; flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--primary-soft); color: var(--primary-strong); }
+.need-tile:has(input:checked) { border-color: var(--primary); background: var(--primary-soft); box-shadow: 0 0 0 2px var(--primary) inset; }
+.need-tile:has(input:checked) .need-icon { background: var(--primary); color: var(--white); }
+.need-tile:has(input:focus-visible) { outline: 3px solid var(--focus); outline-offset: 2px; }
+@media (max-width: 340px) { .need-tiles { grid-template-columns: 1fr; } }
+
+/* Dropdowns */
+.field select { appearance: none; padding-right: 44px; background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2317323a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") right 14px center / 20px no-repeat; cursor: pointer; }
+
+/* "Also living with": two plain checkboxes */
+.wl-conditions { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); }
+.wl-conditions legend { width: 100%; }
+.check { display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--target); font-weight: 700; cursor: pointer; }
+.check input { width: 22px; height: 22px; margin: 0; accent-color: var(--primary); cursor: pointer; }
+
+.wl-trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.wl-submit { min-height: 56px; margin-top: var(--space-2); font-size: var(--text-lg); }
+.wl-privacy { margin: var(--space-3) 0 0; font-size: var(--text-sm); color: var(--ink-3); }
+#form-error { margin-bottom: var(--space-3); }
+.field input[aria-invalid="true"] { border-color: var(--high); }
+
+/* Culture column */
+.wl-points { list-style: none; margin: 0 0 var(--space-5); padding: 0; display: grid; gap: var(--space-4); }
+.wl-points li { display: flex; gap: var(--space-4); align-items: flex-start; }
+.wl-points h3 { margin-bottom: var(--space-1); font-size: var(--text-lg); }
+.wl-points p { margin: 0; color: var(--ink-2); }
+.icon-badge { display: grid; place-items: center; flex: none; width: 48px; height: 48px; border-radius: 50%; background: var(--primary-soft); color: var(--primary-strong); }
+.wl-points li:nth-child(2) .icon-badge { background: var(--accent-soft); color: var(--accent); }
+.wl-photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); }
+.wl-photos figure { margin: 0; }
+.wl-photos img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius); }
+.wl-photos figcaption { margin-top: var(--space-1); font-size: var(--text-sm); color: var(--ink-2); line-height: 1.3; }
+.wl-cuisines { margin: var(--space-4) 0 var(--space-2); padding: var(--space-3) var(--space-4); border-radius: var(--radius); background: var(--surface-tint); color: var(--primary-strong); font-weight: 700; font-size: var(--text-sm); max-width: none; }
+.photo-credit-line { font-size: var(--text-sm); color: var(--ink-3); }
+.photo-credit-line a { color: inherit; }
+
+/* Thank-you view */
+.wl-thanks { max-width: 680px; }
+.wl-thanks-card { padding: clamp(24px, 4vw, 48px); text-align: center; box-shadow: var(--shadow-2); }
+.wl-thanks-card p { margin-inline: auto; }
+.wl-thanks-card h1 { font-size: clamp(2rem, 2vw + 1.2rem, 2.75rem); }
+.wl-thanks-card h1:focus { outline: none; }
+.wl-thanks-mark { display: grid; place-items: center; width: 72px; height: 72px; margin: 0 auto var(--space-4); border-radius: 50%; background: var(--ok-soft); color: var(--ok); }
+.wl-share { margin: var(--space-6) 0; padding: var(--space-5); border-radius: var(--radius-lg); background: var(--accent-soft); }
+.wl-share h2 { font-size: var(--text-xl); }
+.wl-copied { min-height: 1.5em; margin: var(--space-2) auto 0; font-weight: 700; color: var(--ok); }
+.wl-thanks-links { display: flex; flex-wrap: wrap; gap: var(--space-3); justify-content: center; align-items: center; }
+.text-link { display: inline-flex; align-items: center; min-height: var(--target); color: var(--primary); font-weight: 700; text-decoration: none; }
+.text-link:hover { color: var(--primary-strong); text-decoration: underline; }
+
+/* Footer */
+.wl-footer { padding: var(--space-6) 0; background: var(--ink); color: var(--cream-100); font-size: var(--text-sm); }
+.wl-footer p { margin-bottom: var(--space-2); }
+
+@media (max-width: 480px) {
+  .wl-header .brand { font-size: 1.2rem; }
+  .lang-option { padding-inline: 10px; }
+  .wl-photos { gap: var(--space-2); }
+}
+/* On phones the two-row header would cover too much of the form; let it scroll away. */
+@media (max-width: 640px) { .wl-header { position: static; } }
