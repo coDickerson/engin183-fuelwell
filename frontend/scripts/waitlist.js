@@ -10,8 +10,10 @@ const params = new URLSearchParams(location.search);
 
 // Optional tap questions. `type: 'radio'` allows one answer (tap again to clear).
 const chipGroups = [
+  { name: 'interests', type: 'checkbox', legend: 'interests_legend',
+    options: [['meal_planning', 'i_meals'], ['health_records', 'i_records'], ['dietitian', 'i_dietitian'], ['care_team', 'i_care_team']] },
   { name: 'kidney_stage', type: 'radio', legend: { self: 'stage_legend_self', other: 'stage_legend_other' },
-    options: [['at_risk', 'stage_at_risk'], ['stage_2', 'stage_2'], ['stage_3', 'stage_3'], ['stage_4', 'stage_4'], ['dialysis', 'stage_dialysis'], ['not_sure', 'stage_not_sure']] },
+    options: [['stage_3', 'stage_3'], ['stage_4', 'stage_4'], ['stage_2', 'stage_earlier'], ['dialysis', 'stage_dialysis'], ['not_sure', 'stage_not_sure']] },
   { name: 'conditions', type: 'checkbox', legend: 'conditions_legend',
     options: [['diabetes', 'cond_diabetes'], ['high_blood_pressure', 'cond_hbp']] },
   { name: 'cuisines', type: 'checkbox', legend: { self: 'cuisines_legend_self', other: 'cuisines_legend_other' }, hint: 'cuisines_hint',
@@ -189,6 +191,7 @@ function readForm() {
     phone: text('phone') || null,
     role: text('role'),
     kidney_stage: text('kidney_stage') || null,
+    interests: data.getAll('interests'),
     conditions: data.getAll('conditions'),
     cuisines,
     cuisine_other: cuisines.includes('other') ? text('cuisine_other') || null : null,

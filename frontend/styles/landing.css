@@ -276,3 +276,17 @@ h1 em, h2 em { font-style: italic; color: var(--primary); }
   .culture-diagram { padding: 16px; }
   .culture-diagram-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* Two pillars (home): meal planning, and health records + care team */
+.pillars { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+.pillar { display: flex; flex-direction: column; gap: var(--space-2); padding: clamp(24px, 3vw, 36px); }
+.pillar .icon-badge { margin-bottom: var(--space-2); }
+.pillar h3 { margin: 0 0 var(--space-2); font-size: var(--text-xl); }
+.icon-badge--clay { background: var(--accent-soft); color: var(--accent); }
+.pillar-list { display: grid; gap: var(--space-3); margin: 0 0 var(--space-3); padding: 0; list-style: none; color: var(--ink-2); }
+.pillar-list li { display: flex; gap: var(--space-3); align-items: flex-start; }
+.pillar-list svg { flex: none; margin-top: 4px; color: var(--ok); }
+.pillar-preview { display: grid; gap: var(--space-2); margin-bottom: var(--space-2); padding: var(--space-3) var(--space-4); border-radius: var(--radius); background: var(--surface-tint); font-size: var(--text-sm); }
+.pillar-preview-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-1) var(--space-3); }
+.pillar .text-link { margin-top: auto; }
+@media (max-width: 820px) { .pillars { grid-template-columns: 1fr; } }
