@@ -1,3 +1,5 @@
+import { t } from './app-strings.js';
+
 export function groceryMapsUrl(area) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`grocery stores near ${area}`)}`;
 }
@@ -29,35 +31,35 @@ export function initStoreFinder(root = document, geolocation = navigator.geoloca
     reset();
     const place = area.value.trim();
     if (!place) {
-      status.textContent = 'Enter a city or ZIP code to find stores.';
+      status.textContent = t('store_enter');
       area.focus();
       return;
     }
-    showResults(place, `Ready to find grocery stores near ${place}. Open the results below.`);
+    showResults(place, t('store_ready', { place }));
   });
 
   locate.addEventListener('click', () => {
     const current = reset();
     if (!geolocation) {
-      status.textContent = 'Location is unavailable in this browser. Enter a city or ZIP code instead.';
+      status.textContent = t('store_unavailable');
       return;
     }
     locate.disabled = true;
     locate.setAttribute('aria-busy', 'true');
-    status.textContent = 'Finding your location… Allow location access when your browser asks.';
+    status.textContent = t('store_finding');
     const fail = (error) => {
       if (current !== request) return;
       reset();
       status.textContent = error?.code === 1
-        ? 'Location access was denied. Enter a city or ZIP code instead.'
-        : 'We couldn’t find your location. Try again or enter a city or ZIP code.';
+        ? t('store_denied')
+        : t('store_failed');
     };
     try {
       geolocation.getCurrentPosition(({ coords }) => {
         if (current !== request) return;
         reset();
         showResults(`${coords.latitude.toFixed(3)},${coords.longitude.toFixed(3)}`,
-          'Location found. Open Google Maps below to see nearby grocery stores, hours and directions.');
+          t('store_found'));
       }, fail, { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 });
     } catch (error) {
       fail(error);

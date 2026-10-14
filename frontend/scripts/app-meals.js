@@ -1,12 +1,15 @@
-// Meals tab: weekly plan, AI recipe finder, smart swaps and a printable grocery list.
-import { initShell, hydrateIcons } from './app-shell.js';
-import { badge, esc, icon, initTabs, nutrientNames, nutrientRow, storage, toast } from './app-ui.js';
-import { grocery, mealSlots, recipeExamples, swaps, week } from '../data/fung.js';
+// Meals tab: weekly plan, AI recipe adapter, smart swaps and a printable grocery list.
+import { initShell } from './app-shell.js';
+import { badge, esc, fmt, icon, initTabs, nutrientName, nutrientRow, storage, toast } from './app-ui.js';
+import { grocery, mealSlots, persona, recipeExamples, swaps, week } from '../data/fung.js';
 import { adaptRecipe } from './ai-client.js';
 import { initStoreFinder } from './store-finder.js';
+import { lang, tr } from './i18n.js';
+import { t } from './app-strings.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const todayIndex = (new Date().getDay() + 6) % 7;
+let selectedDay = todayIndex;
 
 /* ---------- This week ---------- */
 function weekDates() {
@@ -17,49 +20,56 @@ function weekDates() {
 
 function renderWeek() {
   const dates = weekDates();
-  const picker = $('[data-day-picker]');
-  picker.innerHTML = week.map((day, i) => `
-    <button class="day-btn" type="button" data-day="${i}" aria-pressed="${i === todayIndex}" aria-label="${dates[i].toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}${i === todayIndex ? ', today' : ''}">
-      <span class="day-name">${day.day}</span><span class="day-num">${dates[i].getDate()}</span>${i === todayIndex ? '<span class="day-dot" aria-hidden="true"></span>' : ''}
+  $('[data-reviewed]').innerHTML = `<span class="reviewed">${icon('check')}${esc(t('reviewed_by', { name: persona.dietitian.name }))}</span>`;
+  $('[data-day-picker]').innerHTML = dates.map((d, i) => `
+    <button class="day-btn" type="button" data-day="${i}" aria-pressed="${i === selectedDay}" aria-label="${esc(fmt.day(d))}${i === todayIndex ? esc(t('today_suffix')) : ''}">
+      <span class="day-name">${esc(fmt.weekdayShort(d))}</span><span class="day-num">${d.getDate()}</span>${i === todayIndex ? '<span class="day-dot" aria-hidden="true"></span>' : ''}
     </button>`).join('');
-  picker.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-day]');
-    if (btn) showDay(Number(btn.dataset.day));
-  });
-  showDay(todayIndex);
+  showDay(selectedDay);
 }
 
 function showDay(index) {
+  selectedDay = index;
   document.querySelectorAll('[data-day]').forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.day) === index)));
   const plan = week[index];
+  const showDish = lang() !== 'zh';
   $('[data-week-meals]').innerHTML = mealSlots.map((slot) => {
     const meal = plan[slot.key];
     return `<article class="card meal-card">
-      <p class="meal-card-slot"><span class="meal-slot">${slot.label}</span><span class="muted">${slot.time}</span></p>
-      <h3 class="meal-name">${esc(meal.name)}</h3>
-      <p class="meal-zh-line"><span lang="zh-Hant">${esc(meal.zh)}</span> · <span class="muted">${esc(meal.note)}</span></p>
+      <p class="meal-card-slot"><span class="meal-slot">${esc(tr(slot.label))}</span><span class="muted">${fmt.clock(slot.h, slot.m)}</span></p>
+      <h3 class="meal-name">${esc(tr(meal.name))}</h3>
+      ${showDish ? `<p class="meal-dish" lang="zh-Hant">${esc(meal.dish)}</p>` : ''}
+      <p class="meal-note">${esc(tr(meal.note))}</p>
       ${nutrientRow(meal)}
     </article>`;
   }).join('');
 }
 
-/* ---------- Recipe finder ---------- */
+/* ---------- Recipe adapter ---------- */
 const result = () => $('[data-helper-result]');
 let lastInput = null;
+let view = { state: 'empty' };
+
+function paintResult() {
+  if (view.state === 'empty') emptyState();
+  else if (view.state === 'loading') loadingState(view.dish);
+  else if (view.state === 'error') errorState(view.error);
+  else renderResult(view.result, false);
+}
 
 function emptyState() {
   result().innerHTML = `<div class="empty">
     <span class="empty-icon">${icon('sparkle')}</span>
-    <h3>Your kidney-friendly version will appear here</h3>
-    <p class="muted">Pick an example or describe a family dish. You'll see what to swap, why, and how much potassium, phosphorus and sodium it saves.</p>
+    <h3>${esc(t('helper_empty_title'))}</h3>
+    <p class="muted">${esc(t('helper_empty_body'))}</p>
   </div>`;
 }
 
 function loadingState(dish) {
   result().setAttribute('aria-busy', 'true');
   result().innerHTML = `<div class="loading-block">
-    <p class="loading-title"><span class="spinner" aria-hidden="true"></span>Adapting “${esc(dish)}”…</p>
-    <p class="muted">Matching ingredients to USDA nutrient data and checking swaps.</p>
+    <p class="loading-title"><span class="spinner" aria-hidden="true"></span>${esc(t('helper_loading', { dish }))}</p>
+    <p class="muted">${esc(t('helper_loading_sub'))}</p>
     <div class="sk sk-line"></div><div class="sk sk-line sk-line--short"></div><div class="sk sk-block"></div><div class="sk sk-line"></div>
   </div>`;
 }
@@ -68,9 +78,9 @@ function errorState(error) {
   result().setAttribute('aria-busy', 'false');
   result().innerHTML = `<div class="state-error" role="alert">
     <span class="empty-icon empty-icon--error">${icon('alert')}</span>
-    <h3>The recipe helper couldn't finish</h3>
-    <p>${esc(error?.message || 'Something went wrong.')} Your dish is still in the box, so you can try again in a moment.</p>
-    <button class="button" type="button" data-retry>${icon('retry')}Try again</button>
+    <h3>${esc(t('helper_error_title'))}</h3>
+    <p>${esc(t('helper_error_body', { msg: error?.message || '' }))}</p>
+    <button class="button" type="button" data-retry>${icon('retry')}${esc(t('try_again'))}</button>
   </div>`;
   $('[data-retry]').addEventListener('click', () => runHelper(lastInput));
 }
@@ -85,38 +95,38 @@ function comparison(before, after, levels) {
     const max = Math.max(b, a, 1);
     const change = b ? Math.round(((a - b) / b) * 100) : 0;
     return `<div class="cmp-row">
-      <div class="cmp-head"><strong>${nutrientNames[n]}</strong>${badge(levels?.[n], 'Now')}<span class="cmp-change">${change <= 0 ? `${Math.abs(change)}% less` : `${change}% more`}</span></div>
-      <div class="cmp-line"><span class="cmp-tag">Before</span><span class="cmp-track"><span class="cmp-fill cmp-fill--before" style="width:${(b / max) * 100}%"></span></span><span class="cmp-num">${fmtMg(b)}</span></div>
-      <div class="cmp-line"><span class="cmp-tag">After</span><span class="cmp-track"><span class="cmp-fill" style="width:${(a / max) * 100}%"></span></span><span class="cmp-num">${fmtMg(a)}</span></div>
+      <div class="cmp-head"><strong>${esc(nutrientName(n))}</strong>${badge(levels?.[n], t('now'))}<span class="cmp-change">${esc(change <= 0 ? t('less', { n: Math.abs(change) }) : t('more', { n: change }))}</span></div>
+      <div class="cmp-line"><span class="cmp-tag">${esc(t('before'))}</span><span class="cmp-track"><span class="cmp-fill cmp-fill--before" style="width:${(b / max) * 100}%"></span></span><span class="cmp-num">${fmtMg(b)}</span></div>
+      <div class="cmp-line"><span class="cmp-tag">${esc(t('after'))}</span><span class="cmp-track"><span class="cmp-fill" style="width:${(a / max) * 100}%"></span></span><span class="cmp-num">${fmtMg(a)}</span></div>
     </div>`;
   }).join('');
 }
 
-function renderResult(r) {
+function renderResult(r, focus = true) {
   result().setAttribute('aria-busy', 'false');
   const ai = r.source === 'ai';
-  const swapsRows = (r.swaps || []).map((s) => `<tr><td data-label="From">${esc(s.from)}</td><td data-label="To"><strong>${esc(s.to)}</strong></td><td data-label="Why">${esc(s.why)}</td></tr>`).join('');
+  const swapsRows = (r.swaps || []).map((s) => `<tr><td data-label="${esc(t('from'))}">${esc(s.from)}</td><td data-label="${esc(t('to'))}"><strong>${esc(s.to)}</strong></td><td data-label="${esc(t('why'))}">${esc(s.why)}</td></tr>`).join('');
   const ingredients = (r.ingredients || []).map((i) => `<li class="ing">
-      <span class="ing-name">${esc(i.name)}${i.swapped_from && i.swapped_from.toLowerCase() !== i.name.toLowerCase() ? ` <span class="chip chip--clay">was ${esc(i.swapped_from)}</span>` : ''}</span>
+      <span class="ing-name">${esc(i.name)}${i.swapped_from && i.swapped_from.toLowerCase() !== i.name.toLowerCase() ? ` <span class="chip chip--clay">${esc(t('was', { x: i.swapped_from }))}</span>` : ''}</span>
       <span class="ing-amt">${Math.round(Number(i.amount_g) || 0)} g</span>
       <span class="ing-nutri muted">K ${Math.round(i.k_mg)} · P ${Math.round(i.p_mg)} · Na ${Math.round(i.na_mg)} mg</span>
     </li>`).join('');
   result().innerHTML = `
     <div class="result-head">
-      <div><p class="eyebrow">Kidney-friendly version</p><h3 class="result-title" tabindex="-1">${esc(r.adapted_name)}</h3><p class="muted">Adapted from ${esc(r.dish)}</p></div>
-      <span class="source-tag source-tag--${ai ? 'ai' : 'rules'}">${icon(ai ? 'sparkle' : 'list')}${ai ? 'Generated by AI with nutrient math from USDA data' : 'Rule-based, with USDA nutrient data'}</span>
+      <div><p class="eyebrow">${esc(t('result_eyebrow'))}</p><h3 class="result-title" tabindex="-1">${esc(r.adapted_name)}</h3><p class="muted">${esc(t('result_from', { dish: r.dish }))}</p></div>
+      <span class="source-tag source-tag--${ai ? 'ai' : 'rules'}">${icon(ai ? 'sparkle' : 'list')}${esc(t(ai ? 'result_ai' : 'result_rules'))}</span>
     </div>
     ${r.summary ? `<p class="result-summary">${esc(r.summary)}</p>` : ''}
-    <h4 class="result-sub">Before and after, per serving</h4>
+    <h4 class="result-sub">${esc(t('before_after'))}</h4>
     <div class="cmp">${comparison(r.totals_before, r.totals_after, r.levels_after)}</div>
-    ${swapsRows ? `<h4 class="result-sub">Swaps</h4>
-    <div class="table-wrap"><table class="data-table stack-table"><thead><tr><th scope="col">From</th><th scope="col">To</th><th scope="col">Why</th></tr></thead><tbody>${swapsRows}</tbody></table></div>` : ''}
+    ${swapsRows ? `<h4 class="result-sub">${esc(t('swaps_h'))}</h4>
+    <div class="table-wrap"><table class="data-table stack-table"><thead><tr><th scope="col">${esc(t('from'))}</th><th scope="col">${esc(t('to'))}</th><th scope="col">${esc(t('why'))}</th></tr></thead><tbody>${swapsRows}</tbody></table></div>` : ''}
     <div class="result-cols">
-      ${ingredients ? `<div><h4 class="result-sub">Adapted ingredients</h4><ul class="ing-list">${ingredients}</ul></div>` : ''}
-      ${(r.tips || []).length ? `<div><h4 class="result-sub">Cooking tips</h4><ul class="tip-list">${r.tips.map((t) => `<li>${icon('check')}<span>${esc(t)}</span></li>`).join('')}</ul></div>` : ''}
+      ${ingredients ? `<div><h4 class="result-sub">${esc(t('ingredients_h'))}</h4><ul class="ing-list">${ingredients}</ul></div>` : ''}
+      ${(r.tips || []).length ? `<div><h4 class="result-sub">${esc(t('tips_h'))}</h4><ul class="tip-list">${r.tips.map((tip) => `<li>${icon('check')}<span>${esc(tip)}</span></li>`).join('')}</ul></div>` : ''}
     </div>
-    <p class="notice">${icon('info')}<span>${esc(r.disclaimer || 'Sample guidance only. Check with your renal dietitian before changing a diet.')}</span></p>`;
-  $('.result-title', result()).focus({ preventScroll: true });
+    <p class="notice">${icon('info')}<span>${esc(t('check_with_rd'))}</span></p>`;
+  if (focus) $('.result-title', result()).focus({ preventScroll: true });
 }
 
 async function runHelper(input) {
@@ -125,15 +135,23 @@ async function runHelper(input) {
   const submit = $('[data-helper-submit]');
   submit.setAttribute('aria-busy', 'true');
   submit.disabled = true;
-  loadingState(input.dish);
+  view = { state: 'loading', dish: input.dish };
+  paintResult();
   try {
-    renderResult(await adaptRecipe(input));
+    const r = await adaptRecipe({ ...input, language: lang() });
+    view = { state: 'result', result: r };
+    renderResult(r);
   } catch (error) {
-    errorState(error);
+    view = { state: 'error', error };
+    paintResult();
   } finally {
     submit.removeAttribute('aria-busy');
     submit.disabled = false;
   }
+}
+
+function renderExamples() {
+  $('[data-recipe-examples]').innerHTML = recipeExamples.map((ex, i) => `<button class="chip-button" type="button" data-example="${i}">${esc(tr(ex.label))}</button>`).join('');
 }
 
 function initHelper() {
@@ -141,12 +159,11 @@ function initHelper() {
   const dish = $('#dish');
   const cuisine = $('#cuisine');
   const err = $('#dish-error');
-  $('[data-recipe-examples]').innerHTML = recipeExamples.map((ex, i) => `<button class="chip-button" type="button" data-example="${i}">${esc(ex.label)}</button>`).join('');
   form.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-example]');
     if (!btn) return;
     const ex = recipeExamples[Number(btn.dataset.example)];
-    dish.value = ex.dish;
+    dish.value = tr(ex.dish);
     cuisine.value = ex.cuisine;
     err.hidden = true;
     dish.removeAttribute('aria-invalid');
@@ -167,60 +184,76 @@ function initHelper() {
   });
   const pre = new URLSearchParams(location.search).get('dish');
   if (pre) dish.value = pre.slice(0, 400);
-  emptyState();
 }
 
 /* ---------- Smart swaps ---------- */
-const cuisineLabel = { chinese: 'Chinese', korean: 'Korean', vietnamese: 'Vietnamese' };
+const cuisineKey = { chinese: 'cuisine_chinese', korean: 'cuisine_korean', vietnamese: 'cuisine_vietnamese' };
+let swapFilter = 'all';
 
-function renderSwaps(filter = 'all') {
-  document.querySelectorAll('[data-cuisine]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cuisine === filter)));
+function renderSwaps() {
+  document.querySelectorAll('[data-cuisine]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cuisine === swapFilter)));
   $('[data-swap-list]').innerHTML = swaps
-    .filter((s) => filter === 'all' || s.cuisine === filter)
+    .filter((s) => swapFilter === 'all' || s.cuisine === swapFilter)
     .map((s) => `<li class="swap-item">
-      <p class="swap-item-title"><strong>${esc(s.limit)}</strong> <span class="chip">${cuisineLabel[s.cuisine]}</span></p>
-      <p><strong>Try instead:</strong> ${esc(s.choose)}</p>
+      <p class="swap-item-title"><strong>${esc(tr(s.limit))}</strong> <span class="chip chip--plain">${esc(t(cuisineKey[s.cuisine]))}</span></p>
+      <p><span class="swap-arrow">${icon('arrow')}</span>${esc(tr(s.choose))}</p>
     </li>`).join('');
 }
 
 /* ---------- Grocery list ---------- */
-const GROCERY_KEY = 'fuelwell.grocery.v1';
+const GROCERY_KEY = 'fuelwell.grocery.v2';
+const total = grocery.reduce((sum, a) => sum + a.items.length, 0);
+
+function updateCount() {
+  const n = document.querySelectorAll('[data-grocery] input:checked').length;
+  $('[data-grocery-sub]').textContent = t('grocery_sub', { count: t('grocery_count', { n, total }) });
+}
 
 function renderGrocery() {
   const checked = new Set(storage().get(GROCERY_KEY, []));
-  const total = grocery.reduce((sum, a) => sum + a.items.length, 0);
-  const updateCount = () => {
-    const n = document.querySelectorAll('[data-grocery] input:checked').length;
-    $('[data-grocery-count]').textContent = `${n} of ${total} items in the basket`;
-  };
   $('[data-aisles]').innerHTML = grocery.map((aisle, a) => `
     <fieldset class="aisle">
-      <legend>${esc(aisle.aisle)} <span class="muted">(${aisle.items.length})</span></legend>
+      <legend>${esc(tr(aisle.aisle))} <span class="muted">(${aisle.items.length})</span></legend>
       <ul>${aisle.items.map((item, i) => {
         const id = `g-${a}-${i}`;
-        return `<li><label class="check" for="${id}"><input type="checkbox" id="${id}" value="${esc(item)}"${checked.has(item) ? ' checked' : ''}><span>${esc(item)}</span></label></li>`;
+        return `<li><label class="check" for="${id}"><input type="checkbox" id="${id}" value="${id}"${checked.has(id) ? ' checked' : ''}><span>${esc(tr(item))}</span></label></li>`;
       }).join('')}</ul>
     </fieldset>`).join('');
+  updateCount();
+}
+
+let wired = false;
+function wireOnce() {
+  if (wired) return;
+  wired = true;
+  $('[data-day-picker]').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-day]');
+    if (btn) showDay(Number(btn.dataset.day));
+  });
+  initHelper();
+  $('[data-swap-filter]').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-cuisine]');
+    if (b) { swapFilter = b.dataset.cuisine; renderSwaps(); }
+  });
   $('[data-aisles]').addEventListener('change', () => {
     storage().set(GROCERY_KEY, [...document.querySelectorAll('[data-grocery] input:checked')].map((c) => c.value));
     updateCount();
   });
   $('[data-print]').addEventListener('click', () => window.print());
-  updateCount();
+  initStoreFinder();
+  initTabs($('[role="tablist"]'));
+  if (new URLSearchParams(location.search).get('dish')) toast(t('helper_prefilled'));
 }
 
-initShell({ page: 'meals' }).then((ctx) => {
-  if (!ctx) return;
-  renderWeek();
-  initHelper();
-  renderSwaps();
-  $('[data-swap-filter]').addEventListener('click', (e) => {
-    const b = e.target.closest('[data-cuisine]');
-    if (b) renderSwaps(b.dataset.cuisine);
-  });
-  renderGrocery();
-  initStoreFinder();
-  hydrateIcons(document);
-  initTabs($('[role="tablist"]'));
-  if (new URLSearchParams(location.search).get('dish')) toast('We filled in the dish for you. Press “Make it kidney-friendly” when ready.');
+initShell({
+  page: 'meals',
+  title: 'title_meals',
+  render() {
+    renderWeek();
+    renderExamples();
+    paintResult();
+    renderSwaps();
+    renderGrocery();
+    wireOnce();
+  },
 });

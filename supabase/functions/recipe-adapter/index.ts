@@ -12,6 +12,7 @@
 import { errorResponse, corsHeaders, HttpError, json, optionalEnum, readJsonBody, requireText } from '../_shared/http.ts';
 import { consumeQuota, enforceQuota, requireUser } from '../_shared/guard.ts';
 import { isNum, isStr, runToolLoop, type ToolSpec } from '../_shared/agent.ts';
+import { LANGS, LANGUAGE_NAME } from '../_shared/faq.ts';
 import {
   type Amount, applySwaps, computeTotals, type Cuisine, DISCLAIMER, type Dish, DISHES, findDish, findNutrient,
   type Levels, NUTRIENTS, type Swap, THRESHOLDS, type Totals,
@@ -355,6 +356,7 @@ Deno.serve(async (req) => {
     const body = await readJsonBody(req);
     const dish = requireText(body, 'dish', 'a dish');
     const cuisine = optionalEnum(body, 'cuisine', CUISINES);
+    const lang = optionalEnum(body, 'language', LANGS) ?? 'en';
     const quota = await consumeQuota(user, 'recipe-adapter');
     enforceQuota(quota);
 
@@ -363,7 +365,8 @@ Deno.serve(async (req) => {
     if (quota) {
       const run = await runToolLoop<Submission>({
         system: SYSTEM,
-        userMessage: `<family_dish>${dish}</family_dish>\nCuisine: ${cuisine ?? 'not given'}\nAdapt this dish for one serving.`,
+        userMessage: `<family_dish>${dish}</family_dish>\nCuisine: ${cuisine ?? 'not given'}\nAdapt this dish for one serving.${
+          lang === 'en' ? '' : `\nThe caregiver reads ${LANGUAGE_NAME[lang]}. Write adapted_name, summary, tips and each swap's from, to and why in that language. Keep every ingredient name in English exactly as lookup_nutrients matched it.`}`,
         tools: TOOLS,
         runTool,
         describe,

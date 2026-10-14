@@ -1,5 +1,7 @@
 // Small shared helpers for the FuelWell app pages: icons, escaping, toast, badges, sub-tabs.
 import { mealThresholds } from '../data/fung.js';
+import { intl } from './i18n.js';
+import { t } from './app-strings.js';
 
 const paths = {
   today: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h5v-6h4v6h5V9.5"/>',
@@ -43,24 +45,33 @@ export function esc(value) {
   return String(value ?? '').replace(/[&<>"']/g, (ch) => escMap[ch]);
 }
 
-export const nutrientNames = { k: 'Potassium', p: 'Phosphorus', na: 'Sodium' };
+export const nutrientName = (key) => t({ k: 'potassium', p: 'phosphorus', na: 'sodium' }[key]);
 
 export function levelFor(key, mg) {
   const [low, high] = mealThresholds[key];
   return mg < low ? 'low' : mg <= high ? 'mid' : 'high';
 }
 
-export const levelText = { low: 'Low', mid: 'Med', high: 'High' };
+export const levelText = (lv) => t(`level_${lv}`);
+export const num = (n) => Number(n).toLocaleString(intl());
 
 export function badge(level, prefix = '') {
   const lv = ['low', 'mid', 'high'].includes(level) ? level : 'mid';
-  return `<span class="badge badge--${lv}">${prefix ? esc(prefix) + ' ' : ''}${levelText[lv]}</span>`;
+  return `<span class="badge badge--${lv}">${prefix ? esc(prefix) + ' ' : ''}${levelText(lv)}</span>`;
 }
 
-// Three-column nutrient summary used on meal cards.
+// Nutrient summary used on meal cards: one quiet row per nutrient.
 export function nutrientRow(item) {
   return `<dl class="nutri">${['k', 'p', 'na'].map((key) => `
-    <div class="nutri-item"><dt>${nutrientNames[key]}</dt><dd><span class="nutri-mg">${Number(item[key]).toLocaleString()} mg</span>${badge(levelFor(key, item[key]))}</dd></div>`).join('')}</dl>`;
+    <div class="nutri-item"><dt>${nutrientName(key)}</dt><dd><span class="nutri-mg">${num(item[key])} mg</span>${badge(levelFor(key, item[key]))}</dd></div>`).join('')}</dl>`;
+}
+
+// Compact level pills for list rows (Today).
+export function levelPills(item) {
+  return `<ul class="levels">${['k', 'p', 'na'].map((key) => {
+    const lv = levelFor(key, item[key]);
+    return `<li class="lvl lvl--${lv}"><span class="lvl-dot" aria-hidden="true"></span>${nutrientName(key)} <strong>${levelText(lv)}</strong></li>`;
+  }).join('')}</ul>`;
 }
 
 let toastTimer;
@@ -93,11 +104,17 @@ export function dateFromOffset(days, hour = 9, minute = 0) {
 }
 
 export const fmt = {
-  day: (d) => d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }),
-  short: (d) => d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
-  time: (d) => d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
-  month: (d) => d.toLocaleDateString('en-US', { month: 'short' }),
+  day: (d) => d.toLocaleDateString(intl(), { weekday: 'long', month: 'long', day: 'numeric' }),
+  short: (d) => d.toLocaleDateString(intl(), { weekday: 'short', month: 'short', day: 'numeric' }),
+  date: (d) => d.toLocaleDateString(intl(), { year: 'numeric', month: 'short', day: 'numeric' }),
+  time: (d) => d.toLocaleTimeString(intl(), { hour: 'numeric', minute: '2-digit' }),
+  month: (d) => d.toLocaleDateString(intl(), { month: 'short' }),
+  monthYear: (d) => d.toLocaleDateString(intl(), { month: 'short', year: '2-digit' }),
+  weekdayShort: (d) => d.toLocaleDateString(intl(), { weekday: 'short' }),
+  weekday: (d) => d.toLocaleDateString(intl(), { weekday: 'long' }),
   dateNum: (d) => d.getDate(),
+  clock: (h, m) => { const d = new Date(); d.setHours(h, m, 0, 0); return fmt.time(d); },
+  relative: (days) => new Intl.RelativeTimeFormat(intl(), { numeric: 'auto' }).format(days, 'day'),
 };
 
 /**

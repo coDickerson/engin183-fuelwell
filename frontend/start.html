@@ -25,10 +25,28 @@
     <div class="demo-loading-inner">
       <span class="brand-mark demo-loading-mark" aria-hidden="true"></span>
       <span class="spinner" aria-hidden="true"></span>
-      <p class="demo-loading-title">Opening Heidi’s demo…</p>
-      <p class="demo-loading-copy">Signing in to the sample account. This takes a moment.</p>
+      <p class="demo-loading-title" id="demo-loading-title">Opening FuelWell…</p>
+      <p class="demo-loading-copy" id="demo-loading-copy">Getting Mom’s plan ready.</p>
     </div>
   </div>
+  <script>
+    // Match the loading screen to the language picked on the home page.
+    (function () {
+      var copy = {
+        zh: ['正在打開 FuelWell…', '正在準備媽媽的餐單。'],
+        es: ['Abriendo FuelWell…', 'Preparando el plan de mamá.'],
+      };
+      try {
+        var fromUrl = (new URLSearchParams(location.search).get('lang') || '').slice(0, 2);
+        if (fromUrl === 'en' || copy[fromUrl]) localStorage.setItem('fuelwell.lang.v1', fromUrl);
+        var lang = fromUrl || (localStorage.getItem('fuelwell.lang.v1') || '').slice(0, 2);
+        if (copy[lang]) {
+          document.getElementById('demo-loading-title').textContent = copy[lang][0];
+          document.getElementById('demo-loading-copy').textContent = copy[lang][1];
+        }
+      } catch (e) { /* storage unavailable */ }
+    })();
+  </script>
 
   <div class="start-shell">
     <!-- Left: a peek into the product, plus the first question -->
