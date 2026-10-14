@@ -1,6 +1,7 @@
-// Visit state shared by Today and Care team. Sample visits plus bookings kept in this browser session.
+// Visit state shared by Today and Care team: workspace visits plus bookings kept in this browser session.
 import { visits } from '../data/fung.js';
 import { dateFromOffset, storage } from './app-ui.js';
+import { tr } from './i18n.js';
 
 const KEY = 'fuelwell.booked.v1';
 const store = storage('session');
@@ -22,8 +23,9 @@ export function pastVisits() {
   return visits.past.map(toVisit).sort((a, b) => new Date(b.iso) - new Date(a.iso));
 }
 
-export function bookVisit(iso, reason = 'Nutrition check-in') {
-  const visit = { id: `b-${Date.now()}`, iso, title: reason, with: 'Mei Chen, RD (fictional)', mode: 'Video visit', minutes: 30, booked: true };
+// `reason` is a { en, zh, es } title so a booked visit follows the language too.
+export function bookVisit(iso, reason) {
+  const visit = { id: `b-${Date.now()}`, iso, title: reason, ...visits.newVisit, minutes: 30, booked: true };
   store.set(KEY, [...bookedVisits(), visit]);
   return visit;
 }
@@ -41,7 +43,7 @@ export function openSlots() {
     const d = dateFromOffset(offset);
     if (d.getDay() === 0 || d.getDay() === 6) continue;
     const slots = times
-      .filter((_, i) => (offset + i) % 3 !== 0) // a few slots are "taken" so the grid looks real
+      .filter((_, i) => (offset + i) % 3 !== 0) // a few slots are already taken
       .map(([h, m]) => dateFromOffset(offset, h, m).toISOString());
     days.push({ date: d, slots });
   }
@@ -55,10 +57,10 @@ function icsDate(iso) {
 export function downloadIcs(visit) {
   const end = new Date(new Date(visit.iso).getTime() + (visit.minutes || 30) * 60000).toISOString();
   const text = [
-    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//FuelWell//Student demo//EN', 'BEGIN:VEVENT',
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//FuelWell//EN', 'BEGIN:VEVENT',
     `UID:${visit.id}@fuelwell.demo`, `DTSTAMP:${icsDate(new Date().toISOString())}`,
     `DTSTART:${icsDate(visit.iso)}`, `DTEND:${icsDate(end)}`,
-    `SUMMARY:${visit.title} (sample)`, `DESCRIPTION:FuelWell demo visit with ${visit.with}. Sample data only.`,
+    `SUMMARY:${tr(visit.title)}`, `DESCRIPTION:FuelWell visit with ${tr(visit.with)}.`,
     'END:VEVENT', 'END:VCALENDAR',
   ].join('\r\n');
   const url = URL.createObjectURL(new Blob([text], { type: 'text/calendar' }));

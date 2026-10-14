@@ -158,3 +158,13 @@ img, svg { max-width: 100%; display: block; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }
+
+/* Language toggle: EN / 中文 / ES, shared by the public site and the app */
+.lang-toggle { display: inline-flex; align-items: center; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: var(--radius-pill); background: var(--ground-alt); }
+.lang-toggle-btn { min-width: 44px; min-height: 38px; padding: 0 12px; border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--ink-2); font-size: var(--text-sm); font-weight: 700; line-height: 1; cursor: pointer; transition: background .15s, color .15s, box-shadow .15s; }
+.lang-toggle-btn:hover { color: var(--ink); }
+.lang-toggle-btn[aria-pressed="true"] { background: var(--surface); color: var(--primary-strong); box-shadow: var(--shadow-1); }
+.lang-toggle-btn:lang(zh-Hant) { font-weight: 600; letter-spacing: .02em; }
+:lang(zh-Hant) body, body:lang(zh-Hant) { font-family: var(--font-body), "PingFang HK", "Noto Sans TC", "Microsoft JhengHei", sans-serif; }
+:lang(zh-Hant) h1, :lang(zh-Hant) h2, :lang(zh-Hant) h3 { letter-spacing: .01em; }
+.nowrap { white-space: nowrap; }

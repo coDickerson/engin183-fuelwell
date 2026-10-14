@@ -3,15 +3,17 @@
 // The functions always return one of these shapes on success: when the model is
 // unavailable they answer from a deterministic rules engine with source: 'rules'.
 import { supabase } from '../auth/supabase.js';
+import { tr } from './i18n.js';
 
-const FRIENDLY = {
-  not_configured: 'The AI helpers are not set up on this copy of FuelWell yet.',
-  not_signed_in: 'Please sign in again to use this helper.',
-  rate_limited: "You've reached today's limit for AI requests. Please try again tomorrow.",
-  offline: 'You appear to be offline. Check your connection and try again.',
-  timeout: 'That took too long. Please try again in a moment.',
-  generic: 'The helper could not answer just now. Please try again.',
+const MESSAGES = {
+  not_configured: { en: 'The AI helpers are not set up on this copy of FuelWell yet.', zh: '此版本的 FuelWell 尚未設定 AI 助手。', es: 'Los asistentes de IA aún no están configurados en esta copia de FuelWell.' },
+  not_signed_in: { en: 'Please sign in again to use this helper.', zh: '請重新登入以使用此功能。', es: 'Vuelve a iniciar sesión para usar esta función.' },
+  rate_limited: { en: "You've reached today's limit for AI requests. Please try again tomorrow.", zh: '今日的 AI 使用次數已達上限，請明天再試。', es: 'Llegaste al límite de hoy de solicitudes de IA. Inténtalo mañana.' },
+  offline: { en: 'You appear to be offline. Check your connection and try again.', zh: '你似乎已離線，請檢查網絡後再試。', es: 'Parece que no tienes conexión. Revísala e inténtalo de nuevo.' },
+  timeout: { en: 'That took too long. Please try again in a moment.', zh: '處理時間太長，請稍後再試。', es: 'Tardó demasiado. Inténtalo de nuevo en un momento.' },
+  generic: { en: 'The helper could not answer just now. Please try again.', zh: '助手暫時未能回答，請再試一次。', es: 'El asistente no pudo responder ahora. Inténtalo de nuevo.' },
 };
+const FRIENDLY = new Proxy(MESSAGES, { get: (target, key) => tr(target[key]) });
 
 const TIMEOUT_MS = 60_000;
 
@@ -95,7 +97,7 @@ function badInput(message) {
 }
 
 /**
- * @param {{ dish: string, cuisine?: 'chinese'|'korean'|'vietnamese' }} input
+ * @param {{ dish: string, cuisine?: 'chinese'|'korean'|'vietnamese', language?: 'en'|'zh'|'es' }} input
  * @returns {Promise<{
  *   dish: string, adapted_name: string, summary: string,
  *   ingredients: { name: string, amount_g: number, k_mg: number, p_mg: number, na_mg: number, swapped_from?: string }[],
@@ -111,11 +113,12 @@ export async function adaptRecipe(input) {
   if (!dish) throw badInput('Please enter a dish.');
   const body = { dish };
   if (input?.cuisine) body.cuisine = input.cuisine;
+  if (input?.language && input.language !== 'en') body.language = input.language;
   return invoke('recipe-adapter', body);
 }
 
 /**
- * @param {{ message: string, patient_name?: string }} input
+ * @param {{ message: string, patient_name?: string, language?: 'en'|'zh'|'es' }} input
  * @returns {Promise<{
  *   category: 'meal_question'|'scheduling'|'symptoms'|'labs'|'billing'|'other',
  *   urgency: 'routine'|'soon'|'urgent', red_flag: boolean, escalation: string|null,
@@ -130,5 +133,6 @@ export async function triageInquiry(input) {
   const body = { message };
   const name = cleanText(input?.patient_name, 60);
   if (name) body.patient_name = name;
+  if (input?.language && input.language !== 'en') body.language = input.language;
   return invoke('inquiry-triage', body);
 }
