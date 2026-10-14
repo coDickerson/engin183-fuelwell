@@ -3,7 +3,6 @@ import { authConfigError, getAuthenticatedUser, signOutCurrentSession, supabase 
 import { isDemoUser } from '../auth/demo.js';
 import { persona } from '../data/fung.js';
 import { esc, icon, storage, toast } from './app-ui.js';
-import { languages, initLanguagePreference } from './language-preference.js';
 
 const NAV = [
   { key: 'today', href: '/dashboard.html', label: 'Today', short: 'Today', icon: 'today' },
@@ -73,13 +72,6 @@ function buildShell(frame, page, user) {
         <a class="chip share-chip" href="/care-team.html#circle">${icon('users')}<span><span class="share-long">Shared with </span>${esc(sister.name)}</span></a>
       </div>
       <div class="top-account">
-        <div class="language-picker">
-          <label for="preferred-language">Preferred language</label>
-          <select id="preferred-language" data-language aria-describedby="language-status">
-            ${languages.map(({ code, label }) => `<option value="${code}" lang="${code}">${esc(label)}</option>`).join('')}
-          </select>
-          <span class="language-status" id="language-status" data-language-status role="status" aria-live="polite"></span>
-        </div>
         <span class="sample-pill"><span class="sample-dot" aria-hidden="true"></span><span class="sample-long">Sample workspace</span><span class="sample-short" aria-hidden="true">Sample</span></span>
         <span class="top-email" title="Signed in as ${esc(user.email)}"><span class="sr-only">Signed in as </span>${esc(user.email)}</span>
         <button class="button button--secondary signout" type="button" data-sign-out>${icon('logout')}<span>Sign out</span></button>
@@ -104,13 +96,34 @@ function buildShell(frame, page, user) {
   frame.append(bottom);
 
   wirePersonMenu(top);
-  initLanguagePreference(top, storage());
   banner.querySelector('[data-dismiss-banner]').addEventListener('click', () => {
     banner.hidden = true;
     storage().set(BANNER_KEY, true);
     main.focus({ preventScroll: true });
   });
   top.querySelector('[data-sign-out]').addEventListener('click', signOut);
+  prefetchAppLinks(frame);
+}
+
+// Warm only the page a person is about to open. The browser keeps the current
+// page interactive and can reuse the response on a normal link navigation.
+function prefetchAppLinks(frame) {
+  const warmed = new Set();
+  frame.addEventListener('pointerover', warm);
+  frame.addEventListener('focusin', warm);
+  frame.addEventListener('touchstart', warm, { passive: true });
+  function warm(event) {
+    const link = event.target.closest?.('a[href]');
+    if (!link) return;
+    const url = new URL(link.href);
+    if (url.origin !== location.origin || !/\/(dashboard|meals|care-team|health)\.html$/.test(url.pathname) || url.pathname === location.pathname || warmed.has(url.pathname)) return;
+    warmed.add(url.pathname);
+    const hint = document.createElement('link');
+    hint.rel = 'prefetch';
+    hint.href = url.pathname;
+    hint.as = 'document';
+    document.head.append(hint);
+  }
 }
 
 function wirePersonMenu(top) {
@@ -187,18 +200,28 @@ export async function initShell({ page, withQuiz = false }) {
   if (authConfigError) { location.replace('/start.html#sign-in'); return null; }
   let user;
   try {
-    user = await getAuthenticatedUser();
+    // This workspace contains fictional sample data. A local session can show
+    // it immediately; the server check still runs and revokes stale sessions.
+    const { data, error } = await supabase.auth.getSession();
+    if (error) throw error;
+    user = data.session?.user;
   } catch {
     user = null;
   }
-  if (!user) { location.replace('/start.html#sign-in'); return null; }
+  if (!user?.email || user.is_anonymous) { location.replace('/start.html#sign-in'); return null; }
 
   const isDemo = isDemoUser(user);
+  // The dashboard pages contain Fung's fictional sample workspace. Account
+  // holders use their own family workspace, whose data is protected by RLS.
+  if (!isDemo) { location.replace('/family.html'); return null; }
   const quiz = withQuiz && !isDemo ? await loadQuiz(user) : null;
   buildShell(frame, page, user);
   hydrateIcons(document);
   loader?.remove();
   frame.hidden = false;
   document.body.classList.remove('is-loading');
+  getAuthenticatedUser().then((verified) => {
+    if (!verified || verified.id !== user.id) location.replace('/start.html#sign-in');
+  }).catch(() => { /* A network outage must not hide the fictional workspace. */ });
   return { user, isDemo, displayName: displayNameFor(user, isDemo), quiz };
 }

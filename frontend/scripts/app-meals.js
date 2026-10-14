@@ -2,8 +2,6 @@
 import { initShell, hydrateIcons } from './app-shell.js';
 import { badge, esc, icon, initTabs, nutrientNames, nutrientRow, storage, toast } from './app-ui.js';
 import { grocery, mealSlots, recipeExamples, swaps, week } from '../data/fung.js';
-import { adaptRecipe } from './ai-client.js';
-import { initStoreFinder } from './store-finder.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const todayIndex = (new Date().getDay() + 6) % 7;
@@ -127,6 +125,7 @@ async function runHelper(input) {
   submit.disabled = true;
   loadingState(input.dish);
   try {
+    const { adaptRecipe } = await import('./ai-client.js');
     renderResult(await adaptRecipe(input));
   } catch (error) {
     errorState(error);
@@ -211,16 +210,24 @@ function renderGrocery() {
 
 initShell({ page: 'meals' }).then((ctx) => {
   if (!ctx) return;
-  renderWeek();
-  initHelper();
-  renderSwaps();
-  $('[data-swap-filter]').addEventListener('click', (e) => {
-    const b = e.target.closest('[data-cuisine]');
-    if (b) renderSwaps(b.dataset.cuisine);
-  });
-  renderGrocery();
-  initStoreFinder();
   hydrateIcons(document);
-  initTabs($('[role="tablist"]'));
+  const initialized = new Set();
+  initTabs($('[role="tablist"]'), { onChange(name) {
+    if (initialized.has(name)) return;
+    initialized.add(name);
+    if (name === 'week') renderWeek();
+    if (name === 'helper') initHelper();
+    if (name === 'swaps') {
+      renderSwaps();
+      $('[data-swap-filter]').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-cuisine]');
+        if (b) renderSwaps(b.dataset.cuisine);
+      });
+    }
+    if (name === 'grocery') {
+      renderGrocery();
+      import('./store-finder.js').then(({ initStoreFinder }) => initStoreFinder());
+    }
+  } });
   if (new URLSearchParams(location.search).get('dish')) toast('We filled in the dish for you. Press “Make it kidney-friendly” when ready.');
 });

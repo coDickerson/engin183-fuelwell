@@ -2,7 +2,6 @@
 import { initShell, hydrateIcons } from './app-shell.js';
 import { dateFromOffset, esc, fmt, icon, initTabs, toast } from './app-ui.js';
 import { careCircle, dietitianMessages, exampleQuestions, persona } from '../data/fung.js';
-import { triageInquiry } from './ai-client.js';
 import { bookVisit, downloadIcs, isTaken, openSlots, pastVisits, upcomingVisits } from './app-visits.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -104,6 +103,7 @@ function triageResult(t) {
 async function runTriage(message) {
   triageLoading();
   try {
+    const { triageInquiry } = await import('./ai-client.js');
     triageResult(await triageInquiry({ message, patient_name: persona.patient.name }));
   } catch (error) {
     triageError(error, message);
@@ -224,13 +224,21 @@ function renderCircle() {
 initShell({ page: 'care' }).then((ctx) => {
   if (!ctx) return;
   $('[data-dietitian-label]').textContent = `${persona.dietitian.label}. Messages and visits are sample data kept in this browser.`;
-  renderThreadHead();
-  renderThread();
-  triageIdle();
-  initComposer();
-  renderVisitLists();
-  booker.render();
-  renderCircle();
   hydrateIcons(document);
-  tabs = initTabs($('[role="tablist"]'));
+  const initialized = new Set();
+  tabs = initTabs($('[role="tablist"]'), { onChange(name) {
+    if (initialized.has(name)) return;
+    initialized.add(name);
+    if (name === 'messages') {
+      renderThreadHead();
+      renderThread();
+      triageIdle();
+      initComposer();
+    }
+    if (name === 'visits') {
+      renderVisitLists();
+      booker.render();
+    }
+    if (name === 'circle') renderCircle();
+  } });
 });

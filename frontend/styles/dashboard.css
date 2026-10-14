@@ -54,11 +54,6 @@
 .top-brand { display: none; }
 .top-person { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
 .top-account { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4); margin-left: auto; }
-.language-picker { display: grid; gap: 4px; max-width: 100%; }
-.language-picker label { font-size: var(--text-sm); font-weight: 700; color: var(--ink-2); }
-.language-picker select { width: 220px; max-width: 100%; min-height: 44px; padding: 8px 12px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink); font: inherit; cursor: pointer; }
-.language-status { max-width: 220px; color: var(--ink-3); font-size: var(--text-sm); }
-.language-status:empty { display: none; }
 
 .person-switch { position: relative; }
 .person-button {
@@ -540,7 +535,7 @@
 }
 @media (max-width: 640px) {
   .brand { font-size: 1.2rem; }
-  .brand-mark { width: 30px; height: 30px; background-size: 18px; }
+  .brand-mark { width: 30px; height: 30px; background-size: contain; }
   .top-account { gap: var(--space-2); }
   .sample-long { display: none; }
   .sample-short { display: inline; }

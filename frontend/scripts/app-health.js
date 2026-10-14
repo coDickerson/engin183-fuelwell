@@ -81,8 +81,17 @@ function renderLabs() {
 
 initShell({ page: 'health' }).then((ctx) => {
   if (!ctx) return;
-  const draw = renderCharts();
-  renderLabs();
   hydrateIcons(document);
-  initTabs($('[role="tablist"]'), { onChange: (name) => { if (name === 'trends') requestAnimationFrame(draw); } });
+  let draw;
+  let labsReady = false;
+  initTabs($('[role="tablist"]'), { onChange(name) {
+    if (name === 'trends') {
+      if (!draw) draw = renderCharts();
+      requestAnimationFrame(draw);
+    }
+    if (name === 'labs' && !labsReady) {
+      renderLabs();
+      labsReady = true;
+    }
+  } });
 });

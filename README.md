@@ -17,7 +17,7 @@ It is a student product demo. All health data is sample data, and nothing in it 
 | **Care team** | Visits and messages. **AI question triage:** a caregiver's question is classified, checked for red flags, answered with a reviewable draft and matched with open dietitian slots. Shows "How the agent handled this". |
 | **Health & labs** | Sample lab trends (eGFR, potassium, phosphorus) explained in plain language. |
 
-The public site (Home, How it works, For families, Meal planning, Questions) and the account flow (sign in, sign up with a short matching quiz, demo login) are separate pages.
+The public site (Home, How it works, For families, Meal planning, Questions) and the account flow (sign in, email/password sign up, demo login) are separate pages. Real accounts can add an optional matching summary after sign-in.
 
 ## Architecture
 
