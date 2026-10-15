@@ -5,198 +5,195 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#fbf7f1" />
-  <meta name="description" content="Join the FuelWell waitlist: kidney-friendly meal planning built around the food your family already eats, plus health records and renal dietitian support. For kidney disease stages G3 and G4. English, 中文, Español." />
-  <meta property="og:title" content="FuelWell waitlist: kidney-friendly meals that still taste like home" />
-  <meta property="og:description" content="Meal planning, health records and dietitian support for kidney disease stages G3 and G4. Free to join, about 30 seconds. English · 中文 · Español." />
+  <meta name="description" content="Add your family's dish to the FuelWell family food board, then beta test FuelWell for 3 minutes for a chance to win a gift card." />
+  <meta property="og:title" content="FuelWell: add your family's dish to the board" />
+  <meta property="og:description" content="Add a dish to the live family food board, then try FuelWell for 3 minutes for a chance to win a gift card." />
   <meta property="og:image" content="/images/steamed-fish.jpg" />
-  <title>Join the FuelWell waitlist | Kidney-friendly meals that taste like home</title>
+  <title>FuelWell | Family food board and beta test</title>
   <link rel="stylesheet" href="/styles/styles.css" />
-  <link rel="stylesheet" href="/styles/waitlist.css" />
-  <script type="module" src="/scripts/waitlist.js"></script>
-<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
-    <script defer src="/_vercel/insights/script.js"></script>
-  </head>
+  <link rel="stylesheet" href="/styles/survey.css" />
+  <script type="module" src="/scripts/survey.js"></script>
+  <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
 
 <body>
-  <a class="skip-link" href="#waitlist-form" data-i18n="skip">Skip to the form</a>
-  <header class="wl-header">
-    <div class="wrap wl-header-inner">
+  <a class="skip-link" href="#survey">Skip to the survey</a>
+  <header class="sv-header">
+    <div class="wrap sv-header-inner">
       <a class="brand" href="/" aria-label="FuelWell home"><span class="brand-mark" aria-hidden="true"></span>FuelWell</a>
-      <div class="lang-switch">
-        <div class="lang-group" role="group" aria-label="Language" data-i18n-aria="lang_label">
-          <button type="button" class="lang-option" data-lang="en" lang="en">English</button>
-          <button type="button" class="lang-option" data-lang="zh" lang="zh">中文</button>
-          <button type="button" class="lang-option" data-lang="es" lang="es">Español</button>
-        </div>
-        <div class="script-group" role="group" aria-label="Chinese characters" data-i18n-aria="script_label" hidden>
-          <button type="button" class="script-option" data-script="zh-Hans" lang="zh-Hans">简体</button>
-          <button type="button" class="script-option" data-script="zh-Hant" lang="zh-Hant">繁體</button>
-        </div>
-      </div>
+      <span class="sv-prize-tag">🎁 Gift card draw</span>
     </div>
   </header>
 
-  <main id="main" class="wl-main">
-    <div class="wrap wl-grid" id="signup-view">
-      <section class="wl-intro" aria-labelledby="wl-heading">
-        <p class="pill"><span class="pill-dot" aria-hidden="true"></span><span data-i18n="eyebrow">Early access · Free to join</span></p>
-        <h1 id="wl-heading" data-i18n-html="hero_html">Kidney-friendly meals that <em>still taste like home.</em></h1>
-        <p class="wl-lead" data-i18n="lead"></p>
+  <main id="main" class="sv-main">
+    <div class="wrap sv-wrap">
+      <section class="sv-intro" id="intro">
+        <p class="eyebrow">Family food board</p>
+        <h1>What does your family <em>cook?</em></h1>
+        <p class="sv-lead">Add a dish to our live board. Then try FuelWell for 3 minutes for a chance to win a gift card.</p>
       </section>
 
-      <section class="wl-form-card card" aria-labelledby="form-title">
-        <h2 id="form-title" data-i18n="form_title">Join the waitlist</h2>
-        <p class="muted wl-form-sub" data-i18n="form_sub"></p>
+      <section class="card sv-card" id="survey">
+        <p class="sv-step-label" id="step-label">1 of 3</p>
 
-        <form id="waitlist-form" novalidate>
-          <fieldset class="wl-fieldset">
-            <legend class="wl-legend"><span data-i18n="role_legend">Who are you?</span> <span class="tag tag--req" data-i18n="required">required</span></legend>
-            <div class="role-tiles">
-              <label class="role-tile">
-                <input type="radio" name="role" value="patient" required />
-                <span class="role-tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
-                <span class="role-tile-text"><strong data-i18n="role_patient">I’m the patient</strong><span data-i18n="role_patient_sub"></span></span>
-              </label>
-              <label class="role-tile">
-                <input type="radio" name="role" value="child" />
-                <span class="role-tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="7" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M2 20a6 6 0 0 1 12 0M13 20a4.5 4.5 0 0 1 9 0"/></svg></span>
-                <span class="role-tile-text"><strong data-i18n="role_child">I’m their son or daughter</strong><span data-i18n="role_child_sub"></span></span>
-              </label>
-              <label class="role-tile">
-                <input type="radio" name="role" value="caregiver" />
-                <span class="role-tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></span>
-                <span class="role-tile-text"><strong data-i18n="role_caregiver">I’m a caregiver</strong><span data-i18n="role_caregiver_sub"></span></span>
-              </label>
-            </div>
-          </fieldset>
-
-          <div class="wl-row">
+        <!-- Step 1: family food board -->
+        <div class="sv-step" data-step="dish">
+          <h2 class="sv-q" tabindex="-1">Add your family’s dish to the board</h2>
+          <p class="hint sv-why">It shows up on the live family food board. Any language, any cuisine.</p>
+          <form id="dish-form" novalidate>
             <div class="field">
-              <label for="first-name"><span data-i18n="first_name">First name</span> <span class="tag tag--req" data-i18n="required">required</span></label>
-              <input id="first-name" name="first_name" type="text" autocomplete="given-name" maxlength="80" required />
+              <label for="dish">Dish</label>
+              <input id="dish" name="dish" type="text" maxlength="40" autocomplete="off" placeholder="红烧肉, pozole, sinigang, mac and cheese…" required />
             </div>
             <div class="field">
-              <label for="email"><span data-i18n="email">Email</span> <span class="tag tag--req" data-i18n="required">required</span></label>
-              <input id="email" name="email" type="email" inputmode="email" autocomplete="email" maxlength="254" required />
+              <label for="origin">Where it’s from <span class="sv-optional">optional</span></label>
+              <input id="origin" name="origin" type="text" maxlength="40" autocomplete="off" placeholder="Shanghai, Oaxaca, Grandma’s kitchen…" />
             </div>
-          </div>
-          <div class="field">
-            <label for="phone"><span data-i18n="phone">Phone</span> <span class="tag" data-i18n="optional">optional</span></label>
-            <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="30" aria-describedby="phone-hint" />
-            <p class="hint" id="phone-hint" data-i18n="phone_hint"></p>
-          </div>
-
-          <div class="wl-optional">
-            <h3 class="wl-optional-title" data-i18n="optional_title">Optional: help us build the right thing</h3>
-            <p class="hint" data-i18n="optional_sub"></p>
-
-            <fieldset class="wl-fieldset">
-              <legend class="wl-legend"><span data-i18n="interests_legend">What would help most?</span> <span class="wl-legend-hint" data-i18n="interests_hint"></span></legend>
-              <div class="need-tiles">
-                <label class="need-tile"><input type="checkbox" name="interests" value="meal_planning" /><span class="need-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18a9 9 0 0 1-18 0Z"/><path d="M8 7c0-2 2-2 2-4M13 7c0-2 2-2 2-4"/></svg></span><span data-i18n="i_meals"></span></label>
-                <label class="need-tile"><input type="checkbox" name="interests" value="health_records" /><span class="need-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v3h6V3M9 12h6M9 16h4"/></svg></span><span data-i18n="i_records"></span></label>
-                <label class="need-tile"><input type="checkbox" name="interests" value="dietitian" /><span class="need-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg></span><span data-i18n="i_dietitian"></span></label>
-                <label class="need-tile"><input type="checkbox" name="interests" value="care_team" /><span class="need-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/></svg></span><span data-i18n="i_care_team"></span></label>
-              </div>
-            </fieldset>
-
-            <div class="wl-row">
-              <div class="field">
-                <label for="kidney-stage" data-i18n-role="stage_legend">Their kidney stage</label>
-                <select id="kidney-stage" name="kidney_stage">
-                  <option value="" data-i18n="select_placeholder"></option>
-                <option value="stage_3" data-i18n="stage_3"></option>
-                <option value="stage_4" data-i18n="stage_4"></option>
-                <option value="stage_2" data-i18n="stage_earlier"></option>
-                <option value="dialysis" data-i18n="stage_dialysis"></option>
-                <option value="not_sure" data-i18n="stage_not_sure"></option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="heard-from" data-i18n="heard_legend">How did you hear about us?</label>
-                <select id="heard-from" name="heard_from">
-                  <option value="" data-i18n="select_placeholder"></option>
-                <option value="reddit" data-i18n="h_reddit"></option>
-                <option value="facebook" data-i18n="h_facebook"></option>
-                <option value="friend" data-i18n="h_friend"></option>
-                <option value="clinic" data-i18n="h_clinic"></option>
-                <option value="other" data-i18n="h_other"></option>
-                </select>
-              </div>
-            </div>
-
-            <fieldset class="wl-fieldset wl-conditions">
-              <legend class="wl-legend" data-i18n="conditions_legend">Also living with</legend>
-              <label class="check"><input type="checkbox" name="conditions" value="diabetes" /><span data-i18n="cond_diabetes"></span></label>
-              <label class="check"><input type="checkbox" name="conditions" value="high_blood_pressure" /><span data-i18n="cond_hbp"></span></label>
-            </fieldset>
-          </div>
-
-          <!-- Honeypot: hidden from people, often filled by bots. -->
-          <div class="wl-trap" aria-hidden="true">
-            <label for="company">Company</label>
-            <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
-          </div>
-
-          <p class="form-error" id="form-error" role="alert" hidden></p>
-          <button class="button button--accent button--block wl-submit" type="submit" data-i18n="submit">Join the waitlist</button>
-          <p class="wl-privacy" data-i18n="privacy"></p>
-        </form>
-      </section>
-
-      <section class="wl-culture" aria-label="What FuelWell does">
-        <ul class="wl-points">
-          <li>
-            <span class="icon-badge" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18a9 9 0 0 1-18 0Z"/><path d="M8 7c0-2 2-2 2-4M13 7c0-2 2-2 2-4"/></svg></span>
-            <div><h3 data-i18n="b1_title"></h3><p data-i18n="b1_body"></p></div>
-          </li>
-          <li>
-            <span class="icon-badge" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v5a4 4 0 0 0 8 0V3"/><path d="M10 12v3a5 5 0 0 0 10 0v-2"/><circle cx="20" cy="11" r="2"/></svg></span>
-            <div><h3 data-i18n="care_title"></h3><p data-i18n="care_body"></p></div>
-          </li>
-          <li>
-            <span class="icon-badge" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c3.5 3.4 5.5 6.6 5.5 9.6a5.5 5.5 0 0 1-11 0C6.5 9.6 8.5 6.4 12 3Z"/><path d="M12 9v9M12 14l2.5-2.5"/></svg></span>
-            <div><h3 data-i18n="b2_title"></h3><p data-i18n="b2_body"></p></div>
-          </li>
-          <li>
-            <span class="icon-badge" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/></svg></span>
-            <div><h3 data-i18n="b3_title"></h3><p data-i18n="b3_body"></p></div>
-          </li>
-        </ul>
-        <div class="wl-photos">
-          <figure><img src="/images/steamed-fish.jpg" alt="" width="1400" height="931" loading="lazy" /><figcaption data-i18n="photo1"></figcaption></figure>
-          <figure><img src="/images/congee.jpg" alt="" width="1000" height="1198" loading="lazy" /><figcaption data-i18n="photo2"></figcaption></figure>
-          <figure><img src="/images/bok-choy.jpg" alt="" width="1000" height="667" loading="lazy" /><figcaption data-i18n="photo3"></figcaption></figure>
+            <p class="form-error" id="dish-error" role="alert" hidden></p>
+            <button class="button button--accent button--block sv-submit" type="submit">Add to the board</button>
+          </form>
         </div>
-        <p class="wl-cuisines" data-i18n="cuisines_line"></p>
-        <p class="photo-credit-line">Photos: <a href="https://www.pexels.com/photo/11830200/" rel="noopener">Jan Kao</a>, <a href="https://www.pexels.com/photo/delicious-asian-congee-breakfast-with-tea-set-36340265/" rel="noopener">ivi nnnnnn</a>, <a href="https://www.pexels.com/photo/stir-fried-bok-choy-with-shiitake-mushrooms-36676215/" rel="noopener">Sóc Năng Động</a> / Pexels</p>
+
+        <!-- Step 2: know someone? yes opens the send panel -->
+        <div class="sv-step" data-step="know" hidden>
+          <h2 class="sv-q" tabindex="-1">Do you know any family or friends with kidney disease?</h2>
+          <div class="sv-yesno" role="group" aria-label="Your answer">
+            <button type="button" class="sv-choice" data-answer="yes" aria-pressed="false">Yes</button>
+            <button type="button" class="sv-choice" data-answer="no" aria-pressed="false">No</button>
+          </div>
+
+          <div class="sv-send" id="send-panel" hidden>
+            <h3 tabindex="-1" id="send-title">Send them FuelWell</h3>
+            <p>Ask them to join the waitlist. It takes 30 seconds. Pick the language they read best and we’ll write the message.</p>
+            <div class="sv-share-box" data-share="family"></div>
+            <button type="button" class="button button--block sv-continue" data-go="beta">Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 3a: beta tester invite -->
+        <div class="sv-step" data-step="beta" hidden>
+          <p class="sv-gift">🎁 Chance to win a gift card</p>
+          <h2 class="sv-q" tabindex="-1">Be a beta tester for 3 minutes</h2>
+          <ol class="sv-how">
+            <li><span><strong>Try the FuelWell demo.</strong> It opens in a new tab with a sample family already set up.</span></li>
+            <li><span><strong>Come back here</strong> and answer 4 quick questions.</span></li>
+            <li><span><strong>That’s it.</strong> You’re entered to win a gift card.</span></li>
+          </ol>
+          <a class="button button--accent button--block sv-submit" id="open-demo" href="/start.html?demo=1" target="_blank" rel="noopener">Open the demo</a>
+          <button type="button" class="button button--ghost button--block sv-skip" data-go="feedback">I’ve already tried it</button>
+          <button type="button" class="button button--ghost button--block sv-skip" data-go="done">No thanks, I’m done</button>
+        </div>
+
+        <!-- Step 3b: feedback + gift card entry -->
+        <div class="sv-step" data-step="feedback" hidden>
+          <p class="sv-gift">🎁 Finish to enter the gift card draw</p>
+          <h2 class="sv-q" tabindex="-1">How was it?</h2>
+          <p class="hint sv-why">Still exploring? <a href="/start.html?demo=1" target="_blank" rel="noopener" id="reopen-demo">Open the demo again</a>.</p>
+          <form id="feedback-form" novalidate>
+            <fieldset class="sv-fieldset">
+              <legend>How clear was what FuelWell does?</legend>
+              <div class="sv-scale">
+                <label><input type="radio" name="clarity" value="1" /><span>1</span></label>
+                <label><input type="radio" name="clarity" value="2" /><span>2</span></label>
+                <label><input type="radio" name="clarity" value="3" /><span>3</span></label>
+                <label><input type="radio" name="clarity" value="4" /><span>4</span></label>
+                <label><input type="radio" name="clarity" value="5" /><span>5</span></label>
+              </div>
+              <p class="sv-scale-ends" aria-hidden="true"><span>Confusing</span><span>Very clear</span></p>
+            </fieldset>
+
+            <div class="field">
+              <label for="confusing">What was confusing or hard to find? <span class="sv-optional">optional</span></label>
+              <textarea id="confusing" name="confusing" maxlength="1000" rows="3"></textarea>
+            </div>
+
+            <fieldset class="sv-fieldset">
+              <legend>Would you recommend FuelWell to a family that needs it?</legend>
+              <div class="sv-pills">
+                <label><input type="radio" name="would_recommend" value="yes" /><span>Yes</span></label>
+                <label><input type="radio" name="would_recommend" value="maybe" /><span>Maybe</span></label>
+                <label><input type="radio" name="would_recommend" value="no" /><span>No</span></label>
+              </div>
+            </fieldset>
+
+            <div class="field">
+              <label for="other">Anything else we should change? <span class="sv-optional">optional</span></label>
+              <textarea id="other" name="other" maxlength="1000" rows="3"></textarea>
+            </div>
+
+            <div class="sv-entry">
+              <p class="sv-entry-title">Where should we send the gift card if you win?</p>
+              <div class="sv-row">
+                <div class="field">
+                  <label for="first-name">First name</label>
+                  <input id="first-name" name="first_name" type="text" maxlength="80" autocomplete="given-name" required />
+                </div>
+                <div class="field">
+                  <label for="email">Email</label>
+                  <input id="email" name="email" type="email" inputmode="email" maxlength="254" autocomplete="email" required />
+                </div>
+              </div>
+              <p class="hint">One entry per person. We’ll only use your email to contact you about the draw or a follow-up beta test.</p>
+            </div>
+
+            <div class="sv-trap" aria-hidden="true">
+              <label for="company">Company</label>
+              <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
+            </div>
+            <p class="form-error" id="feedback-error" role="alert" hidden></p>
+            <button class="button button--accent button--block sv-submit" type="submit">Send feedback and enter the draw</button>
+          </form>
+        </div>
+
+        <!-- Thank you -->
+        <div class="sv-step" data-step="done" hidden>
+          <span class="sv-done-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+          <h2 class="sv-q sv-done-title" id="done-title" tabindex="-1">Thank you!</h2>
+          <p class="sv-done-body" id="done-body"></p>
+          <p class="sv-done-cta" id="done-beta" hidden><button type="button" class="button button--secondary" data-go="beta">Be a beta tester and enter the draw</button></p>
+
+          <div class="sv-mini-wall" id="mini-wall" hidden>
+            <h3>Live on the family food board</h3>
+            <ul class="sv-mini-list" id="mini-list"></ul>
+            <a class="sv-wall-link" href="/wall" target="_blank" rel="noopener">See the whole board →</a>
+          </div>
+
+          <div class="sv-share-section">
+            <h3>Share with friends</h3>
+            <p>Get their family’s dish on the board too.</p>
+            <div class="sv-share-box" data-share="friends"></div>
+          </div>
+          <div class="sv-share-section">
+            <h3>Know a family managing kidney disease?</h3>
+            <p>Send them the 30-second waitlist, in the language they read best.</p>
+            <div class="sv-share-box" data-share="family"></div>
+          </div>
+        </div>
       </section>
     </div>
-
-    <section class="wrap wl-thanks" id="thanks-view" hidden aria-labelledby="thanks-title">
-      <div class="card wl-thanks-card">
-        <span class="wl-thanks-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
-        <p class="eyebrow" data-i18n="thanks_eyebrow">You’re on the list</p>
-        <h1 id="thanks-title" tabindex="-1"></h1>
-        <p class="wl-lead" id="thanks-body"></p>
-        <div class="wl-share">
-          <h2 data-i18n="thanks_share_title"></h2>
-          <p data-i18n="thanks_share_body"></p>
-          <button class="button button--accent" type="button" id="share-button" data-i18n="share">Share this page</button>
-          <p class="wl-copied" id="share-status" role="status" aria-live="polite"></p>
-        </div>
-        <div class="wl-thanks-links">
-          <a class="button button--secondary" href="/start.html?demo=1" data-i18n="demo">Look around the demo</a>
-          <a class="text-link" href="/" data-i18n="home">Back to FuelWell</a>
-        </div>
-      </div>
-    </section>
   </main>
 
-  <footer class="wl-footer">
+  <template id="share-template">
+    <div class="sv-langs" role="group" aria-label="Message language">
+      <button type="button" class="sv-lang" data-locale="en" lang="en">English</button>
+      <button type="button" class="sv-lang" data-locale="zh-Hans" lang="zh-Hans">简体中文</button>
+      <button type="button" class="sv-lang" data-locale="zh-Hant" lang="zh-Hant">繁體中文</button>
+      <button type="button" class="sv-lang" data-locale="es" lang="es">Español</button>
+    </div>
+    <p class="sv-message"></p>
+    <div class="sv-share-buttons">
+      <button type="button" class="button button--accent sv-share-native">Share</button>
+      <a class="button button--secondary sv-share-sms" href="#">Text</a>
+      <a class="button button--secondary sv-share-wa" href="#" target="_blank" rel="noopener">WhatsApp</a>
+      <button type="button" class="button button--ghost sv-share-copy">Copy</button>
+    </div>
+    <p class="sv-share-status" role="status" aria-live="polite"></p>
+  </template>
+
+  <footer class="sv-footer">
     <div class="wrap">
-      <p><strong data-i18n="emergency">In an emergency, call 911.</strong></p>
-      <p data-i18n="footer"></p>
+      <p><strong>In an emergency, call 911.</strong> FuelWell is a student project from ENGIN 183 at UC Berkeley. Looking for the full waitlist form? <a href="/join">Join here</a>.</p>
     </div>
   </footer>
 </body>

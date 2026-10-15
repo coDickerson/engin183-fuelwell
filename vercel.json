@@ -7,6 +7,14 @@
     {
       "source": "/waitlist",
       "destination": "/waitlist.html"
+    },
+    {
+      "source": "/join",
+      "destination": "/join.html"
+    },
+    {
+      "source": "/wall",
+      "destination": "/wall.html"
     }
   ]
 }

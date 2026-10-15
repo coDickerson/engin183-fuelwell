@@ -175,7 +175,7 @@ function showThanks() {
 }
 
 byId('share-button').addEventListener('click', async () => {
-  const url = new URL('/waitlist', location.origin);
+  const url = new URL('/join', location.origin);
   url.searchParams.set('lang', locale);
   const status = byId('share-status');
   try {
