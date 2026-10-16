@@ -1,0 +1,35 @@
+/*
+  Family food board record (/dishes). Builds on styles.css tokens; light theme to
+  match the rest of the site (the dark projector view lives at /wall).
+*/
+
+.ds-header { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--ground) 94%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.ds-header-inner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-height: 68px; }
+.ds-add { padding-inline: 18px; font-size: var(--text-sm); }
+
+.ds-hero { padding: var(--space-7) 0 var(--space-5); }
+.ds-hero h1 { font-size: clamp(2.25rem, 4vw + 1rem, 3.75rem); }
+.ds-lead { font-size: var(--text-lg); color: var(--ink-2); }
+.ds-count { margin: 0; font-weight: 700; color: var(--accent); font-size: var(--text-lg); }
+.ds-count:empty { display: none; }
+
+.ds-list { padding-bottom: var(--space-8); }
+.ds-search { max-width: 420px; }
+.ds-status { padding: var(--space-6) 0; color: var(--ink-3); font-size: var(--text-lg); }
+.ds-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-3); }
+.ds-card { display: grid; align-content: center; gap: 4px; min-height: 104px; padding: var(--space-4) var(--space-5); border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow-1); }
+.ds-card strong { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 600; line-height: 1.15; overflow-wrap: anywhere; }
+.ds-card span { color: var(--ink-3); font-size: var(--text-sm); }
+.ds-card--1 { background: var(--accent-soft); border-color: transparent; }
+.ds-card--2 { background: var(--primary-soft); border-color: transparent; }
+.ds-card--3 { background: var(--mid-soft); border-color: transparent; }
+.ds-card--4 { background: var(--surface-tint); border-color: transparent; }
+
+.ds-footer { padding: var(--space-6) 0; background: var(--ink); color: var(--cream-100); font-size: var(--text-sm); }
+.ds-footer p { margin: 0; }
+.ds-footer a { color: var(--cream-50); }
+
+@media (max-width: 420px) {
+  .ds-header .brand { font-size: 1.2rem; }
+  .ds-add { padding-inline: 12px; }
+}

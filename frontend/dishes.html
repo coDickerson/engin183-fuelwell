@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#fbf7f1" />
+  <meta name="description" content="The family dishes added to FuelWell's family food board: home cooking from every culture, which is what FuelWell plans kidney-friendly meals around." />
+  <meta property="og:title" content="Our families’ tables | FuelWell" />
+  <meta property="og:description" content="Home cooking from every culture, added to FuelWell's family food board." />
+  <meta property="og:image" content="/images/steamed-fish.jpg" />
+  <title>Our families’ tables | FuelWell</title>
+  <link rel="stylesheet" href="/styles/styles.css" />
+  <link rel="stylesheet" href="/styles/dishes.css" />
+  <script type="module" src="/scripts/dishes.js"></script>
+  <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
+
+<body>
+  <a class="skip-link" href="#dishes">Skip to the dishes</a>
+  <header class="ds-header">
+    <div class="wrap ds-header-inner">
+      <a class="brand" href="/" aria-label="FuelWell home"><span class="brand-mark" aria-hidden="true"></span>FuelWell</a>
+      <a class="button button--accent ds-add" href="/waitlist">Add your family’s dish</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="wrap ds-hero">
+      <p class="eyebrow">Family food board</p>
+      <h1>Our families’ <em>tables</em></h1>
+      <p class="ds-lead">Dishes people grew up on, added to FuelWell’s family food board. This is the food FuelWell is built around: families shouldn’t have to give up their own cooking when someone they love has kidney disease.</p>
+      <p class="ds-count" id="count" aria-live="polite"></p>
+    </section>
+
+    <section class="wrap ds-list" id="dishes" aria-label="Family dishes">
+      <div class="field ds-search" id="search-wrap" hidden>
+        <label for="search">Search dishes or places</label>
+        <input id="search" type="search" placeholder="pho, Oaxaca, dumplings…" autocomplete="off" />
+      </div>
+      <p class="ds-status" id="status">Loading dishes…</p>
+      <ul class="ds-grid" id="grid"></ul>
+    </section>
+  </main>
+
+  <footer class="ds-footer">
+    <div class="wrap">
+      <p>FuelWell is a student project from ENGIN 183 at UC Berkeley. <a href="/join">Join the waitlist</a> · <a href="/">FuelWell home</a></p>
+    </div>
+  </footer>
+</body>
+</html>

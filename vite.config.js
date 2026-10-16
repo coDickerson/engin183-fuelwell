@@ -23,6 +23,7 @@ export default defineConfig({
         join: resolve(import.meta.dirname, 'frontend/join.html'),
         waitlist: resolve(import.meta.dirname, 'frontend/waitlist.html'),
         wall: resolve(import.meta.dirname, 'frontend/wall.html'),
+        dishes: resolve(import.meta.dirname, 'frontend/dishes.html'),
       },
     },
   },

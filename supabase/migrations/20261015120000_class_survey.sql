@@ -71,3 +71,6 @@ alter table public.dish_wall add column sample boolean not null default false;
 comment on column public.dish_wall.sample is 'Seeded example dish so the board is not empty at the start of class. Remove with: delete from dish_wall where sample;';
 drop policy "Anyone can add a visible dish" on public.dish_wall;
 create policy "Anyone can add a visible dish" on public.dish_wall for insert to anon, authenticated with check (not hidden and not sample);
+
+-- /dishes (the permanent public record) shows real dishes only, so it needs to filter on sample.
+grant select (sample) on public.dish_wall to anon, authenticated;
