@@ -64,3 +64,10 @@ grant select (knows_someone) on public.class_survey_answers to anon, authenticat
 create policy "Anyone can read the yes/no tally" on public.class_survey_answers for select to anon, authenticated using (true);
 grant select (id, created_at, dish, origin) on public.dish_wall to anon, authenticated;
 create policy "Anyone can read visible dishes" on public.dish_wall for select to anon, authenticated using (not hidden);
+
+-- Sample dishes seeded before class so the board isn't empty. Visitors can't insert them;
+-- leave them out of the record and remove them with: delete from public.dish_wall where sample;
+alter table public.dish_wall add column sample boolean not null default false;
+comment on column public.dish_wall.sample is 'Seeded example dish so the board is not empty at the start of class. Remove with: delete from dish_wall where sample;';
+drop policy "Anyone can add a visible dish" on public.dish_wall;
+create policy "Anyone can add a visible dish" on public.dish_wall for insert to anon, authenticated with check (not hidden and not sample);
