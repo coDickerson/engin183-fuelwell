@@ -100,7 +100,7 @@
 .wl-photos img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius); }
 .wl-photos figcaption { margin-top: var(--space-1); font-size: var(--text-sm); color: var(--ink-2); line-height: 1.3; }
 .wl-cuisines { margin: var(--space-4) 0 var(--space-2); padding: var(--space-3) var(--space-4); border-radius: var(--radius); background: var(--surface-tint); color: var(--primary-strong); font-weight: 700; font-size: var(--text-sm); max-width: none; }
-.photo-credit-line { font-size: var(--text-sm); color: var(--ink-3); }
+.photo-credit-line { margin: 0; font-size: var(--text-sm); color: var(--on-dark-2); }
 .photo-credit-line a { color: inherit; }
 
 /* Thank-you view */
@@ -118,7 +118,7 @@
 .text-link:hover { color: var(--primary-strong); text-decoration: underline; }
 
 /* Footer */
-.wl-footer { padding: var(--space-6) 0; background: var(--ink); color: var(--cream-100); font-size: var(--text-sm); }
+.wl-footer { padding: var(--space-6) 0; background: var(--ink); color: var(--on-dark-2); font-size: var(--text-sm); }
 .wl-footer p { margin-bottom: var(--space-2); }
 
 @media (max-width: 480px) {
