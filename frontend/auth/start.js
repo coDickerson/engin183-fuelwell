@@ -97,14 +97,39 @@ document.querySelectorAll('#quiz-step-1 input[name="role"]').forEach((radio) => 
   radio.addEventListener('change', () => setRole(radio.value));
 });
 
+/* ---------- Health conditions (step 1) ---------- */
+
+const CONDITIONS = ['high_blood_pressure', 'diabetes', 'kidney_disease'];
+const STAGES = ['g1', 'g2', 'g3', 'g3b', 'g4', 'g5', 'g5d', 'unsure'];
+const GOALS = ['familiar-meals', 'eat-healthier', 'fuel-performance', 'understand-options', 'prepare-conversation'];
+const conditionBoxes = [...document.querySelectorAll('#conditions-set input[type="checkbox"]')];
+const noneBox = document.querySelector('#conditions-set input[name="no_conditions"]');
+const kidneyBox = document.querySelector('#conditions-set input[name="kidney_disease"]');
+const stageSet = byId('stage-set');
+
+function syncStage() {
+  stageSet.hidden = !kidneyBox.checked;
+  if (!kidneyBox.checked) stageSet.querySelectorAll('input').forEach((radio) => { radio.checked = false; });
+}
+
+// "None of these" and the conditions exclude each other.
+conditionBoxes.forEach((box) => box.addEventListener('change', () => {
+  if (!box.checked) { syncStage(); return; }
+  if (box === noneBox) conditionBoxes.forEach((other) => { if (other !== noneBox) other.checked = false; });
+  else noneBox.checked = false;
+  syncStage();
+}));
+
+const chosenConditions = (form) => CONDITIONS.filter((name) => form.has(name));
+
 /* ---------- Quiz result ---------- */
 
 function readMatch() {
   try {
     const match = JSON.parse(sessionStorage.getItem(matchKey) || 'null');
     return match && ['patient', 'caregiver'].includes(match.role)
-      && ['g3', 'g3b', 'g4', 'unsure'].includes(match.stage)
-      && ['familiar-meals', 'understand-options', 'prepare-conversation'].includes(match.goal)
+      && (match.stage === null || STAGES.includes(match.stage))
+      && GOALS.includes(match.goal)
       ? match : null;
   } catch { return null; }
 }
@@ -135,41 +160,74 @@ async function finishAuthentication(user) {
 }
 
 const nextSteps = {
-  'familiar-meals': 'List a few dishes you cook often. FuelWell will suggest kidney-friendly versions to discuss with a renal dietitian.',
-  'understand-options': 'Start with the nutrient check on your dashboard, then bring questions to a renal dietitian or the care team.',
+  'familiar-meals': 'List a few dishes you cook often. FuelWell will suggest versions that fit, to discuss with a dietitian.',
+  'eat-healthier': 'Start with this week’s plan on your dashboard and swap in the dishes you love.',
+  'fuel-performance': 'Add your favourite dishes, and FuelWell will balance them for training and recovery.',
+  'understand-options': 'Start with the nutrient check on your dashboard, then bring questions to a dietitian or the care team.',
   'prepare-conversation': 'Write down the food questions you want to raise at the next care-team visit.',
 };
+
+// What each condition means for the nutrient check, in plain words.
+const conditionFocus = {
+  high_blood_pressure: ['sodium'],
+  diabetes: ['carbs', 'sugar'],
+  kidney_disease: ['potassium', 'phosphorus', 'sodium'],
+};
+
+function joinWords(words) {
+  return words.length < 2 ? words.join('') : `${words.slice(0, -1).join(', ')} and ${words.at(-1)}`;
+}
 
 byId('quiz-step-1').addEventListener('submit', (event) => {
   event.preventDefault();
   const answers = new FormData(event.currentTarget);
-  if (!answers.get('role') || !answers.get('stage')) {
-    showError('Please choose an answer for both questions.');
+  if (!answers.get('role')) {
+    showError('Please choose who you’re setting this up for.');
     return;
   }
+  if (!chosenConditions(answers).length && !answers.has('no_conditions')) {
+    showError('Please choose any that apply, or “None of these”.');
+    return;
+  }
+  // The care-team visit goal only fits when there's a condition to discuss.
+  const none = answers.has('no_conditions');
+  document.querySelectorAll('#quiz-step-2 [data-needs-condition]').forEach((choice) => {
+    choice.hidden = none;
+    if (none) choice.querySelector('input').checked = false;
+  });
   clearMessages();
   setRole(answers.get('role'));
   showStep(2);
 });
+
+document.querySelectorAll('.cuisine-pick').forEach((pick) => pick.addEventListener('click', () => {
+  const input = byId('food-traditions');
+  input.value = pick.textContent.trim();
+  input.focus();
+}));
 
 byId('quiz-step-2').addEventListener('submit', (event) => {
   event.preventDefault();
   const first = new FormData(byId('quiz-step-1'));
   const second = new FormData(event.currentTarget);
   const role = first.get('role');
-  const stage = first.get('stage');
+  const conditions = chosenConditions(first);
+  const stage = conditions.includes('kidney_disease') ? (first.get('stage') || 'unsure') : null;
   const goal = second.get('goal');
   if (!goal) {
     showError('Please choose what would help most.');
     return;
   }
-  const hasTraditions = Boolean(String(second.get('traditions') || '').trim());
+  const cuisine = String(second.get('traditions') || '').trim();
+  const hasTraditions = Boolean(cuisine);
   const forWhom = role === 'caregiver' ? 'the person you care for' : 'you';
-  const stageLine = stage === 'unsure'
-    ? 'It’s fine not to know the kidney stage yet; the care team can confirm it.'
-    : 'We’ll keep the plan in line with the stage the care team mentioned.';
-  byId('result-intro').textContent = `We’ll start with meals for ${forWhom}`
-    + (hasTraditions ? ', built around the foods that feel like home. ' : '. ') + stageLine;
+  const focus = conditions.length
+    ? `Every dish gets a check for ${joinWords([...new Set(conditions.flatMap((c) => conditionFocus[c]))])}.`
+    : goal === 'fuel-performance'
+      ? 'Meals are balanced for energy, protein and recovery.'
+      : 'Meals are balanced for everyday energy and health.';
+  byId('result-intro').textContent = `We’ll start with ${cuisine ? `${cuisine} ` : ''}meals for ${forWhom}`
+    + (hasTraditions ? ', built around the food that feels like home. ' : '. ') + focus;
   byId('result-next-step').textContent = nextSteps[goal];
   try { sessionStorage.setItem(matchKey, JSON.stringify({ role, stage, goal, hasTraditions })); }
   catch {
@@ -286,7 +344,8 @@ forms.signUp.addEventListener('submit', (event) => {
   const profile = {
     fullName: byId('sign-up-name').value,
     cuisine: byId('food-traditions').value,
-    stage: quiz.get('stage'),
+    kidneyDisease: quiz.has('kidney_disease'),
+    stage: quiz.get('stage') || 'unsure',
     highBloodPressure: quiz.has('high_blood_pressure'),
     diabetes: quiz.has('diabetes'),
   };

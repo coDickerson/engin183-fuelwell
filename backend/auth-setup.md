@@ -109,18 +109,25 @@ The quiz keeps a small summary in same-origin `sessionStorage` under
 free-text answer and the email are not stored there. RLS restricts every read
 and write to the signed-in user's ID.
 
-## 7. Profile (name, cuisine, health history)
+## 7. Profile (name, cuisine, health conditions)
 
-Each account has one row in `public.profiles`
-(`supabase/migrations/20261016120000_profiles.sql`): `full_name`, `cuisine`,
-`ckd_stage` (`g1`–`g5`, `g3a`/`g3b`, or `unsure`), `has_high_blood_pressure`
-and `has_diabetes`. RLS lets only the signed-in owner read, insert or update
+FuelWell covers high blood pressure, diabetes and kidney disease, and also
+people with none of these (athletes, anyone who wants to eat well). Each
+account has one row in `public.profiles` (migrations `20261016120000_profiles`
+and `20261017120000_profiles_conditions`): `full_name`, `cuisine`,
+`has_high_blood_pressure`, `has_diabetes`, `has_kidney_disease`, and
+`ckd_stage` (`g1`–`g5`, `g5d` for dialysis, or `unsure`; only kept when kidney
+disease is ticked). RLS lets only the signed-in owner read, insert or update
 their row; `anon` has no access.
 
-- **Sign-up** asks for the stage and the two conditions in step 1, the cuisine
-  in step 2 and the person's name on the account step. The answers wait in
-  `sessionStorage` (`fuelwell.profile.v1`) until there is a session, then are
-  inserted. They never overwrite a profile that already exists.
+- **Sign-up** step 1 asks who it's for and "Do you have any of these?" (high
+  blood pressure, diabetes, kidney disease or dialysis, or None of these). The
+  kidney stage is an optional follow-up that only appears when kidney disease
+  is ticked. Step 2 asks for the cuisine that feels like home (with quick
+  picks) and the main goal, including "Fuel training and everyday energy" and
+  "Eat healthier day to day". The account step asks for the person's name.
+  The answers wait in `sessionStorage` (`fuelwell.profile.v1`) until there is
+  a session, then are inserted. They never overwrite an existing profile.
 - **Dashboard** (`/dashboard.html`) shows the profile in a "Your profile" card
   with an Edit form, and greets the person by their first name. Accounts made
   before profiles existed see a "Complete your profile" form there instead.

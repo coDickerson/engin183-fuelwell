@@ -99,13 +99,23 @@ function renderNextStep() {
     <a class="link-arrow" href="/meals.html?dish=${encodeURIComponent(tr(dish))}#helper">${icon('sparkle')}${esc(t('recipe_cta_button'))} ${icon('arrow')}</a>`;
 }
 
-const goalKey = { 'familiar-meals': 'goal_familiar', 'understand-options': 'goal_understand', 'prepare-conversation': 'goal_prepare' };
-const cuisineIdeas = ['Cantonese home cooking', 'Chinese', 'Filipino', 'Indian', 'Japanese', 'Korean', 'Mexican', 'Mediterranean', 'Middle Eastern', 'Southern US', 'Vietnamese', 'West African'];
+const goalKey = { 'familiar-meals': 'goal_familiar', 'eat-healthier': 'goal_healthier', 'fuel-performance': 'goal_fuel', 'understand-options': 'goal_understand', 'prepare-conversation': 'goal_prepare' };
+const cuisineIdeas = ['Cantonese', 'Chinese', 'Filipino', 'Indian', 'Japanese', 'Korean', 'Mexican', 'Mediterranean', 'Middle Eastern', 'Soul food', 'Vietnamese', 'West African'];
 let editingProfile = false;
 let profileDraft = null;
 
-const stageLabel = (stage) => (stage === 'unsure' ? t('stage_unsure') : stage ? t('stage', { s: `G${stage.slice(1)}` }) : t('profile_not_set'));
-const conditionsOf = (p) => [p?.highBloodPressure && t('cond_hbp'), p?.diabetes && t('cond_diabetes')].filter(Boolean);
+const stageLabel = (stage) => {
+  if (stage === 'unsure') return t('stage_unsure');
+  if (stage === 'g5d') return t('stage_dialysis');
+  return stage ? t('stage', { s: `G${stage.slice(1)}` }) : t('profile_not_set');
+};
+// "Kidney disease · Stage G3" when a stage is known, otherwise just the condition.
+const kidneyLabel = (p) => (p.stage && p.stage !== 'unsure' ? `${t('cond_kidney')} · ${stageLabel(p.stage)}` : t('cond_kidney'));
+const conditionsOf = (p) => [
+  p?.highBloodPressure && t('cond_hbp'),
+  p?.diabetes && t('cond_diabetes'),
+  p?.kidneyDisease && kidneyLabel(p),
+].filter(Boolean);
 
 function profileView(ctx) {
   const p = ctx.profile;
@@ -116,7 +126,6 @@ function profileView(ctx) {
     <p class="profile-name">${esc(p.fullName)}${role ? ` <span class="chip chip--plain">${esc(role)}</span>` : ''}</p>
     <dl class="profile-facts">
       <div><dt>${esc(t('profile_cuisine'))}</dt><dd>${esc(p.cuisine || t('profile_not_set'))}</dd></div>
-      <div><dt>${esc(t('profile_stage'))}</dt><dd>${esc(stageLabel(p.stage))}</dd></div>
       <div><dt>${esc(t('profile_conditions'))}</dt><dd>${conditions.length ? conditions.map((c) => `<span class="chip chip--clay">${esc(c)}</span>`).join('') : esc(t('cond_none'))}</dd></div>
     </dl>
     ${ctx.quiz?.role === 'caregiver' ? `<p class="muted profile-note">${esc(t('profile_for_caregiver'))}</p>` : ''}
@@ -135,11 +144,13 @@ function profileForm(ctx, d) {
         <input id="pf-cuisine" name="cuisine" type="text" list="pf-cuisines" maxlength="80" autocomplete="off" aria-describedby="pf-cuisine-hint" value="${esc(d.cuisine || '')}" />
         <datalist id="pf-cuisines">${cuisineIdeas.map((c) => `<option value="${esc(c)}"></option>`).join('')}</datalist>
         <p class="hint" id="pf-cuisine-hint">${esc(t('profile_cuisine_hint'))}</p></div>
-      <div class="field"><label for="pf-stage">${esc(t('profile_stage'))}</label>
-        <select id="pf-stage" name="stage"><option value="">${esc(t('profile_not_set'))}</option>${CKD_STAGES.map((s) => `<option value="${s}"${d.stage === s ? ' selected' : ''}>${esc(stageLabel(s))}</option>`).join('')}</select></div>
       <fieldset class="field profile-checks"><legend>${esc(t('profile_conditions'))}</legend>
         ${check('highBloodPressure', t('cond_hbp'), d.highBloodPressure)}
-        ${check('diabetes', t('cond_diabetes'), d.diabetes)}</fieldset>
+        ${check('diabetes', t('cond_diabetes'), d.diabetes)}
+        ${check('kidneyDisease', t('cond_kidney'), d.kidneyDisease)}
+        <p class="hint">${esc(t('profile_conditions_hint'))}</p></fieldset>
+      <div class="field" data-stage-field${d.kidneyDisease ? '' : ' hidden'}><label for="pf-stage">${esc(t('profile_stage'))}</label>
+        <select id="pf-stage" name="stage"><option value="">${esc(t('profile_not_set'))}</option>${CKD_STAGES.map((s) => `<option value="${s}"${d.stage === s ? ' selected' : ''}>${esc(stageLabel(s))}</option>`).join('')}</select></div>
       <div class="profile-actions">
         <button class="button" type="submit">${esc(t('profile_save'))}</button>
         ${ctx.profile ? `<button class="button button--ghost" type="button" data-profile-cancel>${esc(t('profile_cancel'))}</button>` : ''}
@@ -153,6 +164,7 @@ function readProfileForm(form) {
   return {
     fullName: String(data.get('fullName') || ''),
     cuisine: String(data.get('cuisine') || ''),
+    kidneyDisease: data.has('kidneyDisease'),
     stage: String(data.get('stage') || '') || null,
     highBloodPressure: data.has('highBloodPressure'),
     diabetes: data.has('diabetes'),
@@ -177,8 +189,12 @@ function renderProfile(ctx) {
     });
     return;
   }
-  box.innerHTML = profileForm(ctx, profileDraft || { stage: CKD_STAGES.includes(ctx.quiz?.stage) ? ctx.quiz.stage : null });
+  const fromQuiz = CKD_STAGES.includes(ctx.quiz?.stage) ? ctx.quiz.stage : null;
+  box.innerHTML = profileForm(ctx, profileDraft || { kidneyDisease: Boolean(fromQuiz), stage: fromQuiz });
   const form = box.querySelector('[data-profile-form]');
+  // The kidney stage only applies when kidney disease is ticked.
+  const kidneyBox = form.querySelector('[name="kidneyDisease"]');
+  kidneyBox.addEventListener('change', () => { form.querySelector('[data-stage-field]').hidden = !kidneyBox.checked; });
   const errorBox = form.querySelector('[data-profile-error]');
   const showError = (msg) => { errorBox.textContent = msg; errorBox.hidden = !msg; };
   form.querySelector('[data-profile-cancel]')?.addEventListener('click', () => {
@@ -221,7 +237,7 @@ function renderHeadMeta(ctx) {
     return;
   }
   const p = ctx.profile;
-  const bits = p ? [p.stage && stageLabel(p.stage), ...conditionsOf(p)].filter(Boolean) : [];
+  const bits = conditionsOf(p);
   $('[data-patient-meta]').innerHTML = bits.length ? `<span class="chip">${icon('heart')}${esc(bits.join(' · '))}</span>` : '';
 }
 

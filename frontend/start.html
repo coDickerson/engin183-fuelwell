@@ -5,7 +5,7 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#073d30" />
-  <meta name="description" content="Sign in to FuelWell or create an account to plan kidney-friendly meals your family already loves." />
+  <meta name="description" content="Sign in to FuelWell or create an account to plan meals around the food you grew up with, for high blood pressure, diabetes, kidney health or just eating well." />
   <title>Sign in | FuelWell</title>
   <script>
     // The demo has its own page now; keep old shared ?demo=1 links working.
@@ -67,7 +67,7 @@
 
       <div class="role-picker">
         <p class="eyebrow eyebrow--light" id="role-question">First, who is this for?</p>
-        <h1 id="role-heading">Helping your parent eat well for their kidneys.</h1>
+        <h1 id="role-heading">Eat well with the food you grew up with.</h1>
         <div class="role-cards" role="group" aria-labelledby="role-question">
           <button type="button" class="role-card role-card--primary" data-role="caregiver" aria-pressed="false">
             <span class="role-icon" aria-hidden="true">
@@ -87,7 +87,7 @@
             </span>
             <span class="role-text">
               <span class="role-title">For myself</span>
-              <span class="role-sub">My own kidney diet</span>
+              <span class="role-sub">My own health, training or everyday eating</span>
             </span>
             <span class="role-check" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
@@ -179,39 +179,58 @@
                 <label class="choice"><input type="radio" name="role" value="patient" /><span>Myself</span></label>
               </div>
             </fieldset>
-            <fieldset class="choice-set">
-              <legend data-copy-caregiver="Which kidney stage has their care team mentioned?" data-copy-patient="Which kidney stage has your care team mentioned?">Which kidney stage has their care team mentioned?</legend>
-              <div class="choice-grid choice-grid--three">
-                <label class="choice"><input type="radio" name="stage" value="g3" required /><span>G3</span></label>
-                <label class="choice"><input type="radio" name="stage" value="g4" /><span>G4</span></label>
-                <label class="choice"><input type="radio" name="stage" value="unsure" /><span>Not sure</span></label>
-              </div>
-            </fieldset>
-            <fieldset class="choice-set">
-              <legend data-copy-caregiver="Do they also have either of these? (optional)" data-copy-patient="Do you also have either of these? (optional)">Do they also have either of these? (optional)</legend>
+            <fieldset class="choice-set" id="conditions-set">
+              <legend data-copy-caregiver="Do they have any of these?" data-copy-patient="Do you have any of these?">Do they have any of these?</legend>
               <div class="choice-grid">
                 <label class="choice"><input type="checkbox" name="high_blood_pressure" value="1" /><span>High blood pressure</span></label>
                 <label class="choice"><input type="checkbox" name="diabetes" value="1" /><span>Diabetes</span></label>
+                <label class="choice"><input type="checkbox" name="kidney_disease" value="1" aria-controls="stage-set" /><span>Kidney disease or dialysis</span></label>
+                <label class="choice"><input type="checkbox" name="no_conditions" value="1" /><span>None of these</span></label>
+              </div>
+              <p class="hint choice-hint">None of these? FuelWell works for athletes and anyone who wants to eat well, too.</p>
+            </fieldset>
+            <fieldset class="choice-set" id="stage-set" hidden>
+              <legend data-copy-caregiver="Which kidney stage has their care team mentioned? (optional)" data-copy-patient="Which kidney stage has your care team mentioned? (optional)">Which kidney stage has their care team mentioned? (optional)</legend>
+              <div class="choice-grid choice-grid--three">
+                <label class="choice"><input type="radio" name="stage" value="g1" /><span>G1</span></label>
+                <label class="choice"><input type="radio" name="stage" value="g2" /><span>G2</span></label>
+                <label class="choice"><input type="radio" name="stage" value="g3" /><span>G3</span></label>
+                <label class="choice"><input type="radio" name="stage" value="g4" /><span>G4</span></label>
+                <label class="choice"><input type="radio" name="stage" value="g5" /><span>G5</span></label>
+                <label class="choice"><input type="radio" name="stage" value="g5d" /><span>Dialysis</span></label>
               </div>
             </fieldset>
             <button class="button button--block" type="submit">Continue</button>
           </form>
 
           <form id="quiz-step-2" class="quiz-step" data-step="2" novalidate hidden>
-            <h2 id="step-2-heading" class="auth-title" tabindex="-1">What would help most?</h2>
+            <h2 id="step-2-heading" class="auth-title" tabindex="-1">Food that feels like home</h2>
+            <div class="field">
+              <label for="food-traditions" data-copy-caregiver="Which cuisine did they grow up with or cook most? (optional)" data-copy-patient="Which cuisine did you grow up with or cook most? (optional)">Which cuisine did they grow up with or cook most? (optional)</label>
+              <input id="food-traditions" name="traditions" type="text" maxlength="80" autocomplete="off" aria-describedby="traditions-hint" />
+              <p id="traditions-hint" class="hint">FuelWell plans around this food instead of swapping it out. Pick one or type your own.</p>
+              <div class="cuisine-picks" role="group" aria-label="Cuisine ideas">
+                <button type="button" class="cuisine-pick">Cantonese</button>
+                <button type="button" class="cuisine-pick">Mexican</button>
+                <button type="button" class="cuisine-pick">Filipino</button>
+                <button type="button" class="cuisine-pick">Indian</button>
+                <button type="button" class="cuisine-pick">Korean</button>
+                <button type="button" class="cuisine-pick">Vietnamese</button>
+                <button type="button" class="cuisine-pick">Soul food</button>
+                <button type="button" class="cuisine-pick">West African</button>
+                <button type="button" class="cuisine-pick">Middle Eastern</button>
+              </div>
+            </div>
             <fieldset class="choice-set">
-              <legend class="sr-only">What would help most right now?</legend>
+              <legend>What would help most right now?</legend>
               <div class="choice-stack">
-                <label class="choice"><input type="radio" name="goal" value="familiar-meals" required /><span>Plan familiar meals that fit the diet</span></label>
+                <label class="choice"><input type="radio" name="goal" value="familiar-meals" required /><span>Plan familiar meals that fit my health</span></label>
+                <label class="choice"><input type="radio" name="goal" value="eat-healthier" /><span>Eat healthier day to day</span></label>
+                <label class="choice"><input type="radio" name="goal" value="fuel-performance" /><span>Fuel training and everyday energy</span></label>
                 <label class="choice"><input type="radio" name="goal" value="understand-options" /><span>Understand which foods are okay</span></label>
-                <label class="choice"><input type="radio" name="goal" value="prepare-conversation" /><span>Prepare for the next care-team visit</span></label>
+                <label class="choice" data-needs-condition><input type="radio" name="goal" value="prepare-conversation" /><span>Prepare for the next care-team visit</span></label>
               </div>
             </fieldset>
-            <div class="field">
-              <label for="food-traditions" data-copy-caregiver="Cuisine that feels like home to them (optional)" data-copy-patient="Cuisine that feels like home to you (optional)">Cuisine that feels like home to them (optional)</label>
-              <input id="food-traditions" name="traditions" type="text" maxlength="80" autocomplete="off" aria-describedby="traditions-hint" />
-              <p id="traditions-hint" class="hint">For example: meat and potatoes, Cantonese home cooking, Mexican food.</p>
-            </div>
             <div class="step-actions">
               <button class="button button--ghost step-back" type="button" data-back="1">Back</button>
               <button class="button" type="submit">Continue</button>
