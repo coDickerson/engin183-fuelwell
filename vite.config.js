@@ -15,6 +15,7 @@ export default defineConfig({
         mealPlanning: resolve(import.meta.dirname, 'frontend/meal-planning.html'),
         questions: resolve(import.meta.dirname, 'frontend/questions.html'),
         start: resolve(import.meta.dirname, 'frontend/start.html'),
+        demo: resolve(import.meta.dirname, 'frontend/demo.html'),
         dashboard: resolve(import.meta.dirname, 'frontend/dashboard.html'),
         meals: resolve(import.meta.dirname, 'frontend/meals.html'),
         careTeam: resolve(import.meta.dirname, 'frontend/care-team.html'),

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="description" content="Explore the FuelWell demo as Heidi, who helps her mom Fung eat well for her kidneys." />
+  <title>Demo | FuelWell</title>
+  <link rel="stylesheet" href="/styles/styles.css" />
+  <link rel="stylesheet" href="/styles/demo.css" />
+  <script type="module" src="/auth/demo-page.js"></script>
+  <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
+
+<body class="demo-page">
+  <main class="demo-loading">
+    <div class="demo-loading-inner">
+      <span class="brand-mark demo-loading-mark" aria-hidden="true"></span>
+      <div id="demo-opening" role="status" aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span>
+        <p class="demo-loading-title" id="demo-loading-title">Opening FuelWell…</p>
+        <p class="demo-loading-copy" id="demo-loading-copy">Getting Mom’s plan ready.</p>
+      </div>
+      <div class="demo-failed" id="demo-failed" hidden>
+        <h1 class="demo-loading-title" tabindex="-1">The demo didn’t open</h1>
+        <p class="form-error" id="demo-error" role="alert"></p>
+        <button class="button" id="demo-retry" type="button">Try again</button>
+        <p class="demo-loading-copy"><a href="/">Back to FuelWell</a></p>
+      </div>
+    </div>
+  </main>
+  <script>
+    // Match the loading screen to the language picked on the home page.
+    (function () {
+      var copy = {
+        zh: ['正在打開 FuelWell…', '正在準備媽媽的餐單。'],
+        es: ['Abriendo FuelWell…', 'Preparando el plan de mamá.'],
+      };
+      try {
+        var fromUrl = (new URLSearchParams(location.search).get('lang') || '').slice(0, 2);
+        if (fromUrl === 'en' || copy[fromUrl]) localStorage.setItem('fuelwell.lang.v1', fromUrl);
+        var lang = fromUrl || (localStorage.getItem('fuelwell.lang.v1') || '').slice(0, 2);
+        if (copy[lang]) {
+          document.getElementById('demo-loading-title').textContent = copy[lang][0];
+          document.getElementById('demo-loading-copy').textContent = copy[lang][1];
+        }
+      } catch (e) { /* storage unavailable */ }
+    })();
+  </script>
+</body>
+</html>

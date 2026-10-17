@@ -1,8 +1,9 @@
 # FuelWell auth setup
 
 FuelWell uses Supabase Auth (email and password). The sign-in page is
-`/start.html`. It has three ways in: sign in, create an account (a short
-three-step quiz, then email and password), or **Explore the demo as Heidi**.
+`/start.html`. It has two ways in: sign in, or create an account (a short
+three-step quiz, then email and password). The demo is a separate page,
+`/demo` (`/demo.html`), so it never gets mixed up with someone's own account.
 
 ## 1. Environment
 
@@ -24,7 +25,7 @@ disables the forms. It never pretends a sign-in worked.
 | Persona | Heidi, who manages meals for her mom Fung (78, CKD G3b, eGFR 38, Cantonese home cooking). Her sister Joyce has view-only access. |
 
 These credentials are public on purpose. They live in `frontend/auth/demo.js`
-and are shown on the sign-in page so reviewers can type them. The account must
+and are listed in the README so reviewers can type them on the sign-in page. The account must
 hold sample data only.
 
 **How to create it:** Supabase Dashboard → Authentication → Users →
@@ -32,8 +33,8 @@ hold sample data only.
 **Auto Confirm User**, so no confirmation email is needed. Then seed the sample
 data for that user (the dashboard reads it by `user_id`).
 
-The demo button calls `supabase.auth.signInWithPassword` with these
-credentials and opens `/dashboard.html`. The app never writes quiz answers for
+`/demo` (`frontend/auth/demo-page.js`) calls `supabase.auth.signInWithPassword`
+with these credentials and opens `/dashboard.html`. The app never writes quiz answers for
 the demo user (`isDemoUser` guards `saveMatch`), so reviewers can't overwrite
 the curated data. If the account is missing, the page says "The demo account
 isn't available right now" instead of showing a raw error.
@@ -41,13 +42,21 @@ isn't available right now" instead of showing a raw error.
 ### Shareable demo link
 
 ```
-https://<your-vercel-domain>/start.html?demo=1
-http://localhost:5173/start.html?demo=1
+https://<your-vercel-domain>/demo
+http://localhost:5173/demo.html
 ```
 
-This link shows a short "Opening Heidi's demo…" screen, signs in as the demo
-user and goes straight to the dashboard. Use it in the portfolio submission
-and in the site's "Try the demo" buttons.
+This page shows a short "Opening FuelWell…" screen, signs in as the demo
+user and goes straight to the dashboard. Every "Try the demo" button links
+here. Old `/start.html?demo=1` links still work: they forward to `/demo.html`.
+
+### Keeping the demo and real accounts apart
+
+A demo session is remembered by the browser like any other. If someone who
+explored the demo later opens `/start.html`, the page signs that demo session
+out and shows the sign-in form, instead of sending them back into Heidi's
+dashboard. Real accounts that are already signed in still go straight to
+their own dashboard.
 
 ## 3. Turn off "Confirm email"
 

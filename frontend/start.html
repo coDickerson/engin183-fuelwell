@@ -5,11 +5,11 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#073d30" />
-  <meta name="description" content="Sign in to FuelWell, create an account, or explore the demo as Heidi, who helps her mom Fung eat well for her kidneys." />
+  <meta name="description" content="Sign in to FuelWell or create an account to plan kidney-friendly meals your family already loves." />
   <title>Sign in | FuelWell</title>
   <script>
-    // Show the demo loading screen before first paint when the shareable ?demo=1 link is used.
-    if (/[?&]demo=1(&|$)/.test(location.search)) document.documentElement.classList.add('is-demo-loading');
+    // The demo has its own page now; keep old shared ?demo=1 links working.
+    if (/[?&]demo=1(&|$)/.test(location.search)) location.replace('/demo.html' + location.search);
   </script>
   <link rel="stylesheet" href="/styles/styles.css" />
   <link rel="stylesheet" href="/styles/start.css" />
@@ -20,33 +20,6 @@
 
 <body class="start-page">
   <a class="skip-link" href="#main">Skip to sign-in form</a>
-
-  <div id="demo-loading" class="demo-loading" role="status" aria-live="polite">
-    <div class="demo-loading-inner">
-      <span class="brand-mark demo-loading-mark" aria-hidden="true"></span>
-      <span class="spinner" aria-hidden="true"></span>
-      <p class="demo-loading-title" id="demo-loading-title">Opening FuelWell…</p>
-      <p class="demo-loading-copy" id="demo-loading-copy">Getting Mom’s plan ready.</p>
-    </div>
-  </div>
-  <script>
-    // Match the loading screen to the language picked on the home page.
-    (function () {
-      var copy = {
-        zh: ['正在打開 FuelWell…', '正在準備媽媽的餐單。'],
-        es: ['Abriendo FuelWell…', 'Preparando el plan de mamá.'],
-      };
-      try {
-        var fromUrl = (new URLSearchParams(location.search).get('lang') || '').slice(0, 2);
-        if (fromUrl === 'en' || copy[fromUrl]) localStorage.setItem('fuelwell.lang.v1', fromUrl);
-        var lang = fromUrl || (localStorage.getItem('fuelwell.lang.v1') || '').slice(0, 2);
-        if (copy[lang]) {
-          document.getElementById('demo-loading-title').textContent = copy[lang][0];
-          document.getElementById('demo-loading-copy').textContent = copy[lang][1];
-        }
-      } catch (e) { /* storage unavailable */ }
-    })();
-  </script>
 
   <div class="start-shell">
     <!-- Left: a peek into the product, plus the first question -->
@@ -276,15 +249,6 @@
           </div>
         </section>
 
-        <div class="demo-block" id="demo-block">
-          <div class="divider" aria-hidden="true"><span>or</span></div>
-          <button id="demo-button" class="button button--accent button--block demo-button" type="button">
-            Explore the demo as Heidi <span aria-hidden="true">→</span>
-          </button>
-          <p class="demo-creds" id="demo-creds">
-            Or type the demo login: <span class="creds"><code id="demo-email">heidi_demo@fuelwell.app</code> / <code id="demo-password">FuelwellDemo</code></span>
-          </p>
-        </div>
       </div>
 
       <footer class="start-footer">

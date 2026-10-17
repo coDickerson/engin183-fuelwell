@@ -1,16 +1,14 @@
-import { authConfigError, friendlyAuthError, getAuthenticatedUser, supabase } from './supabase.js';
-import { DEMO_EMAIL, DEMO_PASSWORD, isDemoUser } from './demo.js';
+import { authConfigError, friendlyAuthError, getAuthenticatedUser, signOutCurrentSession, supabase } from './supabase.js';
+import { isDemoUser } from './demo.js';
 import { savePendingProfile, stashPendingProfile } from './profile.js';
 
 const byId = (id) => document.getElementById(id);
 const card = byId('auth-card');
 const errorBox = byId('form-error');
 const statusBox = byId('status');
-const demoButton = byId('demo-button');
 const matchKey = 'fuelwell.match.v1';
 const MIN_PASSWORD = 8;
 const DASHBOARD = '/dashboard.html';
-const isDemoLink = new URLSearchParams(location.search).get('demo') === '1';
 
 const views = [...document.querySelectorAll('.auth-view')];
 const steps = [byId('quiz-step-1'), byId('quiz-step-2'), byId('account-step')];
@@ -355,49 +353,13 @@ forms.newPassword.addEventListener('submit', (event) => {
   });
 });
 
-/* ---------- Demo ---------- */
-
-function setDemoLoading(on) {
-  document.documentElement.classList.toggle('is-demo-loading', on);
-}
-
-async function signInAsDemo() {
-  if (!supabase) {
-    setDemoLoading(false);
-    showError('The demo isn’t available because sign-in is not configured on this copy of the site.');
-    return;
-  }
-  demoButton.disabled = true;
-  demoButton.setAttribute('aria-busy', 'true');
-  setDemoLoading(true);
-  clearMessages();
-  try {
-    const { error } = await supabase.auth.signInWithPassword({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
-    if (error) throw error;
-    // Demo sign-in never saves quiz answers: go straight to the dashboard.
-    location.replace(DASHBOARD);
-  } catch (error) {
-    setDemoLoading(false);
-    showMode('signIn');
-    showError(/invalid login credentials/i.test(error?.message || '')
-      ? 'The demo account isn’t available right now. Please try again later.'
-      : friendlyAuthError(error, 'We couldn’t open the demo. Please try again.'));
-    demoButton.disabled = false;
-    demoButton.removeAttribute('aria-busy');
-  }
-}
-
-byId('demo-email').textContent = DEMO_EMAIL;
-byId('demo-password').textContent = DEMO_PASSWORD;
-demoButton.addEventListener('click', signInAsDemo);
-
 /* ---------- Startup ---------- */
 
 if (authConfigError) {
   const notice = byId('config-notice');
   notice.hidden = false;
   notice.querySelector('.config-text').textContent = `${authConfigError} Use a browser-safe publishable key, never a service role key.`;
-  card.querySelectorAll('form button, form input, #demo-button').forEach((control) => { control.disabled = true; });
+  card.querySelectorAll('form button, form input').forEach((control) => { control.disabled = true; });
 }
 
 if (supabase) {
@@ -416,17 +378,19 @@ async function initialize() {
   if (location.hash === '#sign-up') showMode('signUp');
   else showMode('signIn');
 
-  if (isDemoLink) {
-    await signInAsDemo();
-    return;
-  }
   if (!supabase) return;
   // A recovery link carries type=recovery; let the PASSWORD_RECOVERY handler take over.
   if (/type=recovery/.test(location.hash)) return;
   try {
     const user = await getAuthenticatedUser();
-    // Anyone already signed in (including after an email-confirmation redirect) goes to the dashboard.
-    if (user && !recoveryInProgress) await finishAuthentication(user);
+    if (!user || recoveryInProgress) return;
+    // A leftover demo session must never stand in for someone's own sign-in: end it and show the form.
+    if (isDemoUser(user)) {
+      await signOutCurrentSession();
+      return;
+    }
+    // Anyone else already signed in (including after an email-confirmation redirect) goes to the dashboard.
+    await finishAuthentication(user);
   } catch (error) {
     showError(friendlyAuthError(error, 'We could not check your account right now. Please try again.'));
   }
