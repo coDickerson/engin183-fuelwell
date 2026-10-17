@@ -5,6 +5,7 @@ import { dietitianMessages, mealSlots, persona, targets, week } from '../data/fu
 import { upcomingVisits, downloadIcs } from './app-visits.js';
 import { lang, tr } from './i18n.js';
 import { t } from './app-strings.js';
+import { CKD_STAGES, saveProfile } from '../auth/profile.js';
 
 const $ = (sel) => document.querySelector(sel);
 const todayIndex = (new Date().getDay() + 6) % 7;
@@ -98,24 +99,130 @@ function renderNextStep() {
     <a class="link-arrow" href="/meals.html?dish=${encodeURIComponent(tr(dish))}#helper">${icon('sparkle')}${esc(t('recipe_cta_button'))} ${icon('arrow')}</a>`;
 }
 
-const stageKey = { g3: 'G3', g3b: 'G3b', g4: 'G4' };
 const goalKey = { 'familiar-meals': 'goal_familiar', 'understand-options': 'goal_understand', 'prepare-conversation': 'goal_prepare' };
+const cuisineIdeas = ['Cantonese home cooking', 'Chinese', 'Filipino', 'Indian', 'Japanese', 'Korean', 'Mexican', 'Mediterranean', 'Middle Eastern', 'Southern US', 'Vietnamese', 'West African'];
+let editingProfile = false;
+let profileDraft = null;
 
-function renderQuiz(ctx) {
+const stageLabel = (stage) => (stage === 'unsure' ? t('stage_unsure') : stage ? t('stage', { s: `G${stage.slice(1)}` }) : t('profile_not_set'));
+const conditionsOf = (p) => [p?.highBloodPressure && t('cond_hbp'), p?.diabetes && t('cond_diabetes')].filter(Boolean);
+
+function profileView(ctx) {
+  const p = ctx.profile;
+  const role = { caregiver: t('role_caregiver'), patient: t('role_patient') }[ctx.quiz?.role];
+  const conditions = conditionsOf(p);
+  return `<div class="panel-title"><h2 id="profile-title">${esc(t('profile_title'))}</h2>
+      <button class="button button--secondary profile-edit" type="button" data-profile-edit>${esc(t('profile_edit'))}</button></div>
+    <p class="profile-name">${esc(p.fullName)}${role ? ` <span class="chip chip--plain">${esc(role)}</span>` : ''}</p>
+    <dl class="profile-facts">
+      <div><dt>${esc(t('profile_cuisine'))}</dt><dd>${esc(p.cuisine || t('profile_not_set'))}</dd></div>
+      <div><dt>${esc(t('profile_stage'))}</dt><dd>${esc(stageLabel(p.stage))}</dd></div>
+      <div><dt>${esc(t('profile_conditions'))}</dt><dd>${conditions.length ? conditions.map((c) => `<span class="chip chip--clay">${esc(c)}</span>`).join('') : esc(t('cond_none'))}</dd></div>
+    </dl>
+    ${ctx.quiz?.role === 'caregiver' ? `<p class="muted profile-note">${esc(t('profile_for_caregiver'))}</p>` : ''}
+    ${goalKey[ctx.quiz?.goal] ? `<p class="profile-note">${esc(t(goalKey[ctx.quiz.goal]))}</p>` : ''}`;
+}
+
+function profileForm(ctx, d) {
+  const check = (name, label, on) => `<label class="profile-check"><input type="checkbox" name="${name}"${on ? ' checked' : ''} /><span>${esc(label)}</span></label>`;
+  return `<div class="panel-title"><h2 id="profile-title">${esc(ctx.profile ? t('profile_title') : t('profile_add'))}</h2></div>
+    ${ctx.profile ? '' : `<p>${esc(t('profile_empty'))}</p>`}
+    <form class="profile-form" novalidate data-profile-form>
+      <p class="form-error" role="alert" data-profile-error hidden></p>
+      <div class="field"><label for="pf-name">${esc(t('profile_name'))}</label>
+        <input id="pf-name" name="fullName" type="text" autocomplete="name" maxlength="80" required value="${esc(d.fullName || '')}" /></div>
+      <div class="field"><label for="pf-cuisine">${esc(t('profile_cuisine'))}</label>
+        <input id="pf-cuisine" name="cuisine" type="text" list="pf-cuisines" maxlength="80" autocomplete="off" aria-describedby="pf-cuisine-hint" value="${esc(d.cuisine || '')}" />
+        <datalist id="pf-cuisines">${cuisineIdeas.map((c) => `<option value="${esc(c)}"></option>`).join('')}</datalist>
+        <p class="hint" id="pf-cuisine-hint">${esc(t('profile_cuisine_hint'))}</p></div>
+      <div class="field"><label for="pf-stage">${esc(t('profile_stage'))}</label>
+        <select id="pf-stage" name="stage"><option value="">${esc(t('profile_not_set'))}</option>${CKD_STAGES.map((s) => `<option value="${s}"${d.stage === s ? ' selected' : ''}>${esc(stageLabel(s))}</option>`).join('')}</select></div>
+      <fieldset class="field profile-checks"><legend>${esc(t('profile_conditions'))}</legend>
+        ${check('highBloodPressure', t('cond_hbp'), d.highBloodPressure)}
+        ${check('diabetes', t('cond_diabetes'), d.diabetes)}</fieldset>
+      <div class="profile-actions">
+        <button class="button" type="submit">${esc(t('profile_save'))}</button>
+        ${ctx.profile ? `<button class="button button--ghost" type="button" data-profile-cancel>${esc(t('profile_cancel'))}</button>` : ''}
+      </div>
+      <p class="hint profile-privacy">${esc(t('profile_privacy'))}</p>
+    </form>`;
+}
+
+function readProfileForm(form) {
+  const data = new FormData(form);
+  return {
+    fullName: String(data.get('fullName') || ''),
+    cuisine: String(data.get('cuisine') || ''),
+    stage: String(data.get('stage') || '') || null,
+    highBloodPressure: data.has('highBloodPressure'),
+    diabetes: data.has('diabetes'),
+  };
+}
+
+function renderProfile(ctx) {
+  // The demo keeps Heidi's curated persona.
   if (ctx.isDemo) return;
-  const box = $('[data-quiz]');
-  const q = ctx.quiz;
+  const box = $('[data-profile]');
   box.hidden = false;
-  const role = q && { caregiver: t('role_caregiver'), patient: t('role_patient') }[q.role];
-  const stage = q?.stage === 'unsure' ? t('stage_unsure') : stageKey[q?.stage] ? t('stage', { s: stageKey[q.stage] }) : t('stage_not_set');
-  box.innerHTML = role
-    ? `<div class="panel-title"><h2 id="quiz-title">${esc(t('quiz_title'))}</h2></div>
-       <p class="quiz-chips"><span class="chip">${esc(role)}</span><span class="chip chip--clay">${esc(stage)}</span></p>
-       <p>${esc(goalKey[q.goal] ? t(goalKey[q.goal]) : t('quiz_explore'))}</p>
-       <a class="link-arrow" href="/start.html">${esc(t('quiz_update'))} ${icon('arrow')}</a>`
-    : `<div class="panel-title"><h2 id="quiz-title">${esc(t('quiz_personalise'))}</h2></div>
-       <p>${esc(t('quiz_intro'))}</p>
-       <a class="link-arrow" href="/start.html">${esc(t('quiz_take'))} ${icon('arrow')}</a>`;
+  const openForm = box.querySelector('[data-profile-form]');
+  // Re-rendering (for example on a language switch) keeps whatever was typed.
+  if (openForm) profileDraft = readProfileForm(openForm);
+  if (!editingProfile && ctx.profile) {
+    box.innerHTML = profileView(ctx);
+    box.querySelector('[data-profile-edit]').addEventListener('click', () => {
+      editingProfile = true;
+      profileDraft = { ...ctx.profile };
+      renderProfile(ctx);
+      box.querySelector('#pf-name').focus();
+    });
+    return;
+  }
+  box.innerHTML = profileForm(ctx, profileDraft || { stage: CKD_STAGES.includes(ctx.quiz?.stage) ? ctx.quiz.stage : null });
+  const form = box.querySelector('[data-profile-form]');
+  const errorBox = form.querySelector('[data-profile-error]');
+  const showError = (msg) => { errorBox.textContent = msg; errorBox.hidden = !msg; };
+  form.querySelector('[data-profile-cancel]')?.addEventListener('click', () => {
+    editingProfile = false;
+    profileDraft = null;
+    renderProfile(ctx);
+    box.querySelector('[data-profile-edit]')?.focus();
+  });
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const values = readProfileForm(form);
+    if (!values.fullName.trim()) {
+      showError(t('profile_name_error'));
+      form.querySelector('#pf-name').focus();
+      return;
+    }
+    const controls = [...form.querySelectorAll('input, select, button')];
+    controls.forEach((c) => { c.disabled = true; });
+    form.querySelector('[type="submit"]').setAttribute('aria-busy', 'true');
+    showError('');
+    try {
+      ctx.profile = await saveProfile(ctx.user, values);
+      editingProfile = false;
+      profileDraft = null;
+      ctx.repaint();
+      $('[data-profile-edit]')?.focus();
+      toast(t('profile_saved'));
+    } catch {
+      controls.forEach((c) => { c.disabled = false; });
+      form.querySelector('[type="submit"]').removeAttribute('aria-busy');
+      showError(t('profile_save_error'));
+    }
+  });
+}
+
+function renderHeadMeta(ctx) {
+  const { patient } = persona;
+  if (ctx.isDemo) {
+    $('[data-patient-meta]').innerHTML = `<span class="chip">${icon('heart')}${esc(patient.name)} · ${patient.age} · ${esc(t('stage', { s: patient.stage }))} · eGFR ${patient.egfr}</span>`;
+    return;
+  }
+  const p = ctx.profile;
+  const bits = p ? [p.stage && stageLabel(p.stage), ...conditionsOf(p)].filter(Boolean) : [];
+  $('[data-patient-meta]').innerHTML = bits.length ? `<span class="chip">${icon('heart')}${esc(bits.join(' · '))}</span>` : '';
 }
 
 initShell({
@@ -123,16 +230,15 @@ initShell({
   withQuiz: true,
   title: 'title_today',
   render(ctx) {
-    const { patient } = persona;
     $('[data-greeting]').textContent = greeting(ctx.displayName);
     $('[data-today-date]').textContent = t('today_eyebrow', { date: fmt.day(new Date()) });
-    $('[data-patient-meta]').innerHTML = `<span class="chip">${icon('heart')}${esc(patient.name)} · ${patient.age} · ${esc(t('stage', { s: patient.stage }))} · eGFR ${patient.egfr}</span>`;
+    renderHeadMeta(ctx);
     renderKpis();
     renderMeals();
     renderDietitian();
     renderAppointment();
     renderNextStep();
-    renderQuiz(ctx);
+    renderProfile(ctx);
   },
 });
 

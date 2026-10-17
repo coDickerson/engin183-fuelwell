@@ -100,6 +100,23 @@ The quiz keeps a small summary in same-origin `sessionStorage` under
 free-text answer and the email are not stored there. RLS restricts every read
 and write to the signed-in user's ID.
 
+## 7. Profile (name, cuisine, health history)
+
+Each account has one row in `public.profiles`
+(`supabase/migrations/20261016120000_profiles.sql`): `full_name`, `cuisine`,
+`ckd_stage` (`g1`–`g5`, `g3a`/`g3b`, or `unsure`), `has_high_blood_pressure`
+and `has_diabetes`. RLS lets only the signed-in owner read, insert or update
+their row; `anon` has no access.
+
+- **Sign-up** asks for the stage and the two conditions in step 1, the cuisine
+  in step 2 and the person's name on the account step. The answers wait in
+  `sessionStorage` (`fuelwell.profile.v1`) until there is a session, then are
+  inserted. They never overwrite a profile that already exists.
+- **Dashboard** (`/dashboard.html`) shows the profile in a "Your profile" card
+  with an Edit form, and greets the person by their first name. Accounts made
+  before profiles existed see a "Complete your profile" form there instead.
+- The demo account keeps Heidi's curated persona and never shows this card.
+
 Passwords must be at least 8 characters (checked in the browser; set the same
 minimum under Authentication → Sign In / Providers → Email → Minimum password
 length).

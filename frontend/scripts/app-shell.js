@@ -1,6 +1,7 @@
 // Shared app shell for signed-in pages: auth gate, header, navigation, language.
 import { authConfigError, getAuthenticatedUser, signOutCurrentSession, supabase } from '../auth/supabase.js';
 import { isDemoUser } from '../auth/demo.js';
+import { clearPendingProfile, loadProfile } from '../auth/profile.js';
 import { persona } from '../data/fung.js';
 import { esc, icon, toast } from './app-ui.js';
 import { applyDom, langToggleHtml, onLangChange, tr, wireLangToggle } from './i18n.js';
@@ -14,8 +15,9 @@ const NAV = [
 ];
 const brand = () => `<a class="brand" href="/" aria-label="${esc(t('home_label'))}"><span class="brand-mark" aria-hidden="true"></span>FuelWell</a>`;
 
-function displayNameFor(user, demo) {
+function displayNameFor(user, demo, profile) {
   if (demo) return persona.caregiver.name;
+  if (profile?.fullName) return profile.fullName.split(' ')[0];
   const local = (user.email || '').split('@')[0].split(/[._+\-0-9]/).find(Boolean) || 'there';
   return local.charAt(0).toUpperCase() + local.slice(1).toLowerCase();
 }
@@ -146,6 +148,7 @@ function buildShell(frame, page, ctx) {
   };
   render();
   onLangChange(render);
+  return render;
 }
 
 async function signOut(event) {
@@ -154,6 +157,7 @@ async function signOut(event) {
   try {
     await signOutCurrentSession();
     try { sessionStorage.removeItem('fuelwell.match.v1'); } catch { /* storage unavailable */ }
+    clearPendingProfile();
     location.replace('/start.html#sign-in');
   } catch {
     btn.disabled = false;
@@ -184,7 +188,8 @@ export function hydrateIcons(root) {
 /**
  * Gate the page on a signed-in user, then build the shell.
  * `render(ctx)` draws the page and runs again whenever the language changes.
- * Resolves to { user, isDemo, displayName, quiz } or null when redirecting.
+ * Resolves to { user, isDemo, displayName, quiz, profile } or null when redirecting.
+ * After changing ctx (for example a saved profile), call ctx.repaint().
  */
 export async function initShell({ page, withQuiz = false, title, render }) {
   const frame = document.querySelector('[data-app-frame]');
@@ -199,15 +204,24 @@ export async function initShell({ page, withQuiz = false, title, render }) {
   if (!user) { location.replace('/start.html#sign-in'); return null; }
 
   const isDemo = isDemoUser(user);
-  const quiz = withQuiz && !isDemo ? await loadQuiz(user) : null;
-  const ctx = { user, isDemo, displayName: displayNameFor(user, isDemo), quiz };
-  buildShell(frame, page, ctx);
+  const [quiz, profile] = await Promise.all([
+    withQuiz && !isDemo ? loadQuiz(user) : null,
+    // The demo keeps its curated persona; real accounts show their own profile.
+    isDemo ? null : loadProfile(user).catch(() => null),
+  ]);
+  const ctx = { user, isDemo, displayName: displayNameFor(user, isDemo, profile), quiz, profile };
+  const renderShell = buildShell(frame, page, ctx);
 
   const paint = () => {
     if (title) document.title = t(title);
     applyDom(t, document);
     render?.(ctx);
     hydrateIcons(document);
+  };
+  ctx.repaint = () => {
+    ctx.displayName = displayNameFor(user, isDemo, ctx.profile);
+    renderShell();
+    paint();
   };
   paint();
   onLangChange(paint);

@@ -214,6 +214,13 @@
                 <label class="choice"><input type="radio" name="stage" value="unsure" /><span>Not sure</span></label>
               </div>
             </fieldset>
+            <fieldset class="choice-set">
+              <legend data-copy-caregiver="Do they also have either of these? (optional)" data-copy-patient="Do you also have either of these? (optional)">Do they also have either of these? (optional)</legend>
+              <div class="choice-grid">
+                <label class="choice"><input type="checkbox" name="high_blood_pressure" value="1" /><span>High blood pressure</span></label>
+                <label class="choice"><input type="checkbox" name="diabetes" value="1" /><span>Diabetes</span></label>
+              </div>
+            </fieldset>
             <button class="button button--block" type="submit">Continue</button>
           </form>
 
@@ -228,8 +235,8 @@
               </div>
             </fieldset>
             <div class="field">
-              <label for="food-traditions" data-copy-caregiver="Foods that feel like home to them (optional)" data-copy-patient="Foods that feel like home to you (optional)">Foods that feel like home to them (optional)</label>
-              <input id="food-traditions" name="traditions" type="text" maxlength="240" aria-describedby="traditions-hint" />
+              <label for="food-traditions" data-copy-caregiver="Cuisine that feels like home to them (optional)" data-copy-patient="Cuisine that feels like home to you (optional)">Cuisine that feels like home to them (optional)</label>
+              <input id="food-traditions" name="traditions" type="text" maxlength="80" autocomplete="off" aria-describedby="traditions-hint" />
               <p id="traditions-hint" class="hint">For example: meat and potatoes, Cantonese home cooking, Mexican food.</p>
             </div>
             <div class="step-actions">
@@ -245,6 +252,10 @@
               <p class="result-next"><strong>Next step:</strong> <span id="result-next-step"></span></p>
             </div>
             <form id="sign-up-form" novalidate>
+              <div class="field">
+                <label for="sign-up-name">Your name</label>
+                <input id="sign-up-name" name="name" type="text" autocomplete="given-name" maxlength="80" required />
+              </div>
               <div class="field">
                 <label for="sign-up-email">Email</label>
                 <input id="sign-up-email" name="email" type="email" autocomplete="email" inputmode="email" required />

@@ -1,5 +1,6 @@
 import { authConfigError, friendlyAuthError, getAuthenticatedUser, supabase } from './supabase.js';
 import { DEMO_EMAIL, DEMO_PASSWORD, isDemoUser } from './demo.js';
+import { savePendingProfile, stashPendingProfile } from './profile.js';
 
 const byId = (id) => document.getElementById(id);
 const card = byId('auth-card');
@@ -128,6 +129,10 @@ async function saveMatch(user) {
 
 async function finishAuthentication(user) {
   await saveMatch(user);
+  if (!isDemoUser(user)) {
+    // The dashboard asks for anything missing, so a failed profile save shouldn't block sign-in.
+    try { await savePendingProfile(user); } catch { /* finished from the dashboard */ }
+  }
   location.assign(DASHBOARD);
 }
 
@@ -204,7 +209,7 @@ async function withBusy(scope, action) {
 function requireFields(form) {
   const empty = [...form.querySelectorAll('input[required]')].find((input) => !input.value.trim());
   if (empty) {
-    showError(`Please fill in your ${empty.name === 'password' ? 'password' : 'email'}.`);
+    showError(`Please fill in your ${{ password: 'password', name: 'name' }[empty.name] || 'email'}.`);
     empty.focus();
     return false;
   }
@@ -279,6 +284,14 @@ forms.signUp.addEventListener('submit', (event) => {
     byId('sign-up-password').focus();
     return;
   }
+  const quiz = new FormData(byId('quiz-step-1'));
+  const profile = {
+    fullName: byId('sign-up-name').value,
+    cuisine: byId('food-traditions').value,
+    stage: quiz.get('stage'),
+    highBloodPressure: quiz.has('high_blood_pressure'),
+    diabetes: quiz.has('diabetes'),
+  };
   withBusy(form, async () => {
     const { data, error } = await supabase.auth.signUp({
       email: byId('sign-up-email').value.trim(),
@@ -290,6 +303,8 @@ forms.signUp.addEventListener('submit', (event) => {
     if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
       throw new Error('You already have an account. Sign in instead.');
     }
+    // Held in this tab until there is a session (right away, or after the confirmation email).
+    stashPendingProfile(profile);
     form.reset();
     if (!data.session) {
       showStatus('Almost done. Open the confirmation email we sent, then come back and sign in.');
