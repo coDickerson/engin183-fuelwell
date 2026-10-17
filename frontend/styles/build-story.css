@@ -57,7 +57,7 @@
 .bs-list li::marker { color: var(--primary); }
 code, .bs-code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .92em; }
 :not(pre) > code { background: var(--surface-tint); color: var(--primary-strong); padding: 1px 6px; border-radius: 6px; overflow-wrap: anywhere; }
-pre.bs-code { margin: 0; padding: var(--space-4); overflow-x: auto; border-radius: var(--radius); background: var(--ink); color: var(--cream-50); font-size: var(--text-sm); line-height: 1.5; }
+pre.bs-code { margin: 0; padding: var(--space-4); overflow-x: auto; border-radius: var(--radius); background: var(--ink); color: var(--white); font-size: var(--text-sm); line-height: 1.5; }
 
 .bs-callout { border-left: 4px solid var(--accent); padding: var(--space-4) var(--space-5); background: var(--accent-soft); border-radius: 0 var(--radius) var(--radius) 0; margin: var(--space-6) 0; }
 .bs-callout h3 { color: var(--accent); }

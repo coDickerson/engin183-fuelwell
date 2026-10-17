@@ -4,7 +4,7 @@
 */
 
 /* ---------- Frame ---------- */
-.app-page { min-height: 100vh; background: var(--ground); }
+.app-page { min-height: 100vh; background: var(--ground-alt); }
 .icon { width: 22px; height: 22px; flex: none; }
 .app-frame {
   display: grid;
@@ -30,11 +30,11 @@
   display: flex; align-items: center; gap: var(--space-3);
   min-height: 52px; padding: 10px 14px;
   border-radius: var(--radius);
-  color: var(--ink-2); font-weight: 700; text-decoration: none;
+  color: var(--ink-2); font-weight: 600; text-decoration: none;
   transition: background .15s, color .15s;
 }
-.rail-link:hover { background: var(--ground); color: var(--ink); }
-.rail-link[aria-current="page"] { background: var(--primary-soft); color: var(--primary-strong); box-shadow: inset 4px 0 0 var(--primary); }
+.rail-link:hover { background: var(--ground-alt); color: var(--ink); }
+.rail-link[aria-current="page"] { background: var(--green-50); color: var(--primary); font-weight: 700; box-shadow: inset 0 0 0 1px var(--green-100); }
 .rail-foot { margin-top: auto; display: grid; gap: var(--space-3); }
 .rail-card { padding: var(--space-4); border-radius: var(--radius); background: var(--surface-tint); font-size: var(--text-sm); color: var(--ink-2); }
 .rail-card p { margin: 0; }
@@ -117,19 +117,20 @@
 /* ---------- Sub-tabs ---------- */
 .subtabs {
   display: inline-flex; flex-wrap: wrap; gap: 6px;
-  margin-bottom: var(--space-5); padding: 6px;
-  border: 1px solid var(--line); border-radius: var(--radius-pill);
-  background: var(--ground-alt);
+  margin-bottom: var(--space-5); padding: 4px;
+  border: 0; border-radius: 14px;
+  background: var(--gray-100);
 }
 .subtab {
   display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
-  min-height: 52px; padding: 10px 22px;
-  border: 0; border-radius: var(--radius-pill); background: transparent;
+  min-height: 48px; padding: 8px 20px;
+  border: 0; border-radius: 10px; background: transparent;
   color: var(--ink-2); font-size: var(--text-base); font-weight: 700; cursor: pointer;
   transition: background .15s, color .15s;
 }
 .subtab:hover { background: color-mix(in srgb, var(--surface) 70%, transparent); color: var(--ink); }
-.subtab[aria-selected="true"] { background: var(--surface); color: var(--primary-strong); box-shadow: var(--shadow-1), inset 0 0 0 2px var(--primary); }
+.subtab[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgb(29 36 34 / .12); }
+.subtab[aria-selected="true"] .icon { color: var(--primary); }
 .tabpanel { outline: none; }
 .tabpanel:focus-visible { outline: 3px solid var(--focus); outline-offset: 6px; border-radius: var(--radius); }
 
@@ -275,7 +276,7 @@
 .cmp-tag { color: var(--ink-3); font-size: var(--text-sm); }
 .cmp-track { height: 14px; border-radius: var(--radius-pill); background: var(--line); overflow: hidden; }
 .cmp-fill { display: block; height: 100%; min-width: 4px; border-radius: inherit; background: var(--primary); }
-.cmp-fill--before { background: var(--sand-400); }
+.cmp-fill--before { background: var(--gray-400); }
 .cmp-num { font-size: var(--text-sm); font-weight: 700; text-align: right; }
 .result-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 var(--space-5); }
 .ing-list, .tip-list { margin: 0; padding: 0; list-style: none; }

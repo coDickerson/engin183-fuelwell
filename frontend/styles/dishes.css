@@ -25,9 +25,9 @@
 .ds-card--3 { background: var(--mid-soft); border-color: transparent; }
 .ds-card--4 { background: var(--surface-tint); border-color: transparent; }
 
-.ds-footer { padding: var(--space-6) 0; background: var(--ink); color: var(--cream-100); font-size: var(--text-sm); }
+.ds-footer { padding: var(--space-6) 0; background: var(--ink); color: var(--on-dark-2); font-size: var(--text-sm); }
 .ds-footer p { margin: 0; }
-.ds-footer a { color: var(--cream-50); }
+.ds-footer a { color: var(--white); }
 
 @media (max-width: 420px) {
   .ds-header .brand { font-size: 1.2rem; }

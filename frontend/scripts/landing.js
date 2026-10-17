@@ -36,3 +36,16 @@ links?.querySelectorAll('a').forEach((link) => link.addEventListener('click', ()
   toggle?.setAttribute('aria-label', menuLabel());
   links.classList.remove('is-open');
 }));
+
+// Fade sections in as they scroll into view. Content stays visible without JS,
+// and people who ask for reduced motion get no animation.
+if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const targets = document.querySelectorAll('main .section-heading, main .card, main .explore-card, main .closing-inner, main .faq-list, main .experts-card');
+  const io = new IntersectionObserver((entries) => entries.forEach((entry) => {
+    if (!entry.isIntersecting) return;
+    entry.target.classList.add('is-in');
+    io.unobserve(entry.target);
+  }), { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  targets.forEach((el) => { el.classList.add('reveal'); io.observe(el); });
+  document.documentElement.classList.add('js-reveal');
+}

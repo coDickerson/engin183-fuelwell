@@ -77,7 +77,7 @@
 }
 .pv-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) var(--space-4); background: var(--surface); border-bottom: 1px solid var(--line); }
 .pv-dots { display: flex; gap: 6px; }
-.pv-dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--sand-200); }
+.pv-dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--gray-200); }
 .pv-viewing svg { flex: none; }
 .pv-body { padding: var(--space-4) var(--space-5) var(--space-5); }
 .pv-hello { margin: 0; font-family: var(--font-display); font-size: var(--text-xl); font-weight: 600; }
@@ -97,7 +97,7 @@
 
 /* The first question, sitting on top of the preview */
 .role-picker { position: relative; z-index: 2; width: min(100%, 560px); margin-inline: auto; }
-.eyebrow--light { color: var(--teal-100); }
+.eyebrow--light { color: var(--on-dark-2); }
 .role-picker h1 { color: var(--white); font-size: clamp(1.75rem, 1.6vw + 1.1rem, 2.375rem); margin-bottom: var(--space-5); max-width: 22ch; }
 .role-cards { display: grid; grid-template-columns: 1.15fr 1fr; gap: var(--space-3); }
 
