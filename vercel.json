@@ -9,6 +9,18 @@
       "destination": "/demo.html"
     },
     {
+      "source": "/demo-dashboard",
+      "destination": "/demo-dashboard.html"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/dashboard.html"
+    },
+    {
+      "source": "/account",
+      "destination": "/account.html"
+    },
+    {
       "source": "/waitlist",
       "destination": "/waitlist.html"
     },

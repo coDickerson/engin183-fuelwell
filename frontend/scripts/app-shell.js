@@ -8,7 +8,7 @@ import { applyDom, langToggleHtml, onLangChange, tr, wireLangToggle } from './i1
 import { t } from './app-strings.js';
 
 const NAV = [
-  { key: 'today', href: '/dashboard.html', label: 'nav_today', icon: 'today' },
+  { key: 'today', href: '/demo-dashboard.html', label: 'nav_today', icon: 'today' },
   { key: 'meals', href: '/meals.html', label: 'nav_meals', icon: 'meals' },
   { key: 'care', href: '/care-team.html', label: 'nav_care', icon: 'care' },
   { key: 'health', href: '/health.html', label: 'nav_health', icon: 'health' },
@@ -204,6 +204,9 @@ export async function initShell({ page, withQuiz = false, title, render }) {
   if (!user) { location.replace('/start.html#sign-in'); return null; }
 
   const isDemo = isDemoUser(user);
+  // The care dashboard is fictional sample data. Real accounts have their own
+  // starting page so it cannot be mistaken for a personal care record.
+  if (!isDemo) { location.replace('/dashboard.html'); return null; }
   const [quiz, profile] = await Promise.all([
     withQuiz && !isDemo ? loadQuiz(user) : null,
     // The demo keeps its curated persona; real accounts show their own profile.

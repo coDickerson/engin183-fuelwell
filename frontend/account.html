@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#073d30" />
+  <meta name="description" content="Your private FuelWell starting point and optional food preferences." />
+  <title>Your account | FuelWell</title>
+  <link rel="stylesheet" href="/styles/styles.css" />
+  <link rel="stylesheet" href="/styles/account.css" />
+  <script type="module" src="/auth/account.js"></script>
+</head>
+<body class="account-page">
+  <a class="skip-link" href="#main" data-i18n="skip">Skip to your account</a>
+  <header class="account-header">
+    <div class="wrap account-header-inner">
+      <a class="brand" href="/" aria-label="FuelWell home"><span class="brand-mark" aria-hidden="true"></span>FuelWell</a>
+      <div class="account-header-actions">
+        <div data-lang-slot></div>
+        <a class="account-dashboard-link" href="/dashboard.html" data-i18n="dashboard_link">Dashboard</a>
+        <span id="account-email"></span>
+        <button class="button button--secondary" id="sign-out" type="button" data-i18n="sign_out">Sign out</button>
+      </div>
+    </div>
+  </header>
+  <main class="wrap account-main" id="main">
+    <div id="account-loading" role="status" data-i18n="loading">Opening your account…</div>
+    <div id="account-content" hidden>
+      <div id="preview-notice" class="notice preview-notice" hidden data-i18n="preview">Local preview. This sample account shows the layout and interactions. Nothing is saved.</div>
+      <div id="account-error" class="form-error account-message" role="alert" hidden></div>
+      <div id="account-status" class="form-success account-message" role="status" aria-live="polite" hidden></div>
+
+      <section class="account-hero" aria-labelledby="account-title">
+        <div>
+          <p class="eyebrow" data-i18n="eyebrow">Your private starting point</p>
+          <h1 id="account-title">Welcome to FuelWell</h1>
+          <p data-i18n="intro">Your account is ready. Add a little about the food you enjoy whenever you want. Your answers stay in your account and can be changed later.</p>
+          <a class="button" href="#preferences"><span data-i18n="add_preferences">Edit preferences</span> <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="account-summary card" aria-label="Account summary">
+          <p class="account-summary-label" data-i18n="your_account">Your account</p>
+          <strong id="summary-name">Welcome</strong>
+          <span id="summary-email"></span>
+          <span class="chip" id="summary-status">Preferences not added yet</span>
+        </div>
+      </section>
+
+      <section class="account-next" aria-labelledby="next-title">
+        <div class="section-heading">
+          <p class="eyebrow" data-i18n="next_eyebrow">What happens next</p>
+          <h2 id="next-title" data-i18n="next_title">Start at your own pace.</h2>
+        </div>
+        <div class="account-next-grid">
+          <article class="card">
+            <span class="account-step">01</span>
+            <h3 data-i18n="step1_title">Add your preferences</h3>
+            <p data-i18n="step1_body">Save a name, the food you enjoy and a goal for future meal planning. You can skip this for now.</p>
+            <a class="text-link" href="#preferences" data-i18n="step1_link">Go to preferences →</a>
+          </article>
+          <article class="card">
+            <span class="account-step">02</span>
+            <h3 data-i18n="step2_title">See how FuelWell works</h3>
+            <p data-i18n="step2_body">Explore the meal planning idea and sample care experience before deciding what fits you.</p>
+            <a class="text-link" href="/how-it-works.html" data-i18n="step2_link">How it works →</a>
+          </article>
+          <article class="card">
+            <span class="account-step">03</span>
+            <h3 data-i18n="step3_title">Return to your dashboard</h3>
+            <p data-i18n="step3_body">Your saved preferences and starting goal appear on your private dashboard.</p>
+            <a class="text-link" href="/dashboard.html" data-i18n="step3_link">Open dashboard →</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="account-preferences" id="preferences" aria-labelledby="preferences-title">
+        <div class="account-preferences-heading">
+          <p class="eyebrow" data-i18n="optional">Optional</p>
+          <h2 id="preferences-title" data-i18n="preferences_title">Your preferences</h2>
+          <p data-i18n="preferences_intro">These answers belong to your account and do not change the fictional demo. FuelWell is a student project, so please do not enter real medical information.</p>
+        </div>
+        <div class="account-forms">
+          <form class="card" id="profile-form" novalidate>
+            <h3 data-i18n="food_title">About you and your food</h3>
+            <div class="field"><label for="profile-name" data-i18n="name">Name</label><input id="profile-name" name="name" type="text" maxlength="80" autocomplete="name" required /></div>
+            <div class="field"><label for="profile-cuisine"><span data-i18n="cuisine">Food or cuisine you enjoy</span> <span class="optional" data-i18n="optional_paren">(optional)</span></label><input id="profile-cuisine" name="cuisine" type="text" maxlength="80" data-i18n-placeholder="cuisine_example" placeholder="For example, Cantonese or Mexican" /></div>
+            <fieldset class="account-fieldset">
+              <legend><span data-i18n="topics">Topics you are interested in</span> <span class="optional" data-i18n="optional_paren">(optional)</span></legend>
+              <label><input id="condition-pressure" type="checkbox" /> <span data-i18n="pressure">High blood pressure</span></label>
+              <label><input id="condition-diabetes" type="checkbox" /> <span data-i18n="diabetes">Diabetes</span></label>
+              <label><input id="condition-kidney" type="checkbox" /> <span data-i18n="kidney">Kidney health</span></label>
+            </fieldset>
+            <div class="field" id="stage-field" hidden>
+              <label for="profile-stage"><span data-i18n="kidney_stage">Kidney stage</span> <span class="optional" data-i18n="optional_paren">(optional)</span></label>
+              <select id="profile-stage"><option value="" data-i18n="skip_stage">Not sure / skip</option><option value="g1">G1</option><option value="g2">G2</option><option value="g3">G3</option><option value="g3a">G3a</option><option value="g3b">G3b</option><option value="g4">G4</option><option value="g5">G5</option><option value="g5d" data-i18n="dialysis">Dialysis</option></select>
+            </div>
+            <button class="button" type="submit" data-i18n="save_preferences">Save preferences</button>
+          </form>
+          <form class="card" id="goal-form" novalidate>
+            <h3 data-i18n="goal_title">Your starting goal</h3>
+            <p data-i18n="goal_intro">Choose a direction for future meal planning. You can decide later.</p>
+            <div class="field"><label for="goal-role" data-i18n="goal_who">Who are you exploring for?</label><select id="goal-role" required><option value="" data-i18n="choose_one">Choose one</option><option value="patient" data-i18n="myself">Myself</option><option value="caregiver" data-i18n="someone">Someone I care for</option></select></div>
+            <div class="field"><label for="goal-choice" data-i18n="goal_help">What would help most?</label><select id="goal-choice" required><option value="" data-i18n="choose_one">Choose one</option><option value="familiar-meals" data-i18n="goal_familiar">Plan familiar meals</option><option value="eat-healthier" data-i18n="goal_healthier">Eat healthier day to day</option><option value="fuel-performance" data-i18n="goal_energy">Fuel training and everyday energy</option><option value="understand-options" data-i18n="goal_options">Understand food options</option><option value="prepare-conversation" data-i18n="goal_visit">Prepare for a care-team visit</option></select></div>
+            <button class="button button--secondary" type="submit" data-i18n="save_goal">Save starting goal</button>
+          </form>
+        </div>
+      </section>
+      <footer class="account-footer" data-i18n="footer">FuelWell is a student project, not a medical service. The care dashboard contains fictional sample data.</footer>
+    </div>
+  </main>
+</body>
+</html>

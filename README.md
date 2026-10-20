@@ -17,7 +17,7 @@ It is a student product demo. All health data is sample data, and nothing in it 
 | **Care team** | Visits and messages. **AI question triage:** a caregiver's question is classified, checked for red flags, answered with a reviewable draft and matched with open dietitian slots. Shows "How the agent handled this". |
 | **Health & labs** | Sample lab trends (eGFR, potassium, phosphorus) explained in plain language. |
 
-The public site (Home, How it works, For families, Meal planning, Questions) and the account flow (sign in, sign up with a short matching quiz, demo login) are separate pages.
+The public site offers three clear paths: try the fictional demo, join the waitlist, or create an account. Account creation asks only for name, email and password. Real accounts open a private starting page with optional preferences; only the demo account opens the fictional care dashboard.
 
 ### Languages
 
@@ -39,6 +39,9 @@ flowchart LR
 ```
 frontend/                 HTML entry points, styles (styles.css = design system), page scripts
 frontend/auth/            Supabase browser client, sign-in/sign-up, demo account
+frontend/dashboard.html    Real-account dashboard with saved starting point
+frontend/account.html      Real-account preference editor
+frontend/demo-dashboard.html Fictional Heidi and Fung demo dashboard
 frontend/scripts/ai-client.js   typed client for both AI functions (the UI contract)
 frontend/data/            sample meal and patient data
 supabase/functions/       Edge Functions (Deno)
@@ -111,7 +114,9 @@ cp .env.example .env     # VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY (publishab
 npm run dev
 ```
 
-Apply `backend/migrations/001_quiz_results.sql` and `002_ai_usage.sql` to your Supabase project. The AI tabs call the deployed Edge Functions; without them the client shows a friendly "not set up" message. `npm run build` writes `dist/`.
+Apply `backend/migrations/001_quiz_results.sql`, `002_ai_usage.sql`, and the profile migrations in `supabase/migrations/` to your Supabase project. The AI tabs call the deployed Edge Functions; without them the client shows a friendly "not set up" message. `npm run build` writes `dist/`.
+
+For a local visual preview without creating an account, open `http://localhost:5173/dashboard.html?preview=1` or `http://localhost:5173/account.html?preview=1`. Preview mode is available only in Vite development and never reads or writes account data.
 
 ## Deploy
 

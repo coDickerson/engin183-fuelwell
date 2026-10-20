@@ -4,15 +4,22 @@ import { t } from './landing-strings.js';
 const toggle = document.querySelector('.menu-toggle');
 const links = document.querySelector('.nav-links');
 const slot = document.querySelector('[data-lang-slot]');
+const highlight = document.querySelector('[data-hero-highlight]');
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+let highlightIndex = 0;
 
 const menuLabel = () => t(toggle?.getAttribute('aria-expanded') === 'true' ? 'close_menu' : 'open_menu');
 
-// The other public pages share this script but are English-only for now,
-// so only the home page (which has the toggle slot) is translated.
+function highlightWords() { return t('hero_highlights').split('|'); }
+function paintHighlight() {
+  if (highlight) highlight.textContent = highlightWords()[highlightIndex] || highlightWords()[0];
+}
+
 function paint() {
   if (slot) {
-    document.title = t('doc_title');
+    if (highlight) document.title = t('doc_title');
     applyDom(t);
+    paintHighlight();
   }
   toggle?.setAttribute('aria-label', menuLabel());
 }
@@ -23,6 +30,17 @@ if (slot) {
 }
 paint();
 onLangChange(paint);
+
+if (highlight && !reduceMotion.matches) {
+  window.setInterval(() => {
+    highlight.classList.add('is-changing');
+    window.setTimeout(() => {
+      highlightIndex = (highlightIndex + 1) % highlightWords().length;
+      paintHighlight();
+      highlight.classList.remove('is-changing');
+    }, 200);
+  }, 3600);
+}
 
 toggle?.addEventListener('click', () => {
   const open = toggle.getAttribute('aria-expanded') !== 'true';

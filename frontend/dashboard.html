@@ -1,61 +1,72 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
+<head>
+  <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#ffffff" />
-    <meta name="description" content="Today’s nutrition, meals and care-team updates for Mom in FuelWell." />
-    <title>Today | FuelWell</title>
-    <link rel="stylesheet" href="/styles/styles.css" />
-    <link rel="stylesheet" href="/styles/dashboard.css" />
-    <script type="module" src="/scripts/dashboard.js"></script>
-    <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
-    <script defer src="/_vercel/insights/script.js"></script>
-  </head>
-  <body class="app-page is-loading">
-    <a class="skip-link" href="#main-content" data-i18n="skip">Skip to content</a>
-    <div class="app-loader" data-app-loader role="status" aria-live="polite">
-      <span class="sr-only" data-i18n="loading">Loading…</span>
-      <div class="sk-rail" aria-hidden="true"><div class="sk sk-logo"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div></div>
-      <div class="sk-body" aria-hidden="true">
-        <div class="sk sk-top"></div>
-        <div class="sk sk-title"></div>
-        <div class="sk sk-line"></div>
-        <div class="sk-grid"><div class="sk sk-tile"></div><div class="sk sk-tile"></div><div class="sk sk-tile"></div><div class="sk sk-tile"></div></div>
-        <div class="sk-grid sk-grid--2"><div class="sk sk-card"></div><div class="sk sk-card"></div></div>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#073d30" />
+  <meta name="description" content="Your private FuelWell dashboard and saved starting point." />
+  <title>Your dashboard | FuelWell</title>
+  <link rel="stylesheet" href="/styles/styles.css" />
+  <link rel="stylesheet" href="/styles/real-dashboard.css" />
+  <script type="module" src="/scripts/real-dashboard.js"></script>
+</head>
+<body class="real-dashboard-page">
+  <a class="skip-link" href="#main" data-i18n="skip">Skip to dashboard</a>
+  <header class="real-header">
+    <div class="wrap real-header-inner">
+      <a class="brand" href="/" aria-label="FuelWell home"><span class="brand-mark" aria-hidden="true"></span>FuelWell</a>
+      <nav class="real-nav" aria-label="Account navigation">
+        <a href="/dashboard.html" aria-current="page" data-i18n="nav_dashboard">Dashboard</a>
+        <a href="/account.html#preferences" data-i18n="nav_preferences">Preferences</a>
+      </nav>
+      <div class="real-header-actions">
+        <div data-lang-slot></div>
+        <button id="sign-out" class="button button--secondary" type="button" data-i18n="sign_out">Sign out</button>
       </div>
     </div>
-    <div class="app-frame" data-app-frame hidden>
-      <main class="app-main" id="main-content" tabindex="-1">
-        <div class="page-head">
-          <div>
-            <p class="eyebrow" data-today-date></p>
-            <h1 data-greeting></h1>
-            <p class="page-sub" data-i18n="today_sub">Here’s Mom’s day at a glance.</p>
-          </div>
-          <div class="page-head-meta" data-patient-meta></div>
+  </header>
+  <main class="wrap real-main" id="main">
+    <div id="dashboard-loading" role="status" data-i18n="loading">Opening your dashboard…</div>
+    <div id="dashboard-content" hidden>
+      <div id="dashboard-error" class="form-error real-message" role="alert" hidden></div>
+      <div id="preview-notice" class="notice real-message" data-i18n="preview" hidden>Local preview. This sample dashboard does not read or save account data.</div>
+      <section class="real-hero" aria-labelledby="dashboard-title">
+        <div>
+          <p class="eyebrow" data-i18n="eyebrow">Your FuelWell dashboard</p>
+          <h1 id="dashboard-title">Welcome to FuelWell.</h1>
+          <p data-i18n="hero_intro">Your account is ready. Your saved starting point is below, and you can change it whenever you want.</p>
+          <a class="button real-hero-cta" href="/account.html#preferences" data-i18n="edit_preferences">Edit preferences</a>
         </div>
-        <section class="kpi-section" aria-labelledby="kpi-title">
-          <div class="section-head"><h2 id="kpi-title" data-i18n="nutrients_title">Today’s nutrients</h2><p class="muted" data-i18n="nutrients_sub"></p></div>
-          <div class="kpi-grid" data-kpis></div>
-        </section>
-        <div class="today-grid">
-          <div class="today-left">
-          <section class="card today-meals" aria-labelledby="meals-title">
-            <div class="panel-title"><h2 id="meals-title" data-i18n="meals_today">Mom’s meals today</h2><a class="link-arrow" href="/meals.html#week"><span data-i18n="see_week">See the week</span> <span data-icon="arrow"></span></a></div>
-            <ol class="meal-list" data-today-meals></ol>
-          </section>
-          <section class="card card--tint next-step" aria-labelledby="next-title" data-next-step></section>
-          </div>
-          <div class="today-side">
-            <section class="card profile-card" aria-labelledby="profile-title" data-profile hidden></section>
-            <section class="card dietitian-card" aria-labelledby="dt-title" data-dietitian></section>
-            <section class="card appt-card" aria-labelledby="appt-title" data-next-appt></section>
-          </div>
+        <div class="real-identity card" aria-label="Your account">
+          <span class="real-identity-label" data-i18n="account_label">Your account</span>
+          <strong id="dashboard-name"></strong>
+          <span id="dashboard-email"></span>
+          <span class="chip" id="dashboard-status"></span>
         </div>
-      </main>
+      </section>
+      <section class="real-section" aria-labelledby="starting-point-title">
+        <div class="real-section-heading">
+          <div><p class="eyebrow" data-i18n="starting_eyebrow">Saved to your account</p><h2 id="starting-point-title" data-i18n="starting_title">Your starting point</h2></div>
+          <a class="text-link" href="/account.html#preferences" data-i18n="update_link">Update details →</a>
+        </div>
+        <div class="real-facts">
+          <article class="card"><span data-i18n="food_label">Food you enjoy</span><strong id="fact-food"></strong></article>
+          <article class="card"><span data-i18n="topics_label">Topics you selected</span><strong id="fact-topics"></strong></article>
+          <article class="card"><span data-i18n="goal_label">Starting goal</span><strong id="fact-goal"></strong></article>
+        </div>
+        <p class="real-footnote" data-i18n="saved_note">These details come from your account, not the sample demo.</p>
+      </section>
+      <section class="real-section" aria-labelledby="workspace-title">
+        <div class="real-section-heading"><div><p class="eyebrow" data-i18n="workspace_eyebrow">Your workspace</p><h2 id="workspace-title" data-i18n="workspace_title">What you can do now</h2></div></div>
+        <div class="real-actions">
+          <article class="card"><span class="real-action-number">01</span><h3 data-i18n="action1_title">Build your starting point</h3><p data-i18n="action1_body">Save or change your food preferences and goal. They will be here when you return.</p><a class="text-link" href="/account.html#preferences" data-i18n="action1_link">Open preferences →</a></article>
+          <article class="card"><span class="real-action-number">02</span><h3 data-i18n="action2_title">See how FuelWell works</h3><p data-i18n="action2_body">Explore the meal planning idea and learn what the sample experience can show you.</p><a class="text-link" href="/how-it-works.html" data-i18n="action2_link">How it works →</a></article>
+          <article class="card"><span class="real-action-number">03</span><h3 data-i18n="action3_title">What comes next</h3><p data-i18n="action3_body">Personal meal plans and care records are still being built. Your saved starting point will be here when you return.</p></article>
+        </div>
+      </section>
+      <footer class="real-footer" data-i18n="footer">FuelWell is a student project, not a medical service. Please do not enter real medical information.</footer>
     </div>
-    <div class="toast" role="status" aria-live="polite" aria-atomic="true" data-toast></div>
-  </body>
+  </main>
+</body>
 </html>

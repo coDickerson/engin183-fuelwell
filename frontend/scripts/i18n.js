@@ -19,7 +19,11 @@ function readStored() {
   try {
     const fromUrl = new URLSearchParams(location.search).get('lang');
     const url = normalise(fromUrl);
-    if (url) return url;
+    if (url) {
+      localStorage.setItem(KEY, url);
+      localStorage.setItem(WAITLIST_KEY, url === 'zh' ? 'zh-Hant' : url);
+      return url;
+    }
     const saved = normalise(localStorage.getItem(KEY));
     if (saved) return saved;
     // Someone who picked a language on the waitlist page keeps it here too.
@@ -48,7 +52,10 @@ export const intl = () => meta().intl;
 export function setLang(code) {
   if (!CODES.includes(code) || code === current) return;
   current = code;
-  try { localStorage.setItem(KEY, code); } catch { /* storage unavailable */ }
+  try {
+    localStorage.setItem(KEY, code);
+    localStorage.setItem(WAITLIST_KEY, code === 'zh' ? 'zh-Hant' : code);
+  } catch { /* storage unavailable */ }
   document.documentElement.lang = meta().html;
   listeners.forEach((fn) => fn(code));
 }

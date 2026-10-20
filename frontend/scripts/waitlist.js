@@ -2,6 +2,7 @@ import { authConfigError, supabase } from '../auth/supabase.js';
 import { locales, strings } from './waitlist-i18n.js';
 
 const LANG_KEY = 'fuelwell.waitlist.lang.v1';
+const SITE_LANG_KEY = 'fuelwell.lang.v1';
 const byId = (id) => document.getElementById(id);
 const form = byId('waitlist-form');
 const errorBox = byId('form-error');
@@ -37,7 +38,8 @@ function initialLocale() {
     }
     return null;
   };
-  return pick(fromUrl) || pick(storage('get')) || fromBrowser() || 'en';
+  const siteChoice = (() => { try { return localStorage.getItem(SITE_LANG_KEY); } catch { return null; } })();
+  return pick(fromUrl) || pick(siteChoice) || pick(storage('get')) || fromBrowser() || 'en';
 }
 
 let locale = initialLocale();
@@ -50,7 +52,10 @@ function role() {
 
 function applyLocale(next, { save = true } = {}) {
   locale = next;
-  if (save) storage('set', next);
+  if (save) {
+    storage('set', next);
+    try { localStorage.setItem(SITE_LANG_KEY, next.startsWith('zh') ? 'zh' : next); } catch { /* storage unavailable */ }
+  }
   document.documentElement.lang = next;
   document.title = t('title');
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });

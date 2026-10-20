@@ -26,7 +26,7 @@ async function openDemo() {
   try {
     const { error } = await supabase.auth.signInWithPassword({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
     if (error) throw error;
-    location.replace('/dashboard.html');
+    location.replace('/demo-dashboard.html');
   } catch (error) {
     showFailure(/invalid login credentials/i.test(error?.message || '')
       ? 'The demo account isn’t available right now. Please try again later.'
