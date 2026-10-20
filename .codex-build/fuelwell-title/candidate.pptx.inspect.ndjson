@@ -1,0 +1,14 @@
+{"kind":"deck","id":"pr/991eyp","name":"Deck"}
+{"kind":"layout","id":"ly/b29gjydk","editable":false,"name":"Master","type":"master"}
+{"kind":"layout","id":"ly/ruhs769g","editable":false,"name":"Title Slide","type":"title","placeholders":[{"name":"title","type":"title"},{"name":"subtitle","type":"subtitle"}]}
+{"kind":"layout","id":"ly/m94ryl8f","editable":false,"name":"Section Header","type":"sectionHeader","placeholders":[{"name":"title","type":"title"}]}
+{"kind":"layout","id":"ly/vm9kzedc","editable":false,"name":"Title and Body","type":"tx","placeholders":[{"name":"title","type":"title"},{"name":"body","type":"body"}]}
+{"kind":"layout","id":"ly/ry1cj61k","editable":false,"name":"Title and Two Column","type":"twoColTx","placeholders":[{"name":"title","type":"title"},{"name":"Left column","type":"body"},{"name":"Right column","type":"body"}]}
+{"kind":"layout","id":"ly/uh07utcr","editable":false,"name":"Title and One Column","type":"tx","placeholders":[{"name":"title","type":"title"},{"name":"body","type":"body"}]}
+{"kind":"layout","id":"ly/pw7618f6","editable":false,"name":"Blank","type":"blank"}
+{"kind":"slide","id":"sl/ifqter","slideIndex":0,"layout":{"id":"ly/pw7618f6","name":"Blank"},"title":"FuelWell","textShapes":3,"backgroundColor":"rgba(255,255,255,1)"}
+{"kind":"textbox","id":"sh/m18bm1wv","slideIndex":0,"position":{"left":355,"top":487,"width":890,"height":116},"name":"FuelWell wordmark","text":"FuelWell","geometry":"rect","lineWidth":0,"style":{"fontSize":112,"typeface":"Helvetica Neue","color":"#1B1918","bold":true,"alignment":"center"}}
+{"kind":"textbox","id":"sh/n2hsf6xg","slideIndex":0,"position":{"left":320,"top":626,"width":960,"height":56},"name":"Presentation subtitle","text":"AI Product Dev · Launch plans","geometry":"rect","lineWidth":0,"style":{"fontSize":32,"typeface":"Helvetica Neue","color":"#6E6A66","alignment":"center"}}
+{"kind":"textbox","id":"sh/w7atsbed","slideIndex":0,"position":{"left":320,"top":760,"width":960,"height":46},"name":"Team names","text":"Cole · Eileen · Megan · Peyton","geometry":"rect","lineWidth":0,"style":{"fontSize":27,"typeface":"Helvetica Neue","color":"#4E4A47","alignment":"center"}}
+{"kind":"image","id":"im/s721wfip","slideIndex":0,"position":{"left":610,"top":90,"width":380,"height":380},"fit":"contain","name":"","alt":"FuelWell kidney bean mark"}
+{"kind":"notes","id":"nt/ifqter","slideIndex":0,"text":""}

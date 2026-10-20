@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">FuelWell dialysis-focused logo ideas</title>
+  <desc id="desc">Three concept marks: a bean and kidney shape, an F/W ligature, and a continuous care loop.</desc>
+  <rect width="1600" height="900" fill="#fbf7f1"/>
+  <text x="80" y="107" fill="#17323a" font-family="Fraunces, Georgia, serif" font-size="60" font-weight="600">FuelWell / new logo directions</text>
+  <text x="80" y="155" fill="#3c5157" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="26">Exploring kidney care, treatment continuity, and an ownable F/W</text>
+
+  <g transform="translate(80 218)">
+    <rect width="448" height="570" rx="28" fill="#ffffff" stroke="#e6ded3" stroke-width="2"/>
+    <g transform="translate(108 47) scale(2.4)">
+      <path d="M66 10c13 0 22 10 22 23 0 14-10 19-16 27-7 9-7 22-21 27-13 5-29-3-37-18-9-16-8-34 2-45 7-8 16-11 26-9 9 2 14-5 24-5Z" fill="#1f6f6b"/>
+      <path d="M65 19c-9 6-15 12-13 19 2 8 11 11 3 19-7 7-14 10-11 20" fill="none" stroke="#fbf7f1" stroke-width="7" stroke-linecap="round"/>
+      <path d="M58 20c7-3 16 0 19 8" fill="none" stroke="#c8643b" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    <text x="36" y="349" fill="#17323a" font-family="Fraunces, Georgia, serif" font-size="43" font-weight="600">Bean / kidney</text>
+    <text x="36" y="403" fill="#3c5157" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="25">Familiar organic form.</text>
+    <text x="36" y="440" fill="#3c5157" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="25">Coffee bean and kidney</text>
+    <text x="36" y="477" fill="#3c5157" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="25">association in one mark.</text>
+    <text x="36" y="533" fill="#a24a28" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="22" font-weight="700">01 / organic</text>
+  </g>
+
+  <g transform="translate(576 218)">
+    <rect width="448" height="570" rx="28" fill="#ffffff" stroke="#e6ded3" stroke-width="2"/>
+    <g transform="translate(108 47) scale(2.4)">
+      <rect x="5" y="5" width="86" height="86" rx="22" fill="#eef5f2"/>
+      <path d="M24 73V23h46M24 45h34" fill="none" stroke="#123f3d" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M24 58 37 73 50 57 63 73 78 54" fill="none" stroke="#1f6f6b" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="78" cy="54" r="5.5" fill="#c8643b"/>
+    </g>
+    <text x="36" y="349" fill="#17323a" font-family="Fraunces, Georgia, serif" font-size="43" font-weight="600">F/W ligature</text>
+    <text x="36" y="403" fill="#3c5157" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="25">One shared F and W.</text>
+    <text x="36" y="440" fill="#3c5157" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="25">A recognizable mark for</text>
+    <text x="36" y="477" fill="#3c5157" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="25">FuelWell itself.</text>
+    <text x="36" y="533" fill="#a24a28" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="22" font-weight="700">02 / monogram</text>
+  </g>
+
+  <g transform="translate(1072 218)">
+    <rect width="448" height="570" rx="28" fill="#ffffff" stroke="#e6ded3" stroke-width="2"/>
+    <g transform="translate(108 47) scale(2.4)">
+      <path d="M27 26c12-13 32-15 47-3 16 13 18 36 5 51-13 16-36 18-51 5-10-8-14-19-13-29" fill="none" stroke="#1f6f6b" stroke-width="9" stroke-linecap="round"/>
+      <path d="M25 50h13l8-14 11 24 8-11h9" fill="none" stroke="#a24a28" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="21" cy="39" r="6" fill="#1f6f6b"/>
+    </g>
+    <text x="36" y="349" fill="#17323a" font-family="Fraunces, Georgia, serif" font-size="43" font-weight="600">Care loop</text>
+    <text x="36" y="403" fill="#3c5157" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="25">A continuous path through</text>
+    <text x="36" y="440" fill="#3c5157" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="25">treatment, meals, and the</text>
+    <text x="36" y="477" fill="#3c5157" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="25">care team.</text>
+    <text x="36" y="533" fill="#a24a28" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="22" font-weight="700">03 / continuity</text>
+  </g>
+  <text x="80" y="848" fill="#5a6a6e" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="21">Exploratory sketches · A fourth F/W bean hybrid is included as a separate ready-to-try wordmark</text>
+</svg>

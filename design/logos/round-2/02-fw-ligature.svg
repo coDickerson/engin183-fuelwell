@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title">
+  <title id="title">FuelWell F and W ligature concept</title>
+  <rect x="5" y="5" width="86" height="86" rx="22" fill="#eef5f2"/>
+  <path d="M24 73V23h46M24 45h34" fill="none" stroke="#123f3d" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M24 58 37 73 50 57 63 73 78 54" fill="none" stroke="#1f6f6b" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="78" cy="54" r="5.5" fill="#c8643b"/>
+</svg>

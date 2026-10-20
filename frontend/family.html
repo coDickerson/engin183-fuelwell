@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#fbf7f1" />
+  <meta name="description" content="Manage the families and shared information you can access in FuelWell." />
+  <title>Your families | FuelWell</title>
+  <link rel="stylesheet" href="/styles/styles.css" />
+  <link rel="stylesheet" href="/styles/family.css" />
+  <script type="module" src="/auth/family.js"></script>
+</head>
+<body class="family-page">
+  <a class="skip-link" href="#main">Skip to your families</a>
+  <header class="family-header">
+    <div class="family-wrap family-header-inner">
+      <a class="brand" href="/" aria-label="FuelWell home"><span class="brand-mark" aria-hidden="true"></span>FuelWell</a>
+      <div class="family-account"><span id="account-email"></span><button class="button button--secondary" id="sign-out" type="button">Sign out</button></div>
+    </div>
+  </header>
+  <main class="family-wrap" id="main" tabindex="-1">
+    <div class="family-intro">
+      <p class="eyebrow">Your workspace</p>
+      <h1>Your families</h1>
+      <p>Choose a family to see its shared notes, or make a space for the people caring together. Family owners decide who can read or add notes.</p>
+    </div>
+    <div id="family-status" class="form-success" role="status" aria-live="polite" hidden></div>
+    <div id="family-error" class="form-error" role="alert" aria-live="assertive" hidden></div>
+    <div id="family-loading" role="status">Loading your families…</div>
+
+    <div id="family-content" hidden>
+      <section class="family-panel starting-point" id="starting-point" aria-labelledby="starting-title">
+        <div><p class="eyebrow">Private to your account</p><h2 id="starting-title">Your starting point</h2><p>These optional answers belong only to your account. Shared notes below belong to the selected family.</p><dl id="quiz-summary" class="quiz-summary" hidden></dl></div>
+        <details id="quiz-details" class="quiz-details">
+          <summary id="quiz-details-label">Add your starting point (optional)</summary>
+          <form id="quiz-form">
+            <div class="field"><label for="quiz-role">Who is this for?</label><select id="quiz-role" required><option value="">Choose one</option><option value="caregiver">Someone I care for</option><option value="patient">Myself</option></select></div>
+            <div class="field"><label for="quiz-stage">Kidney stage, if known</label><select id="quiz-stage" required><option value="">Choose one</option><option value="g3">G3</option><option value="g3b">G3b</option><option value="g4">G4</option><option value="unsure">Not sure yet</option></select></div>
+            <div class="field"><label for="quiz-goal">What would help most?</label><select id="quiz-goal" required><option value="">Choose one</option><option value="familiar-meals">Plan familiar meals</option><option value="understand-options">Understand food options</option><option value="prepare-conversation">Prepare for a care visit</option></select></div>
+            <label class="quiz-checkbox"><input id="quiz-traditions" type="checkbox" /> Meals from my food traditions matter to me</label>
+            <button class="button" type="submit">Save starting point</button>
+          </form>
+        </details>
+      </section>
+      <div class="family-layout">
+        <div class="family-sidebar">
+          <section class="family-panel" aria-labelledby="list-title">
+            <h2 id="list-title">Families you belong to</h2>
+            <div id="family-list" class="family-list"></div>
+            <p id="family-empty" class="muted" hidden>You are not in a family yet. Create one or enter an invitation link below.</p>
+          </section>
+          <section class="family-panel" aria-labelledby="create-title">
+            <h2 id="create-title">Create a family</h2>
+            <form id="create-family-form">
+              <div class="field"><label for="family-name">Family name</label><input id="family-name" name="name" type="text" maxlength="80" autocomplete="off" placeholder="For example, Mom's care circle" required /></div>
+              <button class="button" type="submit">Create family</button>
+            </form>
+          </section>
+          <section class="family-panel" aria-labelledby="join-title">
+            <h2 id="join-title">Join a family</h2>
+            <p>Use an invitation link from the family owner. The invitation must match the email on your account.</p>
+            <form id="join-family-form">
+              <div class="field"><label for="invite-token">Invitation code</label><input id="invite-token" name="token" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" required /></div>
+              <button class="button button--secondary" type="submit">Join family</button>
+            </form>
+          </section>
+        </div>
+
+        <section class="family-panel family-detail" id="family-detail" aria-labelledby="detail-title" hidden>
+          <div class="family-detail-head"><div><p class="eyebrow">Shared space</p><h2 id="detail-title"></h2><p id="my-role" class="muted"></p></div></div>
+          <section class="family-subsection" aria-labelledby="members-title">
+            <h3 id="members-title">Family members</h3>
+            <ul id="member-list" class="member-list"></ul>
+          </section>
+          <section class="family-subsection" id="invite-section" aria-labelledby="invite-title" hidden>
+            <h3 id="invite-title">Invite someone</h3>
+            <p>Only the family owner can invite people. Share the link privately with the email address you enter.</p>
+            <form id="invite-family-form">
+              <div class="field"><label for="member-email">Their account email</label><input id="member-email" type="email" autocomplete="off" inputmode="email" required /></div>
+              <div class="field"><label for="member-role">Their role</label><select id="member-role"><option value="caregiver">Caregiver</option><option value="patient">Patient</option><option value="viewer">Viewer</option></select></div>
+              <div class="field"><label for="invite-notes-access">Shared notes access</label><select id="invite-notes-access"><option value="write">Read and add notes</option><option value="read">Read notes only</option><option value="none">No notes access</option></select><p class="hint">You can change this after they join.</p></div>
+              <button class="button" type="submit">Create invitation</button>
+            </form>
+            <div id="invite-result" class="invite-result" hidden><label for="invite-link">Private invitation link</label><div class="invite-copy"><input id="invite-link" type="text" readonly /><button class="button button--secondary" id="copy-invite" type="button">Copy</button></div><p class="hint">The link can be used only by the invited email. Send it through a private channel.</p></div>
+            <div id="pending-invites" hidden><h4>Pending invitations</h4><ul id="invite-list" class="member-list"></ul></div>
+          </section>
+          <section class="family-subsection" aria-labelledby="notes-title">
+            <h3 id="notes-title">Shared notes</h3>
+            <p class="muted">The family owner chooses which members can read or add notes. Notes are shared across this family, not assigned to one patient.</p>
+            <div id="note-list" class="note-list"></div>
+            <form id="note-form" hidden><div class="field"><label for="note-text">New note</label><textarea id="note-text" rows="3" maxlength="1000" required></textarea></div><button class="button" type="submit">Save note</button></form>
+          </section>
+        </section>
+        <section class="family-panel family-placeholder" id="family-placeholder" aria-label="Select a family"><h2>Choose a family</h2><p>Select a family to see who shares its space and the notes you can access.</p></section>
+      </div>
+    </div>
+    <footer class="family-footer">FuelWell is a student project, not a medical service. Please do not enter real health information.</footer>
+  </main>
+</body>
+</html>

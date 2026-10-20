@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title">
+  <title id="title">FuelWell dialysis care loop concept</title>
+  <path d="M27 26c12-13 32-15 47-3 16 13 18 36 5 51-13 16-36 18-51 5-10-8-14-19-13-29" fill="none" stroke="#1f6f6b" stroke-width="9" stroke-linecap="round"/>
+  <path d="M25 50h13l8-14 11 24 8-11h9" fill="none" stroke="#a24a28" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="21" cy="39" r="6" fill="#1f6f6b"/>
+</svg>
