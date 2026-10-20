@@ -5,11 +5,11 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#ffffff" />
-  <meta name="description" content="Join the FuelWell waitlist: kidney-friendly meal planning built around the food your family already eats, plus health records and renal dietitian support. For kidney disease stages G3 and G4. English, 中文, Español." />
-  <meta property="og:title" content="FuelWell waitlist: kidney-friendly meals that still taste like home" />
-  <meta property="og:description" content="Meal planning, health records and dietitian support for kidney disease stages G3 and G4. Free to join, about 30 seconds. English · 中文 · Español." />
+  <meta name="description" content="Join the FuelWell waitlist: meal planning for high blood pressure, diabetes and kidney disease, built around the food your family already eats, plus health records and dietitian support. English, 中文, Español." />
+  <meta property="og:title" content="FuelWell waitlist: healthy meals that still taste like home" />
+  <meta property="og:description" content="Meal planning, health records and dietitian support for high blood pressure, diabetes and kidney disease. Free to join, about 30 seconds. English · 中文 · Español." />
   <meta property="og:image" content="/images/steamed-fish.jpg" />
-  <title>Join the FuelWell waitlist | Kidney-friendly meals that taste like home</title>
+  <title>Join the FuelWell waitlist | Healthy meals that taste like home</title>
   <link rel="stylesheet" href="/styles/styles.css" />
   <link rel="stylesheet" href="/styles/waitlist.css" />
   <script type="module" src="/scripts/waitlist.js"></script>
@@ -40,7 +40,7 @@
     <div class="wrap wl-grid" id="signup-view">
       <section class="wl-intro" aria-labelledby="wl-heading">
         <p class="pill"><span class="pill-dot" aria-hidden="true"></span><span data-i18n="eyebrow">Early access · Free to join</span></p>
-        <h1 id="wl-heading" data-i18n-html="hero_html">Kidney-friendly meals that <em>still taste like home.</em></h1>
+        <h1 id="wl-heading" data-i18n-html="hero_html">Healthy meals that <em>still taste like home.</em></h1>
         <p class="wl-lead" data-i18n="lead"></p>
       </section>
 
@@ -55,7 +55,7 @@
               <label class="role-tile">
                 <input type="radio" name="role" value="patient" required />
                 <span class="role-tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
-                <span class="role-tile-text"><strong data-i18n="role_patient">I’m the patient</strong><span data-i18n="role_patient_sub"></span></span>
+                <span class="role-tile-text"><strong data-i18n="role_patient">It’s for me</strong><span data-i18n="role_patient_sub"></span></span>
               </label>
               <label class="role-tile">
                 <input type="radio" name="role" value="child" />
@@ -90,6 +90,25 @@
             <h3 class="wl-optional-title" data-i18n="optional_title">Optional: help us build the right thing</h3>
             <p class="hint" data-i18n="optional_sub"></p>
 
+            <fieldset class="wl-fieldset wl-conditions">
+              <legend class="wl-legend"><span data-i18n-role="conditions_legend">Do they live with any of these?</span> <span class="wl-legend-hint" data-i18n="interests_hint"></span></legend>
+              <label class="check"><input type="checkbox" name="conditions" value="high_blood_pressure" /><span data-i18n="cond_hbp"></span></label>
+              <label class="check"><input type="checkbox" name="conditions" value="diabetes" /><span data-i18n="cond_diabetes"></span></label>
+              <label class="check"><input type="checkbox" name="conditions" value="kidney_disease" /><span data-i18n="cond_kidney"></span></label>
+            </fieldset>
+
+            <div class="field" id="stage-field" hidden>
+              <label for="kidney-stage" data-i18n-role="stage_legend">Their kidney stage</label>
+              <select id="kidney-stage" name="kidney_stage">
+                <option value="" data-i18n="select_placeholder"></option>
+                <option value="stage_2" data-i18n="stage_earlier"></option>
+                <option value="stage_3" data-i18n="stage_3"></option>
+                <option value="stage_4" data-i18n="stage_4"></option>
+                <option value="dialysis" data-i18n="stage_dialysis"></option>
+                <option value="not_sure" data-i18n="stage_not_sure"></option>
+              </select>
+            </div>
+
             <fieldset class="wl-fieldset">
               <legend class="wl-legend"><span data-i18n="interests_legend">What would help most?</span> <span class="wl-legend-hint" data-i18n="interests_hint"></span></legend>
               <div class="need-tiles">
@@ -100,36 +119,17 @@
               </div>
             </fieldset>
 
-            <div class="wl-row">
-              <div class="field">
-                <label for="kidney-stage" data-i18n-role="stage_legend">Their kidney stage</label>
-                <select id="kidney-stage" name="kidney_stage">
-                  <option value="" data-i18n="select_placeholder"></option>
-                <option value="stage_3" data-i18n="stage_3"></option>
-                <option value="stage_4" data-i18n="stage_4"></option>
-                <option value="stage_2" data-i18n="stage_earlier"></option>
-                <option value="dialysis" data-i18n="stage_dialysis"></option>
-                <option value="not_sure" data-i18n="stage_not_sure"></option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="heard-from" data-i18n="heard_legend">How did you hear about us?</label>
-                <select id="heard-from" name="heard_from">
-                  <option value="" data-i18n="select_placeholder"></option>
+            <div class="field">
+              <label for="heard-from" data-i18n="heard_legend">How did you hear about us?</label>
+              <select id="heard-from" name="heard_from">
+                <option value="" data-i18n="select_placeholder"></option>
                 <option value="reddit" data-i18n="h_reddit"></option>
                 <option value="facebook" data-i18n="h_facebook"></option>
                 <option value="friend" data-i18n="h_friend"></option>
                 <option value="clinic" data-i18n="h_clinic"></option>
                 <option value="other" data-i18n="h_other"></option>
-                </select>
-              </div>
+              </select>
             </div>
-
-            <fieldset class="wl-fieldset wl-conditions">
-              <legend class="wl-legend" data-i18n="conditions_legend">Also living with</legend>
-              <label class="check"><input type="checkbox" name="conditions" value="diabetes" /><span data-i18n="cond_diabetes"></span></label>
-              <label class="check"><input type="checkbox" name="conditions" value="high_blood_pressure" /><span data-i18n="cond_hbp"></span></label>
-            </fieldset>
           </div>
 
           <!-- Honeypot: hidden from people, often filled by bots. -->

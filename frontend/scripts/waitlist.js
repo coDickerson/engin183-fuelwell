@@ -91,6 +91,15 @@ form.querySelectorAll('input[name="role"]').forEach((input) => input.addEventLis
   if (errorBox.dataset.key === 'err_role') showError(null);
 }));
 
+// The kidney stage question only appears when kidney disease is ticked.
+const kidneyBox = form.querySelector('input[name="conditions"][value="kidney_disease"]');
+function syncStage() {
+  byId('stage-field').hidden = !kidneyBox.checked;
+  if (!kidneyBox.checked) byId('kidney-stage').value = '';
+}
+kidneyBox.addEventListener('change', syncStage);
+syncStage();
+
 applyLocale(locale, { save: false });
 
 /* ---------- Submit ---------- */
