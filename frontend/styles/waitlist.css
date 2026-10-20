@@ -4,15 +4,9 @@
   right and stays in view while the intro and culture column scrolls.
 */
 
-/* Header with language switch */
+/* Header */
 .wl-header { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--ground) 94%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
 .wl-header-inner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-height: 72px; flex-wrap: wrap; padding-block: var(--space-2); }
-.lang-switch { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; justify-content: flex-end; }
-.lang-group, .script-group { display: inline-flex; padding: 3px; border: 2px solid var(--line-strong); border-radius: var(--radius-pill); background: var(--surface); }
-.lang-option, .script-option { min-height: 40px; padding: 4px 14px; border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--ink-2); font-weight: 700; font-size: var(--text-sm); cursor: pointer; }
-.lang-option:hover, .script-option:hover { background: var(--primary-soft); color: var(--primary-strong); }
-.lang-option[aria-pressed="true"], .script-option[aria-pressed="true"] { background: var(--primary); color: var(--white); }
-.script-option { min-height: 36px; padding-inline: 12px; }
 
 /* Layout */
 .wl-main { padding: var(--space-6) 0 var(--space-8); }
@@ -30,7 +24,6 @@
 .wl-intro h1 { max-width: 16ch; font-size: clamp(2.125rem, 2.6vw + 1.2rem, 3.25rem); }
 .wl-lead { font-size: var(--text-lg); color: var(--ink-2); }
 .wl-intro h1, .wl-thanks-card h1, .wl-share h2 { text-wrap: balance; }
-:lang(zh) .wl-intro h1 { max-width: 12em; }
 
 /* Form card */
 .wl-form-card { padding: clamp(20px, 3vw, 32px); box-shadow: var(--shadow-2); }
@@ -123,8 +116,7 @@
 
 @media (max-width: 480px) {
   .wl-header .brand { font-size: 1.2rem; }
-  .lang-option { padding-inline: 10px; }
   .wl-photos { gap: var(--space-2); }
 }
-/* On phones the two-row header would cover too much of the form; let it scroll away. */
+/* Keep the form visible on small screens. */
 @media (max-width: 640px) { .wl-header { position: static; } }

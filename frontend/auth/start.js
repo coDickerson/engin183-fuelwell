@@ -6,13 +6,12 @@ const card = byId('auth-card');
 const errorBox = byId('form-error');
 const statusBox = byId('status');
 const demoButton = byId('demo-button');
-const matchKey = 'fuelwell.match.v1';
 const MIN_PASSWORD = 8;
 const DASHBOARD = '/dashboard.html';
+const FAMILY = '/family.html';
 const isDemoLink = new URLSearchParams(location.search).get('demo') === '1';
 
 const views = [...document.querySelectorAll('.auth-view')];
-const steps = [byId('quiz-step-1'), byId('quiz-step-2'), byId('account-step')];
 const forms = {
   signIn: byId('sign-in-form'),
   signUp: byId('sign-up-form'),
@@ -20,7 +19,6 @@ const forms = {
   newPassword: byId('new-password-form'),
 };
 let recoveryInProgress = false;
-let chosenRole = null;
 
 /* ---------- Messages ---------- */
 
@@ -41,148 +39,22 @@ function clearMessages() {
   showStatus('');
 }
 
-/* ---------- Views and steps ---------- */
+/* ---------- Views ---------- */
 
 function showMode(mode, { focus = false } = {}) {
   card.dataset.mode = mode;
   for (const view of views) view.hidden = view.dataset.view !== mode;
   byId('show-sign-in').setAttribute('aria-pressed', String(mode === 'signIn'));
   byId('show-sign-up').setAttribute('aria-pressed', String(mode === 'signUp'));
-  if (mode === 'signUp' && steps.every((step) => step.hidden)) showStep(1, { focus: false });
   if (focus) {
-    const heading = mode === 'signUp'
-      ? steps.find((step) => !step.hidden)?.querySelector('h2')
-      : views.find((view) => view.dataset.view === mode)?.querySelector('h2');
+    const heading = views.find((view) => view.dataset.view === mode)?.querySelector('h2');
     heading?.focus();
   }
 }
 
-function showStep(number, { focus = true } = {}) {
-  steps.forEach((step, index) => { step.hidden = index + 1 !== number; });
-  byId('step-count').textContent = `Step ${number} of ${steps.length}`;
-  document.querySelectorAll('.step-track i').forEach((dot) => {
-    dot.classList.toggle('is-done', Number(dot.dataset.step) <= number);
-  });
-  if (focus) steps[number - 1].querySelector('h2')?.focus();
-}
-
-/* ---------- Role (left panel) ---------- */
-
-function applyRoleCopy(role) {
-  document.querySelectorAll('[data-copy-caregiver]').forEach((node) => {
-    node.textContent = role === 'patient' ? node.dataset.copyPatient : node.dataset.copyCaregiver;
-  });
-}
-
-function setRole(role) {
-  chosenRole = role;
-  document.querySelectorAll('.role-card').forEach((button) => {
-    button.setAttribute('aria-pressed', String(button.dataset.role === role));
-  });
-  const radio = document.querySelector(`#quiz-step-1 input[name="role"][value="${role}"]`);
-  if (radio) radio.checked = true;
-  applyRoleCopy(role);
-}
-
-document.querySelectorAll('.role-card').forEach((button) => {
-  button.addEventListener('click', () => {
-    setRole(button.dataset.role);
-    clearMessages();
-    showMode('signUp');
-    showStep(1);
-    history.replaceState(null, '', '#sign-up');
-  });
-});
-
-document.querySelectorAll('#quiz-step-1 input[name="role"]').forEach((radio) => {
-  radio.addEventListener('change', () => setRole(radio.value));
-});
-
-/* ---------- Quiz result ---------- */
-
-function readMatch() {
-  try {
-    const match = JSON.parse(sessionStorage.getItem(matchKey) || 'null');
-    return match && ['patient', 'caregiver'].includes(match.role)
-      && ['g3', 'g3b', 'g4', 'unsure'].includes(match.stage)
-      && ['familiar-meals', 'understand-options', 'prepare-conversation'].includes(match.goal)
-      ? match : null;
-  } catch { return null; }
-}
-
-async function saveMatch(user) {
-  // The shared demo account keeps its curated sample data; never overwrite it.
-  if (isDemoUser(user)) return;
-  const match = readMatch();
-  if (!match) return;
-  const { error } = await supabase.from('quiz_results').upsert({
-    user_id: user.id,
-    role: match.role,
-    stage: match.stage,
-    goal: match.goal,
-    has_traditions: Boolean(match.hasTraditions),
-    updated_at: new Date().toISOString(),
-  }, { onConflict: 'user_id' });
-  if (error) throw new Error('Your account is ready, but your answers could not be saved. Please try again.');
-}
-
 async function finishAuthentication(user) {
-  await saveMatch(user);
-  location.assign(DASHBOARD);
+  location.assign(isDemoUser(user) ? DASHBOARD : FAMILY);
 }
-
-const nextSteps = {
-  'familiar-meals': 'List a few dishes you cook often. FuelWell will suggest kidney-friendly versions to discuss with a renal dietitian.',
-  'understand-options': 'Start with the nutrient check on your dashboard, then bring questions to a renal dietitian or the care team.',
-  'prepare-conversation': 'Write down the food questions you want to raise at the next care-team visit.',
-};
-
-byId('quiz-step-1').addEventListener('submit', (event) => {
-  event.preventDefault();
-  const answers = new FormData(event.currentTarget);
-  if (!answers.get('role') || !answers.get('stage')) {
-    showError('Please choose an answer for both questions.');
-    return;
-  }
-  clearMessages();
-  setRole(answers.get('role'));
-  showStep(2);
-});
-
-byId('quiz-step-2').addEventListener('submit', (event) => {
-  event.preventDefault();
-  const first = new FormData(byId('quiz-step-1'));
-  const second = new FormData(event.currentTarget);
-  const role = first.get('role');
-  const stage = first.get('stage');
-  const goal = second.get('goal');
-  if (!goal) {
-    showError('Please choose what would help most.');
-    return;
-  }
-  const hasTraditions = Boolean(String(second.get('traditions') || '').trim());
-  const forWhom = role === 'caregiver' ? 'the person you care for' : 'you';
-  const stageLine = stage === 'unsure'
-    ? 'It’s fine not to know the kidney stage yet; the care team can confirm it.'
-    : 'We’ll keep the plan in line with the stage the care team mentioned.';
-  byId('result-intro').textContent = `We’ll start with meals for ${forWhom}`
-    + (hasTraditions ? ', built around the foods that feel like home. ' : '. ') + stageLine;
-  byId('result-next-step').textContent = nextSteps[goal];
-  try { sessionStorage.setItem(matchKey, JSON.stringify({ role, stage, goal, hasTraditions })); }
-  catch {
-    showError('This browser could not keep your answers. Please allow site storage and try again.');
-    return;
-  }
-  clearMessages();
-  showStep(3);
-});
-
-document.querySelectorAll('.step-back').forEach((button) => {
-  button.addEventListener('click', () => {
-    clearMessages();
-    showStep(Number(button.dataset.back));
-  });
-});
 
 /* ---------- Busy state ---------- */
 
@@ -257,12 +129,12 @@ forms.signIn.addEventListener('submit', (event) => {
   const form = event.currentTarget;
   if (!supabase || !requireFields(form)) return;
   withBusy(form, async () => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: byId('sign-in-email').value.trim(),
       password: byId('sign-in-password').value,
     });
     if (error) throw error;
-    const user = await getAuthenticatedUser();
+    const user = data.user;
     if (!user) throw new Error('We could not confirm your sign-in. Please try again.');
     form.reset();
     await finishAuthentication(user);
@@ -280,8 +152,9 @@ forms.signUp.addEventListener('submit', (event) => {
     return;
   }
   withBusy(form, async () => {
+    const email = byId('sign-up-email').value.trim().toLowerCase();
     const { data, error } = await supabase.auth.signUp({
-      email: byId('sign-up-email').value.trim(),
+      email,
       password,
       options: { emailRedirectTo: new URL('/start.html', location.origin).href },
     });
@@ -292,11 +165,11 @@ forms.signUp.addEventListener('submit', (event) => {
     }
     form.reset();
     if (!data.session) {
-      showStatus('Almost done. Open the confirmation email we sent, then come back and sign in.');
+      showStatus('Almost done. Open the confirmation email we sent, then sign in to create or join a family.');
       return;
     }
-    const user = await getAuthenticatedUser();
-    if (!user) throw new Error('Your account was created. Please sign in to open the dashboard.');
+    const user = data.user;
+    if (!user) throw new Error('Your account was created. Please sign in to open your family space.');
     await finishAuthentication(user);
   });
 });
@@ -332,7 +205,7 @@ forms.newPassword.addEventListener('submit', (event) => {
     recoveryInProgress = false;
     const user = await getAuthenticatedUser();
     if (user) {
-      location.assign(DASHBOARD);
+      location.assign(isDemoUser(user) ? DASHBOARD : FAMILY);
       return;
     }
     showMode('signIn', { focus: true });
@@ -359,7 +232,7 @@ async function signInAsDemo() {
   try {
     const { error } = await supabase.auth.signInWithPassword({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
     if (error) throw error;
-    // Demo sign-in never saves quiz answers: go straight to the dashboard.
+    // The shared demo account opens its curated dashboard.
     location.replace(DASHBOARD);
   } catch (error) {
     setDemoLoading(false);

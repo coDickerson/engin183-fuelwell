@@ -1,6 +1,6 @@
 /*
   Sign-in page. Split layout: a dimmed peek at the dashboard with the first
-  question on the left, the account card on the right. Uses tokens from
+  preview on the left, the account card on the right. Uses tokens from
   styles.css only.
 */
 
@@ -34,7 +34,7 @@
 
 .aside-top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); position: relative; z-index: 2; }
 .brand--light, .brand--light:hover { color: var(--white); }
-.brand--light .brand-mark { background-color: var(--accent); }
+.brand--light .brand-mark { background-color: var(--ground); }
 .aside-back {
   display: inline-flex; align-items: center; gap: 4px;
   min-height: var(--target); padding: 0 var(--space-3);
@@ -95,43 +95,11 @@
 .pv-meal-name { margin: 0 0 var(--space-3); font-family: var(--font-display); font-weight: 600; font-size: 1.0625rem; line-height: 1.25; }
 .pv-meal .badge { align-self: flex-start; font-size: .8rem; }
 
-/* The first question, sitting on top of the preview */
-.role-picker { position: relative; z-index: 2; width: min(100%, 560px); margin-inline: auto; }
+/* Invitation to create an account, sitting on top of the preview */
+.welcome-panel { position: relative; z-index: 2; width: min(100%, 560px); margin-inline: auto; }
 .eyebrow--light { color: var(--teal-100); }
-.role-picker h1 { color: var(--white); font-size: clamp(1.75rem, 1.6vw + 1.1rem, 2.375rem); margin-bottom: var(--space-5); max-width: 22ch; }
-.role-cards { display: grid; grid-template-columns: 1.15fr 1fr; gap: var(--space-3); }
-
-.role-card {
-  position: relative;
-  display: flex; align-items: center; gap: var(--space-3);
-  min-height: 88px; padding: var(--space-4);
-  text-align: left; cursor: pointer;
-  border: 2px solid color-mix(in srgb, var(--white) 35%, transparent);
-  border-radius: var(--radius-lg);
-  background: color-mix(in srgb, var(--white) 8%, transparent);
-  color: var(--white);
-  transition: background .15s, border-color .15s, transform .15s, box-shadow .15s;
-}
-.role-card:hover { background: color-mix(in srgb, var(--white) 14%, transparent); border-color: color-mix(in srgb, var(--white) 60%, transparent); }
-.role-card:active { transform: translateY(1px); }
-.role-card:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
-.role-card--primary { background: var(--surface); border-color: var(--surface); color: var(--ink); box-shadow: var(--shadow-2); }
-.role-card--primary:hover { background: var(--ground); border-color: var(--ground); }
-.role-icon { display: grid; place-items: center; flex: none; width: 48px; height: 48px; border-radius: 50%; background: color-mix(in srgb, var(--white) 14%, transparent); }
-.role-card--primary .role-icon { background: var(--accent-soft); color: var(--accent); }
-.role-text { display: grid; gap: 2px; min-width: 0; }
-.role-title { font-family: var(--font-display); font-weight: 600; font-size: var(--text-lg); line-height: 1.2; }
-.role-sub { font-size: var(--text-sm); opacity: .85; }
-.role-card--primary .role-sub { color: var(--ink-3); opacity: 1; }
-.role-check {
-  position: absolute; top: 10px; right: 10px;
-  display: none; place-items: center;
-  width: 28px; height: 28px; border-radius: 50%;
-  background: var(--accent); color: var(--white);
-}
-.role-card[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-.role-card[aria-pressed="true"]:not(.role-card--primary) { background: color-mix(in srgb, var(--white) 20%, transparent); border-color: var(--white); box-shadow: none; }
-.role-card[aria-pressed="true"] .role-check { display: grid; }
+.welcome-panel h1 { color: var(--white); font-size: clamp(1.75rem, 1.6vw + 1.1rem, 2.375rem); margin-bottom: var(--space-4); max-width: 22ch; }
+.welcome-panel > p:last-child { color: var(--teal-100); line-height: 1.5; max-width: 44ch; }
 
 /* ---------- Right panel ---------- */
 
@@ -195,40 +163,6 @@
 }
 .password-toggle:hover { background: var(--primary-soft); }
 
-/* Steps */
-.step-count { margin: 0 0 var(--space-2); font-size: var(--text-sm); font-weight: 700; color: var(--ink-3); }
-.step-track { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: var(--space-5); }
-.step-track i { height: 6px; border-radius: var(--radius-pill); background: var(--ground-alt); }
-.step-track i.is-done { background: var(--primary); }
-.quiz-step .auth-title { margin-bottom: var(--space-4); }
-
-.choice-set { margin: 0 0 var(--space-5); padding: 0; border: 0; }
-.choice-set legend { padding: 0; margin-bottom: var(--space-3); font-weight: 700; }
-.choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
-.choice-grid--three { grid-template-columns: repeat(3, 1fr); }
-.choice-stack { display: grid; gap: var(--space-2); }
-.choice { position: relative; display: block; cursor: pointer; }
-.choice input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
-.choice span {
-  display: flex; align-items: center; min-height: var(--target);
-  padding: 10px 14px;
-  border: 2px solid var(--line-strong); border-radius: var(--radius);
-  background: var(--surface); font-size: var(--text-base); line-height: 1.3;
-  transition: border-color .15s, background .15s;
-}
-.choice-grid--three .choice span { justify-content: center; text-align: center; }
-.choice:hover span { border-color: var(--primary); }
-.choice input:checked + span { border-color: var(--primary); background: var(--surface-tint); color: var(--primary-strong); font-weight: 700; box-shadow: inset 0 0 0 1px var(--primary); }
-.choice input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 2px; }
-
-.step-actions { display: flex; justify-content: space-between; gap: var(--space-3); margin-top: var(--space-2); }
-.step-actions .button:last-child { flex: 1; }
-
-.result-box { margin-bottom: var(--space-5); padding: var(--space-4); border-radius: var(--radius); background: var(--surface-tint); color: var(--ink-2); font-size: var(--text-sm); }
-.result-box p { margin: 0; }
-.result-box p + p { margin-top: var(--space-2); }
-.result-next strong { color: var(--primary-strong); }
-
 /* Demo */
 .demo-block { margin-top: var(--space-5); }
 .auth-card[data-mode="newPassword"] .demo-block { display: none; }
@@ -280,20 +214,13 @@
   .pv-window { transform: none; width: 100%; }
   .pv-body { padding: var(--space-3) var(--space-4); }
   .pv-grid { display: none; }
-  .role-picker { width: 100%; }
-  .role-picker h1 { font-size: var(--text-xl); margin-bottom: var(--space-4); }
+  .welcome-panel { width: 100%; }
+  .welcome-panel h1 { font-size: var(--text-xl); margin-bottom: var(--space-4); }
   .start-main { justify-content: flex-start; padding: var(--space-5) var(--space-4) var(--space-6); }
 }
 
 @media (max-width: 480px) {
-  .role-cards { grid-template-columns: 1fr 1fr; gap: var(--space-2); }
-  .role-card { flex-direction: column; align-items: flex-start; gap: var(--space-2); min-height: 0; padding: var(--space-3); }
-  .role-icon { width: 40px; height: 40px; }
-  .role-title { font-size: 1.0625rem; }
-  .role-sub { display: none; }
   .auth-card { padding: var(--space-5) var(--space-4); }
-  .choice-grid { grid-template-columns: 1fr; }
-  .choice-grid--three { grid-template-columns: repeat(3, 1fr); }
 }
 
 .photo-note { margin: var(--space-2) 0 0; text-align: center; font-size: var(--text-sm); color: var(--ink-3); }

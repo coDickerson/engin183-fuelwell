@@ -3,7 +3,7 @@ import { authConfigError, getAuthenticatedUser, signOutCurrentSession, supabase 
 import { isDemoUser } from '../auth/demo.js';
 import { persona } from '../data/fung.js';
 import { esc, icon, toast } from './app-ui.js';
-import { applyDom, langToggleHtml, onLangChange, tr, wireLangToggle } from './i18n.js';
+import { applyDom, onLangChange, tr } from './i18n.js';
 import { t } from './app-strings.js';
 
 const NAV = [
@@ -69,7 +69,6 @@ function topHtml(ctx) {
         </div>
       </div>
       <div class="top-actions">
-        ${langToggleHtml()}
         <div class="account">
           <button class="account-button" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="account-menu" aria-label="${esc(t('account'))}" data-account-button>
             <span class="avatar avatar--clay" aria-hidden="true">${esc(name.charAt(0))}</span>
@@ -116,6 +115,7 @@ function buildShell(frame, page, ctx) {
   frame.prepend(rail);
   frame.insertBefore(top, main);
   frame.append(bottom);
+  prefetchAppLinks(frame);
 
   const closers = [];
   document.addEventListener('click', (e) => {
@@ -129,7 +129,6 @@ function buildShell(frame, page, ctx) {
     top.innerHTML = topHtml(ctx);
     bottom.setAttribute('aria-label', t('nav_main'));
     bottom.innerHTML = navLinks(page, 'bottom-link');
-    wireLangToggle(top);
 
     const personMenu = top.querySelector('#person-menu');
     const personItems = [...personMenu.querySelectorAll('[data-person-item]')];
@@ -146,6 +145,25 @@ function buildShell(frame, page, ctx) {
   };
   render();
   onLangChange(render);
+}
+
+function prefetchAppLinks(frame) {
+  const warmed = new Set();
+  frame.addEventListener('pointerover', warm);
+  frame.addEventListener('focusin', warm);
+  frame.addEventListener('touchstart', warm, { passive: true });
+  function warm(event) {
+    const link = event.target.closest?.('a[href]');
+    if (!link) return;
+    const url = new URL(link.href);
+    if (url.origin !== location.origin || !/\/(dashboard|meals|care-team|health)\.html$/.test(url.pathname) || url.pathname === location.pathname || warmed.has(url.pathname)) return;
+    warmed.add(url.pathname);
+    const hint = document.createElement('link');
+    hint.rel = 'prefetch';
+    hint.href = url.pathname;
+    hint.as = 'document';
+    document.head.append(hint);
+  }
 }
 
 async function signOut(event) {
@@ -214,5 +232,8 @@ export async function initShell({ page, withQuiz = false, title, render }) {
   loader?.remove();
   frame.hidden = false;
   document.body.classList.remove('is-loading');
+  getAuthenticatedUser().then((verified) => {
+    if (!verified || verified.id !== user.id) location.replace('/start.html#sign-in');
+  }).catch(() => { /* A network outage must not hide the fictional workspace. */ });
   return ctx;
 }

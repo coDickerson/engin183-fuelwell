@@ -2,7 +2,6 @@
 import { initShell, langBadge } from './app-shell.js';
 import { dateFromOffset, esc, fmt, icon, initTabs, toast } from './app-ui.js';
 import { careCircle, dietitianMessages, exampleQuestions, persona } from '../data/fung.js';
-import { triageInquiry } from './ai-client.js';
 import { bookVisit, downloadIcs, isTaken, openSlots, pastVisits, upcomingVisits } from './app-visits.js';
 import { lang, tr } from './i18n.js';
 import { appStrings, t } from './app-strings.js';
@@ -120,6 +119,7 @@ async function runTriage(message) {
   triageView = { state: 'loading' };
   paintTriage();
   try {
+    const { triageInquiry } = await import('./ai-client.js');
     triageView = { state: 'result', result: await triageInquiry({ message, patient_name: persona.patient.name, language: lang() }) };
   } catch (error) {
     triageView = { state: 'error', error, message };

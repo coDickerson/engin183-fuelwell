@@ -2,8 +2,6 @@
 import { initShell } from './app-shell.js';
 import { badge, esc, fmt, icon, initTabs, nutrientName, nutrientRow, storage, toast } from './app-ui.js';
 import { grocery, mealSlots, persona, recipeExamples, swaps, week } from '../data/fung.js';
-import { adaptRecipe } from './ai-client.js';
-import { initStoreFinder } from './store-finder.js';
 import { lang, tr } from './i18n.js';
 import { t } from './app-strings.js';
 
@@ -138,6 +136,7 @@ async function runHelper(input) {
   view = { state: 'loading', dish: input.dish };
   paintResult();
   try {
+    const { adaptRecipe } = await import('./ai-client.js');
     const r = await adaptRecipe({ ...input, language: lang() });
     view = { state: 'result', result: r };
     renderResult(r);
@@ -223,6 +222,7 @@ function renderGrocery() {
 }
 
 let wired = false;
+let storeFinderReady = false;
 function wireOnce() {
   if (wired) return;
   wired = true;
@@ -240,8 +240,12 @@ function wireOnce() {
     updateCount();
   });
   $('[data-print]').addEventListener('click', () => window.print());
-  initStoreFinder();
-  initTabs($('[role="tablist"]'));
+  initTabs($('[role="tablist"]'), { onChange(name) {
+    if (name === 'grocery' && !storeFinderReady) {
+      storeFinderReady = true;
+      import('./store-finder.js').then(({ initStoreFinder }) => initStoreFinder());
+    }
+  } });
   if (new URLSearchParams(location.search).get('dish')) toast(t('helper_prefilled'));
 }
 
