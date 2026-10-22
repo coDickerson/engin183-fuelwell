@@ -71,10 +71,22 @@ document.querySelectorAll('.lang-option').forEach((button) => button.addEventLis
 }));
 document.querySelectorAll('.script-option').forEach((button) => button.addEventListener('click', () => applyLocale(button.dataset.script)));
 
-// Community posts link with ?ref=reddit / ?ref=facebook; keep it as the source.
-const HEARD_FROM = ['reddit', 'facebook', 'friend', 'clinic', 'other'];
+// Pre-select "How did you hear about us?" from ?ref=reddit / ?ref=facebook links.
 const ref = params.get('ref')?.toLowerCase();
-const heardFrom = HEARD_FROM.includes(ref) ? ref : null;
+const heardFrom = byId('heard-from');
+if ([...heardFrom.options].some((o) => o.value && o.value === ref)) heardFrom.value = ref;
+
+// Picking "Other" for who you are opens a box to say more.
+function syncRoleOther() {
+  const isOther = form.elements.role.value === 'other';
+  byId('role-other-field').hidden = !isOther;
+  if (!isOther) byId('role-other').value = '';
+}
+form.querySelectorAll('input[name="role"]').forEach((input) => input.addEventListener('change', () => {
+  syncRoleOther();
+  if (form.elements.role.value === 'other') byId('role-other').focus();
+}));
+syncRoleOther();
 
 // Saying yes to the swap guide makes email the way we send it.
 function wantsUpdates() {
@@ -120,11 +132,12 @@ function readForm() {
     email: text('email').toLowerCase() || null,
     phone: text('phone') || null,
     role: text('role') || null,
+    role_other: text('role') === 'other' ? text('role_other') || null : null,
     conditions: data.getAll('conditions'),
     usual_food: text('usual_food') || null,
     hardest_part: text('hardest_part') || null,
     wants_updates: updates ? updates === 'yes' : null,
-    heard_from: heardFrom,
+    heard_from: text('heard_from') || null,
     language: locale,
   };
 }

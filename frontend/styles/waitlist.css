@@ -65,6 +65,17 @@
 @media (min-width: 400px) { .role-tiles--grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .role-tiles--grid .role-tile { padding-inline: var(--space-3); }
 
+.wl-other { margin: var(--space-3) 0 0; }
+
+/* UC Berkeley thank-you note */
+.wl-note { display: flex; gap: var(--space-3); align-items: flex-start; margin: var(--space-4) 0 var(--space-5); padding: var(--space-3) var(--space-4); border-radius: var(--radius); background: var(--accent-soft); }
+.wl-note-icon { display: grid; place-items: center; flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: var(--white); }
+.wl-note p { margin: 0; font-size: var(--text-sm); color: var(--ink-2); }
+.wl-note .wl-note-title { margin-bottom: 2px; font-size: var(--text-base); font-weight: 800; color: var(--ink); }
+
+/* Dropdowns */
+.field select { appearance: none; padding-right: 44px; background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2317323a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") right 14px center / 20px no-repeat; cursor: pointer; }
+
 /* Conditions: tap chips (real checkboxes) */
 .wl-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .wl-chip { position: relative; cursor: pointer; }
