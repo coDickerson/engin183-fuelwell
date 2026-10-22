@@ -71,11 +71,6 @@ document.querySelectorAll('.lang-option').forEach((button) => button.addEventLis
 }));
 document.querySelectorAll('.script-option').forEach((button) => button.addEventListener('click', () => applyLocale(button.dataset.script)));
 
-// Pre-select "How did you hear about us?" from ?ref=reddit / ?ref=facebook links.
-const ref = params.get('ref')?.toLowerCase();
-const heardFrom = byId('heard-from');
-if ([...heardFrom.options].some((o) => o.value && o.value === ref)) heardFrom.value = ref;
-
 // Picking "Other" for who you are opens a box to say more.
 function syncRoleOther() {
   const isOther = form.elements.role.value === 'other';
