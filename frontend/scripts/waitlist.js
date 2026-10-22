@@ -83,6 +83,18 @@ form.querySelectorAll('input[name="role"]').forEach((input) => input.addEventLis
 }));
 syncRoleOther();
 
+// Ticking "Other" under conditions opens a box to name it.
+const conditionOtherBox = form.querySelector('input[name="conditions"][value="other"]');
+function syncConditionOther() {
+  byId('condition-other-field').hidden = !conditionOtherBox.checked;
+  if (!conditionOtherBox.checked) byId('condition-other').value = '';
+}
+conditionOtherBox.addEventListener('change', () => {
+  syncConditionOther();
+  if (conditionOtherBox.checked) byId('condition-other').focus();
+});
+syncConditionOther();
+
 // Saying yes to the swap guide makes email the way we send it.
 function wantsUpdates() {
   return form.elements.wants_updates.value === 'yes';
@@ -129,6 +141,7 @@ function readForm() {
     role: text('role') || null,
     role_other: text('role') === 'other' ? text('role_other') || null : null,
     conditions: data.getAll('conditions'),
+    condition_other: data.getAll('conditions').includes('other') ? text('condition_other') || null : null,
     usual_food: text('usual_food') || null,
     hardest_part: text('hardest_part') || null,
     wants_updates: updates ? updates === 'yes' : null,
