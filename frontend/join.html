@@ -109,17 +109,27 @@
           </div>
 
           <div class="field wl-q">
-            <label for="hardest-part" class="wl-legend"><span class="wl-num" aria-hidden="true">4</span><span data-i18n="hardest_legend">What has been the hardest part of changing your diet?</span></label>
-            <textarea id="hardest-part" name="hardest_part" maxlength="2000" rows="4" data-i18n-placeholder="hardest_placeholder"></textarea>
+            <label for="hardest-part" class="wl-legend"><span class="wl-num" aria-hidden="true">4</span><span data-i18n="concern_legend">What concerns you most about changing your diet?</span></label>
+            <textarea id="hardest-part" name="hardest_part" maxlength="2000" rows="4" data-i18n-placeholder="concern_placeholder"></textarea>
           </div>
 
+          <fieldset class="wl-fieldset wl-q">
+            <legend class="wl-legend"><span class="wl-num" aria-hidden="true">5</span><span data-i18n="interests_legend">Which of these would help you most?</span> <span class="wl-legend-hint" data-i18n="interests_hint"></span></legend>
+            <div class="wl-chips">
+              <label class="wl-chip"><input type="checkbox" name="interests" value="dietitian" /><span data-i18n="i_dietitian"></span></label>
+              <label class="wl-chip"><input type="checkbox" name="interests" value="meal_planning" /><span data-i18n="i_meals"></span></label>
+              <label class="wl-chip"><input type="checkbox" name="interests" value="health_records" /><span data-i18n="i_records"></span></label>
+              <label class="wl-chip"><input type="checkbox" name="interests" value="care_team" /><span data-i18n="i_care_team"></span></label>
+            </div>
+          </fieldset>
+
           <div class="field wl-q">
-            <label for="heard-from" class="wl-legend"><span class="wl-num" aria-hidden="true">5</span><span data-i18n="heard_legend">How did you hear about us?</span></label>
+            <label for="heard-from" class="wl-legend"><span class="wl-num" aria-hidden="true">6</span><span data-i18n="heard_legend">How did you hear about us?</span></label>
             <input id="heard-from" name="heard_from" type="text" maxlength="200" autocomplete="off" data-i18n-placeholder="heard_placeholder" />
           </div>
 
           <fieldset class="wl-fieldset wl-q">
-            <legend class="wl-legend"><span class="wl-num" aria-hidden="true">6</span><span data-i18n="updates_legend">Would you like a free swap guide or updates from our team?</span></legend>
+            <legend class="wl-legend"><span class="wl-num" aria-hidden="true">7</span><span data-i18n="updates_legend">Would you like a free swap guide or updates from our team?</span></legend>
             <div class="wl-yesno">
               <label><input type="radio" name="wants_updates" value="yes" /><span data-i18n="yes">Yes</span></label>
               <label><input type="radio" name="wants_updates" value="no" /><span data-i18n="no">No</span></label>

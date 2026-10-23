@@ -144,6 +144,7 @@ function readForm() {
     condition_other: data.getAll('conditions').includes('other') ? text('condition_other') || null : null,
     usual_food: text('usual_food') || null,
     hardest_part: text('hardest_part') || null,
+    interests: data.getAll('interests'),
     wants_updates: updates ? updates === 'yes' : null,
     heard_from: text('heard_from') || null,
     language: locale,
