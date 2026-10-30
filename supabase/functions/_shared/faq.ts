@@ -143,12 +143,42 @@ export const RED_FLAG_RULES: { label: string; pattern: RegExp }[] = [
   { label: 'seizure', pattern: /\b(seizure|convulsion)\w*/i },
 ];
 
+// The app is also offered in Traditional Chinese and Spanish, so the same red flags are
+// matched in those languages. Labels stay in English for the care-team log.
+export const RED_FLAG_RULES_INTL: { label: string; pattern: RegExp }[] = [
+  { label: 'chest pain', pattern: /胸(口)?(痛|悶|緊|口痛)|心口(痛|翳|悶)|dolor\s+(de|en\s+el)\s+pecho|presi[oó]n\s+en\s+el\s+pecho/i },
+  { label: 'trouble breathing', pattern: /氣(喘|促|唔夠)|呼吸(困難|唔到|不到|不順|急促)|喘不過氣|透不過氣|唞唔到氣|falta\s+(de\s+)?(el\s+)?aire|le\s+cuesta\s+respirar|no\s+puede\s+respirar|dificultad\s+para\s+respirar|ahog/i },
+  { label: 'confusion', pattern: /神志不清|神志混亂|糊塗|認不出|認唔到|叫不醒|叫唔醒|confundid|desorientad|no\s+(me\s+)?reconoce|muy\s+somnolient/i },
+  { label: 'no urine', pattern: /(沒有|冇|無)(小便|尿)|小便不出|尿不出|no\s+(ha\s+)?orin(a|ado)|no\s+puede\s+orinar/i },
+  { label: 'severe swelling', pattern: /(嚴重|突然|好|很|越來越|更)(水)?腫|腫(得)?(好|很)?(厲害|嚴重)|(cara|garganta|lengua)\s+hinchad|hinchaz[oó]n\s+(severa|grave|repentina)|m[aá]s\s+hinchad/i },
+  { label: 'muscle weakness (possible very high potassium)', pattern: /(肌肉)?(無力|冇力|乏力).*(企|站|行|走)|站不起|企唔起|debilidad\s+muscular|no\s+puede\s+(caminar|pararse)/i },
+  { label: 'irregular heartbeat (possible very high potassium)', pattern: /心(跳|臟)(不規則|好亂|很亂|好快|很快|加速)|心慌|心悸|心律不整|palpitacion|latidos?\s+irregular|coraz[oó]n\s+(acelerado|late\s+r[aá]pido)/i },
+  { label: 'fainting', pattern: /暈(倒|低|咗)|昏(倒|迷)|失去知覺|se\s+desmay|perdi[oó]\s+el\s+conocimiento|desmayo/i },
+  { label: 'seizure', pattern: /抽搐|抽筋發作|癲癇|convulsi|ataque\s+epil/i },
+];
+
 export function checkRedFlags(text: string): { red_flag: boolean; matches: string[] } {
-  const matches = RED_FLAG_RULES.filter((r) => r.pattern.test(text)).map((r) => r.label);
+  const matches = [...new Set([...RED_FLAG_RULES, ...RED_FLAG_RULES_INTL].filter((r) => r.pattern.test(text)).map((r) => r.label))];
   return { red_flag: matches.length > 0, matches };
 }
 
-export function escalationMessage(name: string | null, matches: string[]): string {
+export type Lang = 'en' | 'zh' | 'es';
+export const LANGS: readonly Lang[] = ['en', 'zh', 'es'];
+export const LANGUAGE_NAME: Record<Lang, string> = {
+  en: 'English',
+  zh: 'Traditional Chinese (written for a Cantonese-speaking family in Hong Kong style; use Traditional characters only)',
+  es: 'Spanish (warm, plain Latin American Spanish)',
+};
+
+export function escalationMessage(name: string | null, matches: string[], lang: Lang = 'en'): string {
+  if (lang === 'zh') {
+    const who = name ?? '您的家人';
+    return `這可能是緊急情況。如果${who}胸口痛、呼吸困難、暈倒或神志不清，請立即撥打 911。否則請馬上致電腎科醫療團隊，不要等待訊息回覆。`;
+  }
+  if (lang === 'es') {
+    const who = name ?? 'su familiar';
+    return `Esto podría ser urgente. Si ${who} tiene dolor de pecho, dificultad para respirar, se desmayó o está confundida, llame al 911 ahora. Si no, llame de inmediato al equipo de cuidado renal. No espere una respuesta por mensaje.`;
+  }
   const who = name ?? 'your parent';
   return `This could be urgent (${matches.join(', ')}). If ${who} has chest pain, trouble breathing, has fainted or is confused, call 911 now. Otherwise call the kidney care team right away. Don't wait for a message reply.`;
 }

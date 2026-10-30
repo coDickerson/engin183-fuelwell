@@ -1,8 +1,9 @@
 # FuelWell auth setup
 
 FuelWell uses Supabase Auth (email and password). The sign-in page is
-`/start.html`. It has three ways in: sign in, create an account (a short
-three-step quiz, then email and password), or **Explore the demo as Heidi**.
+`/start.html`. It has two ways in: sign in, or create an account (a short
+three-step quiz, then email and password). The demo is a separate page,
+`/demo` (`/demo.html`), so it never gets mixed up with someone's own account.
 
 ## 1. Environment
 
@@ -24,7 +25,7 @@ disables the forms. It never pretends a sign-in worked.
 | Persona | Heidi, who manages meals for her mom Fung (78, CKD G3b, eGFR 38, Cantonese home cooking). Her sister Joyce has view-only access. |
 
 These credentials are public on purpose. They live in `frontend/auth/demo.js`
-and are shown on the sign-in page so reviewers can type them. The account must
+and are listed in the README so reviewers can type them on the sign-in page. The account must
 hold sample data only.
 
 **How to create it:** Supabase Dashboard → Authentication → Users →
@@ -32,8 +33,8 @@ hold sample data only.
 **Auto Confirm User**, so no confirmation email is needed. Then seed the sample
 data for that user (the dashboard reads it by `user_id`).
 
-The demo button calls `supabase.auth.signInWithPassword` with these
-credentials and opens `/dashboard.html`. The app never writes quiz answers for
+`/demo` (`frontend/auth/demo-page.js`) calls `supabase.auth.signInWithPassword`
+with these credentials and opens `/dashboard.html`. The app never writes quiz answers for
 the demo user (`isDemoUser` guards `saveMatch`), so reviewers can't overwrite
 the curated data. If the account is missing, the page says "The demo account
 isn't available right now" instead of showing a raw error.
@@ -41,13 +42,21 @@ isn't available right now" instead of showing a raw error.
 ### Shareable demo link
 
 ```
-https://<your-vercel-domain>/start.html?demo=1
-http://localhost:5173/start.html?demo=1
+https://<your-vercel-domain>/demo
+http://localhost:5173/demo.html
 ```
 
-This link shows a short "Opening Heidi's demo…" screen, signs in as the demo
-user and goes straight to the dashboard. Use it in the portfolio submission
-and in the site's "Try the demo" buttons.
+This page shows a short "Opening FuelWell…" screen, signs in as the demo
+user and goes straight to the dashboard. Every "Try the demo" button links
+here. Old `/start.html?demo=1` links still work: they forward to `/demo.html`.
+
+### Keeping the demo and real accounts apart
+
+A demo session is remembered by the browser like any other. If someone who
+explored the demo later opens `/start.html`, the page signs that demo session
+out and shows the sign-in form, instead of sending them back into Heidi's
+dashboard. Real accounts that are already signed in still go straight to
+their own dashboard.
 
 ## 3. Turn off "Confirm email"
 
@@ -99,6 +108,30 @@ The quiz keeps a small summary in same-origin `sessionStorage` under
 `role`, `stage`, `goal` and a `has_traditions` flag to `quiz_results`. The
 free-text answer and the email are not stored there. RLS restricts every read
 and write to the signed-in user's ID.
+
+## 7. Profile (name, cuisine, health conditions)
+
+FuelWell covers high blood pressure, diabetes and kidney disease, and also
+people with none of these (athletes, anyone who wants to eat well). Each
+account has one row in `public.profiles` (migrations `20261016120000_profiles`
+and `20261017120000_profiles_conditions`): `full_name`, `cuisine`,
+`has_high_blood_pressure`, `has_diabetes`, `has_kidney_disease`, and
+`ckd_stage` (`g1`–`g5`, `g5d` for dialysis, or `unsure`; only kept when kidney
+disease is ticked). RLS lets only the signed-in owner read, insert or update
+their row; `anon` has no access.
+
+- **Sign-up** step 1 asks who it's for and "Do you have any of these?" (high
+  blood pressure, diabetes, kidney disease or dialysis, or None of these). The
+  kidney stage is an optional follow-up that only appears when kidney disease
+  is ticked. Step 2 asks for the cuisine that feels like home (with quick
+  picks) and the main goal, including "Fuel training and everyday energy" and
+  "Eat healthier day to day". The account step asks for the person's name.
+  The answers wait in `sessionStorage` (`fuelwell.profile.v1`) until there is
+  a session, then are inserted. They never overwrite an existing profile.
+- **Dashboard** (`/dashboard.html`) shows the profile in a "Your profile" card
+  with an Edit form, and greets the person by their first name. Accounts made
+  before profiles existed see a "Complete your profile" form there instead.
+- The demo account keeps Heidi's curated persona and never shows this card.
 
 Passwords must be at least 8 characters (checked in the browser; set the same
 minimum under Authentication → Sign In / Providers → Email → Minimum password

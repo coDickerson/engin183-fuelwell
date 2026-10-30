@@ -5,8 +5,24 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
+      "source": "/demo",
+      "destination": "/demo.html"
+    },
+    {
       "source": "/waitlist",
       "destination": "/waitlist.html"
+    },
+    {
+      "source": "/join",
+      "destination": "/join.html"
+    },
+    {
+      "source": "/wall",
+      "destination": "/wall.html"
+    },
+    {
+      "source": "/dishes",
+      "destination": "/dishes.html"
     }
   ]
 }

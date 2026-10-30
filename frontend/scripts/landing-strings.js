@@ -1,0 +1,105 @@
+// Home page copy in English, Traditional Chinese and Spanish. Keys match data-i18n
+// attributes in index.html. *_html values hold our own inline markup, never user input.
+import { makeT } from './i18n.js';
+
+const s = (en, zh, es) => ({ en, zh, es });
+const arrow = '<svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
+export const landingStrings = {
+  doc_title: s('FuelWell | Eat well with the food you grew up with', 'FuelWell | 吃得健康，也吃得出家的味道', 'FuelWell | Come bien con la comida con la que creciste'),
+  skip: s('Skip to content', '跳到主要內容', 'Ir al contenido'),
+  home_label: s('FuelWell home', 'FuelWell 首頁', 'Inicio de FuelWell'),
+  main_nav: s('Main navigation', '主選單', 'Navegación principal'),
+  open_menu: s('Open menu', '打開選單', 'Abrir menú'),
+  close_menu: s('Close menu', '關閉選單', 'Cerrar menú'),
+  nav_how: s('How it works', '運作方式', 'Cómo funciona'),
+  nav_families: s('For families', '給家人', 'Para familias'),
+  nav_meals: s('Meal planning', '餐單規劃', 'Planear comidas'),
+  nav_questions: s('Questions', '常見問題', 'Preguntas'),
+  nav_signin: s('Sign in', '登入', 'Iniciar sesión'),
+  try_demo: s('Try the demo', '試用示範', 'Probar la demo'),
+
+  hero_badge: s('Culture first', '文化為本', 'Cultura primero'),
+  hero_pill: s('Blood pressure · Diabetes · Kidneys', '血壓 · 糖尿病 · 腎臟', 'Presión · Diabetes · Riñones'),
+  hero_h1_html: s('Eat well with the food <em>you grew up with.</em>', '吃得健康，<em class="nowrap">也吃得出家的味道。</em>', 'Come bien con la comida <em>con la que creciste.</em>'),
+  hero_lead: s('FuelWell turns the diet your health calls for into everyday meals you can cook this week, built around your culture and your family’s own recipes. Whether you’re managing high blood pressure, diabetes or kidney disease, cooking for a parent or partner who is, or simply training and eating to feel your best, FuelWell checks every dish, keeps labs and health records in one place, and puts a dietitian and your care team a message away.', 'FuelWell 把你的健康需要變成這星期就能煮的家常菜，以你的文化和家傳食譜為本。無論你正在控制高血壓、糖尿病或腎病，為患病的父母或伴侶煮飯，還是為訓練和精神飽滿而吃，FuelWell 都會檢查每一道菜，把化驗和健康紀錄集中一處，只需一則訊息就能聯絡營養師和醫療團隊。', 'FuelWell convierte la dieta que tu salud necesita en comidas de todos los días que puedes cocinar esta semana, basadas en tu cultura y las recetas de tu familia. Ya sea que controles la presión alta, la diabetes o una enfermedad renal, cocines para tu mamá, papá o pareja, o simplemente entrenes y comas para sentirte mejor, FuelWell revisa cada platillo, reúne análisis e historial de salud en un solo lugar y te deja a un mensaje de un dietista y de tu equipo de salud.'),
+  join_waitlist: s('Join the waitlist', '加入候補名單', 'Únete a la lista de espera'),
+  hero_note: s('The demo shows Heidi, who plans Cantonese home cooking for her mom, Fung (78), who has kidney disease.', '示範中的 Heidi 為患腎病的媽媽 Fung（78 歲）規劃廣東家常菜。', 'La demo muestra a Heidi, que planea comida casera cantonesa para su mamá, Fung (78 años), que tiene enfermedad renal.'),
+  hero_alt: s('An older East Asian woman and her adult daughter hugging and smiling outdoors', '一位年長的東亞女士和成年女兒在戶外擁抱微笑', 'Una mujer mayor del este de Asia y su hija adulta abrazadas y sonriendo al aire libre'),
+  float_tonight: s('Tonight', '今晚', 'Esta noche'),
+  float_for: s('Mom (Fung)', '媽媽（Fung）', 'Mamá (Fung)'),
+  float_time: s('25 min', '25 分鐘', '25 min'),
+
+  strip_label: s('What makes FuelWell different', 'FuelWell 的特點', 'Lo que hace diferente a FuelWell'),
+  strip_1_title: s('Your family’s recipes', '你家的食譜', 'Las recetas de tu familia'),
+  strip_1_sub: s('Your culture stays on the plate', '保留你的飲食文化', 'Tu cultura se queda en el plato'),
+  strip_2_title: s('Registered dietitian', '註冊營養師', 'Dietista registrado'),
+  strip_2_sub: s('A message away', '一則訊息就找到', 'A un mensaje de distancia'),
+  strip_3_title: s('Labs in one place', '化驗集中一處', 'Análisis en un solo lugar'),
+  strip_3_sub: s('Blood pressure, A1C, kidney labs', '血壓、A1C、腎功能', 'Presión, A1C, función renal'),
+  strip_4_sub: s('For the whole family', '全家都看得懂', 'Para toda la familia'),
+
+  pillars_eyebrow: s('What FuelWell does', 'FuelWell 做甚麼', 'Qué hace FuelWell'),
+  pillars_h2_html: s('Meals you can cook, and <em>care you can reach.</em>', '煮得到的餐，<em class="nowrap">找得到的照顧。</em>', 'Comidas que puedes cocinar y <em>apoyo a tu alcance.</em>'),
+  pillars_p: s('Two things matter most for eating well at home: what goes on the plate, and staying in close touch with the people who guide your diet.', '在家吃得健康，最重要是兩件事：碟上吃甚麼，以及與指導你飲食的專業人員保持緊密聯繫。', 'Para comer bien en casa importan dos cosas: lo que va en el plato y mantenerse en contacto con quienes guían tu dieta.'),
+  p1_eyebrow: s('01 · Meal planning', '01 · 餐單規劃', '01 · Planear comidas'),
+  p1_h3: s('A week of meals built from the food you already eat', '用你平日吃的菜，砌出一星期餐單', 'Una semana de comidas con lo que ya comes'),
+  p1_li1: s('Start from the dishes your family already cooks, from steamed fish and pozole to jollof rice and pasta.', '由你家平日煮的菜開始，清蒸魚、粥，或墨西哥湯、意粉都可以。', 'Empieza con lo que tu familia ya cocina, del pescado al vapor y el pozole al arroz jollof y la pasta.'),
+  p1_li2: s('Every dish gets a simple check for what matters to you: sodium, carbs and sugar, potassium and phosphorus, or protein for training.', '每道菜都按你的需要簡單檢查：鈉、碳水和糖、鉀和磷，或訓練需要的蛋白質。', 'Cada platillo tiene una revisión sencilla de lo que te importa: sodio, carbohidratos y azúcar, potasio y fósforo, o proteína para entrenar.'),
+  p1_li3: s('Small swaps keep favorite dishes on the table, plus a grocery list for the week.', '小小替換，讓心愛的菜繼續上桌，再附一星期的購物清單。', 'Pequeños cambios mantienen los platillos favoritos en la mesa, con lista del súper para la semana.'),
+  p1_row1: s('Steamed fish with ginger', '薑蔥清蒸魚', 'Pescado al vapor con jengibre'),
+  p1_row1_badge: s('Sodium low', '鈉 低', 'Sodio bajo'),
+  p1_row2: s('Ginger chicken congee', '薑絲雞粥', 'Congee de pollo con jengibre'),
+  p1_row2_badge: s('Potassium low', '鉀 低', 'Potasio bajo'),
+  p1_link: s('How meal planning works', '餐單規劃如何運作', 'Cómo funciona la planeación'),
+  p2_eyebrow: s('02 · Health records and care team', '02 · 健康紀錄與醫療團隊', '02 · Historial de salud y equipo'),
+  p2_h3: s('Labs, records and a dietitian, all in one place', '化驗、紀錄和營養師，集中一處', 'Análisis, historial y dietista en un solo lugar'),
+  p2_li1: s('Keep results like blood pressure, A1C and kidney labs together, with trends in plain language.', '把血壓、A1C 和腎功能等結果放在一起，用淺白語言解釋趨勢。', 'Guarda resultados como presión arterial, A1C y función renal juntos, con tendencias en palabras sencillas.'),
+  p2_li2: s('Message a FuelWell dietitian who speaks your family’s language, and book a visit when questions come up.', '向懂你家語言的 FuelWell 營養師發訊息，有疑問時隨時預約。', 'Escribe a un dietista de FuelWell que habla el idioma de tu familia y reserva una cita cuando tengas dudas.'),
+  p2_li3: s('Share the meal plan and labs with your own doctor, dietitian and care team.', '與你的醫生、營養師和醫療團隊分享餐單和化驗結果。', 'Comparte el plan y los análisis con tu médico, dietista y equipo de salud.'),
+  p2_row1_badge: s('Steady', '穩定', 'Estable'),
+  p2_row2: s('Mei Chen, RD replied', 'Mei Chen, RD 已回覆', 'Mei Chen, RD respondió'),
+  p2_row2_quote: s('“Try fresh choy sum instead of 梅菜.”', '「梅菜可以改用新鮮菜心。」', '“Prueba choy sum fresco en vez de 梅菜.”'),
+  p2_link: s('See the care team in the demo', '在示範中查看醫療團隊', 'Ver el equipo de salud en la demo'),
+
+  explore_eyebrow: s('Explore FuelWell', '探索 FuelWell', 'Explora FuelWell'),
+  explore_h2_html: s('Less guesswork at <em>every meal.</em>', '<em>每一餐</em>都少一點估估下。', 'Menos adivinanzas en <em>cada comida.</em>'),
+  explore_p: s('Sodium, sugar, potassium and protein targets are hard to keep in your head. FuelWell does the checking so you can focus on cooking.', '鈉、糖、鉀和蛋白質的目標很難全部記住。FuelWell 幫你檢查，你可以專心煮飯。', 'Es difícil recordar las metas de sodio, azúcar, potasio y proteína. FuelWell las revisa para que te enfoques en cocinar.'),
+  e1_alt: s('A woman checking a recipe on her laptop in the kitchen', '一位女士在廚房用手提電腦查看食譜', 'Una mujer revisando una receta en su laptop en la cocina'),
+  e1_eyebrow: s('How it works', '運作方式', 'Cómo funciona'),
+  e1_title: s('From your health goals to tonight’s dinner', '由你的健康目標到今晚的晚餐', 'De tus metas de salud a la cena de hoy'),
+  e1_copy: s('Enter a few details once, then get daily meals with a simple nutrient check.', '只需輸入一次基本資料，就能每天收到附營養檢查的餐單。', 'Ingresa unos datos una vez y recibe comidas diarias con una revisión sencilla de nutrientes.'),
+  e1_more: s('See how it works', '了解運作方式', 'Ver cómo funciona'),
+  e2_alt: s('An adult daughter holding her elderly mother’s hands while they talk', '成年女兒握著年邁母親的手傾談', 'Una hija adulta sostiene las manos de su madre mayor mientras conversan'),
+  e2_eyebrow: s('For families', '給家人', 'Para familias'),
+  e2_title: s('Cooking for someone you love', '為你愛的人煮飯', 'Cocinar para alguien que quieres'),
+  e2_copy: s('Plan for a parent or partner, and share view-only access so the whole family cooks the same way.', '為父母或伴侶規劃餐單，並分享只供查看的權限，全家煮法一致。', 'Planea para tu mamá, papá o pareja, y comparte acceso de solo lectura para que toda la familia cocine igual.'),
+  e2_more: s('Caring together', '一起照顧', 'Cuidar juntos'),
+  e3_alt: s('Steamed fish topped with scallions, served with rice', '清蒸魚鋪上蔥絲，配白飯', 'Pescado al vapor con cebollín, servido con arroz'),
+  e3_eyebrow: s('Meal planning', '餐單規劃', 'Planear comidas'),
+  e3_title: s('The dishes you grew up with, adjusted for your health', '你從小吃到大的菜，為你的健康調整', 'Los platillos con los que creciste, ajustados a tu salud'),
+  e3_copy: s('Family favorites like steamed fish or congee, plus weeknight staples, with small swaps.', '清蒸魚、粥等家常好菜，加上平日快餐，只需小小替換。', 'Favoritos como pescado al vapor o congee, y comidas de diario, con pequeños cambios.'),
+  e3_more: s('Plan meals', '規劃餐單', 'Planear comidas'),
+  credits_html: s(
+    'Photos from Pexels by <a href="https://www.pexels.com/photo/an-elderly-and-a-mature-woman-embracing-and-smiling-16125359/" rel="noopener">Nakajima Benjamin</a>, <a href="https://www.pexels.com/photo/focused-asian-woman-browsing-laptop-in-kitchen-5094085/" rel="noopener">Kamaji Ogino</a>, <a href="https://www.pexels.com/photo/elderly-woman-sharing-a-moment-with-adult-daughter-36578169/" rel="noopener">Kimymoto</a> and <a href="https://www.pexels.com/photo/11830200/" rel="noopener">Jan Kao</a>.',
+    '相片來自 Pexels：<a href="https://www.pexels.com/photo/an-elderly-and-a-mature-woman-embracing-and-smiling-16125359/" rel="noopener">Nakajima Benjamin</a>、<a href="https://www.pexels.com/photo/focused-asian-woman-browsing-laptop-in-kitchen-5094085/" rel="noopener">Kamaji Ogino</a>、<a href="https://www.pexels.com/photo/elderly-woman-sharing-a-moment-with-adult-daughter-36578169/" rel="noopener">Kimymoto</a> 及 <a href="https://www.pexels.com/photo/11830200/" rel="noopener">Jan Kao</a>。',
+    'Fotos de Pexels por <a href="https://www.pexels.com/photo/an-elderly-and-a-mature-woman-embracing-and-smiling-16125359/" rel="noopener">Nakajima Benjamin</a>, <a href="https://www.pexels.com/photo/focused-asian-woman-browsing-laptop-in-kitchen-5094085/" rel="noopener">Kamaji Ogino</a>, <a href="https://www.pexels.com/photo/elderly-woman-sharing-a-moment-with-adult-daughter-36578169/" rel="noopener">Kimymoto</a> y <a href="https://www.pexels.com/photo/11830200/" rel="noopener">Jan Kao</a>.'),
+
+  closing_eyebrow: s('See it for yourself', '親身看看', 'Compruébalo tú'),
+  closing_h2_html: s('Spend two minutes as <em>Heidi.</em>', '用兩分鐘，做一次 <em>Heidi。</em>', 'Pasa dos minutos como <em>Heidi.</em>'),
+  closing_p: s('Open the demo to see a week of kidney-friendly meals planned for her mom, Fung. No sign-up needed.', '打開示範，看看 Heidi 為媽媽 Fung 規劃的一星期護腎餐單。無需註冊。', 'Abre la demo para ver una semana de comidas para los riñones planeadas para su mamá, Fung. Sin registrarte.'),
+  closing_waitlist: s('Join the waitlist to be a first user', '加入候補名單，成為首批用戶', 'Únete a la lista de espera para ser de los primeros'),
+  closing_account: s('Or create an account', '或建立帳戶', 'O crea una cuenta'),
+
+  footer_blurb: s('Meal planning around the food you grew up with, plus health records and dietitian support, for high blood pressure, diabetes, kidney health and everyday eating well.', '以你從小吃到大的菜為本的餐單規劃，加上健康紀錄和營養師支援，適合高血壓、糖尿病、腎臟健康，以及日常健康飲食。', 'Planeación de comidas con la comida con la que creciste, más historial de salud y apoyo de dietistas, para la presión alta, la diabetes, la salud renal y comer bien cada día.'),
+  footer_label: s('Footer', '頁尾', 'Pie de página'),
+  footer_built: s('How it was built', '開發過程', 'Cómo se construyó'),
+  footer_emergency: s('In an emergency, call 911.', '如遇緊急情況，請撥打 911。', 'En caso de emergencia, llama al 911.'),
+  footer_disclaimer: s(
+    'FuelWell is a student project (ENGIN 183), not a medical service, and does not give medical advice. Please don’t enter real health information.',
+    'FuelWell 是學生專題（ENGIN 183），不是醫療服務，也不提供醫療建議。請勿輸入真實的健康資料。',
+    'FuelWell es un proyecto estudiantil (ENGIN 183), no un servicio médico, y no da consejos médicos. No ingreses información de salud real.'),
+};
+
+export const arrowSvg = arrow;
+export const t = makeT(landingStrings);

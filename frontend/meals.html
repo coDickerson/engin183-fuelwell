@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#fbf7f1" />
-    <meta name="description" content="Mom's sample kidney-friendly week, the recipe finder, smart swaps and a grocery list." />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="description" content="Mom’s kidney-friendly week, the recipe adapter, smart swaps and a grocery list." />
     <title>Meals | FuelWell</title>
     <link rel="stylesheet" href="/styles/styles.css" />
     <link rel="stylesheet" href="/styles/dashboard.css" />
@@ -14,9 +14,9 @@
     <script defer src="/_vercel/insights/script.js"></script>
   </head>
   <body class="app-page is-loading">
-    <a class="skip-link" href="#main-content">Skip to meals</a>
+    <a class="skip-link" href="#main-content" data-i18n="skip">Skip to content</a>
     <div class="app-loader" data-app-loader role="status" aria-live="polite">
-      <span class="sr-only">Loading Mom's workspace…</span>
+      <span class="sr-only" data-i18n="loading">Loading…</span>
       <div class="sk-rail" aria-hidden="true"><div class="sk sk-logo"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div></div>
       <div class="sk-body" aria-hidden="true">
         <div class="sk sk-top"></div>
@@ -30,42 +30,42 @@
       <main class="app-main" id="main-content" tabindex="-1">
         <div class="page-head">
           <div>
-            <p class="eyebrow">Meals for Mom</p>
-            <h1>Meals</h1>
-            <p class="page-sub">Cantonese home cooking, adjusted for stage G3b. Sample plan only.</p>
+            <h1 data-i18n="meals_h1">Meals</h1>
+            <p class="page-sub" data-i18n="meals_sub">Cantonese home cooking for Mom, adjusted for stage G3b.</p>
           </div>
+          <div class="page-head-meta" data-reviewed></div>
         </div>
-        <div class="subtabs" role="tablist" aria-label="Meals sections">
-          <button class="subtab" type="button" role="tab" id="tab-week" data-tab="week" aria-controls="panel-week" aria-selected="false" tabindex="-1"><span data-icon="week"></span>This week</button>
-          <button class="subtab" type="button" role="tab" id="tab-helper" data-tab="helper" aria-controls="panel-helper" aria-selected="false" tabindex="-1"><span data-icon="sparkle"></span>Recipe finder</button>
-          <button class="subtab" type="button" role="tab" id="tab-swaps" data-tab="swaps" aria-controls="panel-swaps" aria-selected="false" tabindex="-1"><span data-icon="swap"></span>Smart swaps</button>
-          <button class="subtab" type="button" role="tab" id="tab-grocery" data-tab="grocery" aria-controls="panel-grocery" aria-selected="false" tabindex="-1"><span data-icon="list"></span>Grocery list</button>
+        <div class="subtabs" role="tablist" data-i18n-aria="meals_sections">
+          <button class="subtab" type="button" role="tab" id="tab-week" data-tab="week" aria-controls="panel-week" aria-selected="false" tabindex="-1"><span data-icon="week"></span><span data-i18n="tab_week">This week</span></button>
+          <button class="subtab" type="button" role="tab" id="tab-helper" data-tab="helper" aria-controls="panel-helper" aria-selected="false" tabindex="-1"><span data-icon="sparkle"></span><span data-i18n="tab_helper">Recipe adapter</span></button>
+          <button class="subtab" type="button" role="tab" id="tab-swaps" data-tab="swaps" aria-controls="panel-swaps" aria-selected="false" tabindex="-1"><span data-icon="swap"></span><span data-i18n="tab_swaps">Smart swaps</span></button>
+          <button class="subtab" type="button" role="tab" id="tab-grocery" data-tab="grocery" aria-controls="panel-grocery" aria-selected="false" tabindex="-1"><span data-icon="list"></span><span data-i18n="tab_grocery">Grocery list</span></button>
         </div>
         <section class="tabpanel" role="tabpanel" id="panel-week" aria-labelledby="tab-week" tabindex="0" hidden>
-          <div class="day-picker" role="group" aria-label="Choose a day" data-day-picker></div>
+          <div class="day-picker" role="group" data-i18n-aria="choose_day" data-day-picker></div>
           <div class="meal-grid" data-week-meals></div>
         </section>
         <section class="tabpanel" role="tabpanel" id="panel-helper" aria-labelledby="tab-helper" tabindex="0" hidden>
           <div class="helper-grid">
             <form class="card helper-form" data-helper-form novalidate>
-              <div class="panel-title"><h2>Recipe finder</h2><span class="chip chip--clay"><span data-icon="sparkle"></span>AI</span></div>
+              <div class="panel-title"><h2 data-i18n="helper_h2">Recipe adapter</h2><span class="chip chip--clay"><span data-icon="sparkle"></span>AI</span></div>
               <div class="field">
-                <label for="dish">Which family dish would you like to make kidney-friendly?</label>
-                <textarea id="dish" name="dish" rows="3" maxlength="400" placeholder="For example: Mom's lo mein with oyster sauce and char siu" aria-describedby="dish-hint dish-error"></textarea>
-                <p class="hint" id="dish-hint">Name the dish and any sauces you use. No personal health details, please.</p>
-                <p class="field-error" id="dish-error" hidden>Please describe a dish first.</p>
+                <label for="dish" data-i18n="helper_label"></label>
+                <textarea id="dish" name="dish" rows="3" maxlength="400" data-i18n-placeholder="helper_placeholder" aria-describedby="dish-hint dish-error"></textarea>
+                <p class="hint" id="dish-hint" data-i18n="helper_hint"></p>
+                <p class="field-error" id="dish-error" data-i18n="helper_error" hidden></p>
               </div>
-              <div class="example-chips" aria-label="Examples"><span class="muted">Try:</span><span data-recipe-examples></span></div>
+              <div class="example-chips" data-i18n-aria="examples"><span class="muted" data-i18n="tryline">Try:</span><span data-recipe-examples></span></div>
               <div class="helper-actions">
                 <div class="field field--inline">
-                  <label for="cuisine">Cuisine</label>
+                  <label for="cuisine" data-i18n="cuisine">Cuisine</label>
                   <select id="cuisine" name="cuisine">
-                    <option value="chinese">Chinese</option>
-                    <option value="korean">Korean</option>
-                    <option value="vietnamese">Vietnamese</option>
+                    <option value="chinese" data-i18n="cuisine_chinese">Chinese</option>
+                    <option value="korean" data-i18n="cuisine_korean">Korean</option>
+                    <option value="vietnamese" data-i18n="cuisine_vietnamese">Vietnamese</option>
                   </select>
                 </div>
-                <button class="button" type="submit" data-helper-submit><span data-icon="sparkle"></span>Make it kidney-friendly</button>
+                <button class="button" type="submit" data-helper-submit><span data-icon="sparkle"></span><span data-i18n="helper_submit">Make it kidney-friendly</span></button>
               </div>
             </form>
             <section class="card helper-result" aria-live="polite" aria-busy="false" data-helper-result></section>
@@ -73,45 +73,41 @@
         </section>
         <section class="tabpanel" role="tabpanel" id="panel-swaps" aria-labelledby="tab-swaps" tabindex="0" hidden>
           <div class="card">
-            <div class="panel-title"><h2>Smart swaps</h2>
-              <div class="filter-group" role="group" aria-label="Filter by cuisine" data-swap-filter>
-                <button class="filter" type="button" data-cuisine="all" aria-pressed="true">All</button>
-                <button class="filter" type="button" data-cuisine="chinese" aria-pressed="false">Chinese</button>
-                <button class="filter" type="button" data-cuisine="korean" aria-pressed="false">Korean</button>
-                <button class="filter" type="button" data-cuisine="vietnamese" aria-pressed="false">Vietnamese</button>
+            <div class="panel-title"><h2 data-i18n="swaps_h2">Smart swaps</h2>
+              <div class="filter-group" role="group" data-i18n-aria="filter_cuisine" data-swap-filter>
+                <button class="filter" type="button" data-cuisine="all" aria-pressed="true" data-i18n="all">All</button>
+                <button class="filter" type="button" data-cuisine="chinese" aria-pressed="false" data-i18n="cuisine_chinese">Chinese</button>
+                <button class="filter" type="button" data-cuisine="korean" aria-pressed="false" data-i18n="cuisine_korean">Korean</button>
+                <button class="filter" type="button" data-cuisine="vietnamese" aria-pressed="false" data-i18n="cuisine_vietnamese">Vietnamese</button>
               </div>
             </div>
-            <p class="muted swaps-intro">Familiar ingredients that are high in sodium, potassium or phosphorus, and what to reach for instead.</p>
-            <ul class="swap-list" aria-label="Ingredient swaps" data-swap-list></ul>
+            <p class="muted swaps-intro" data-i18n="swaps_intro"></p>
+            <ul class="swap-list" data-i18n-aria="swaps_list" data-swap-list></ul>
           </div>
         </section>
         <section class="tabpanel" role="tabpanel" id="panel-grocery" aria-labelledby="tab-grocery" tabindex="0" hidden>
           <div class="card print-area" data-grocery>
-            <div class="panel-title"><div><h2>Grocery list</h2><p class="muted grocery-sub">For Mom's sample week · <span data-grocery-count></span></p></div>
-              <button class="button button--secondary no-print" type="button" data-print><span data-icon="print"></span>Print list</button>
+            <div class="panel-title"><div><h2 data-i18n="grocery_h2">Grocery list</h2><p class="muted grocery-sub" data-grocery-sub></p></div>
+              <button class="button button--secondary no-print" type="button" data-print><span data-icon="print"></span><span data-i18n="print_list">Print list</span></button>
             </div>
             <section class="store-finder no-print" aria-labelledby="store-finder-title">
-              <h3 id="store-finder-title">Find nearby grocery stores</h3>
-              <p class="muted" id="store-location-note">Use your location or enter a city or ZIP code. Opening results shares that location with Google Maps. FuelWell doesn't save it.</p>
-              <button class="button button--secondary" type="button" data-locate-stores aria-describedby="store-location-note">Use my location</button>
+              <h3 id="store-finder-title" data-i18n="stores_h3"></h3>
+              <p class="muted" id="store-location-note" data-i18n="stores_note"></p>
+              <button class="button button--secondary" type="button" data-locate-stores aria-describedby="store-location-note" data-i18n="use_location">Use my location</button>
               <form class="store-search" data-store-search>
                 <div class="field">
-                  <label for="store-area">City or ZIP code</label>
-                  <input id="store-area" name="area" type="text" placeholder="e.g. Berkeley, CA" maxlength="120" required />
+                  <label for="store-area" data-i18n="city_zip">City or ZIP code</label>
+                  <input id="store-area" name="area" type="text" data-i18n-placeholder="city_placeholder" maxlength="120" required />
                 </div>
-                <button class="button" type="submit">Find stores</button>
+                <button class="button" type="submit" data-i18n="find_stores">Find stores</button>
               </form>
               <p class="store-status" data-store-status role="status" aria-live="polite"></p>
-              <a class="button" data-store-results target="_blank" rel="noopener noreferrer" hidden>View grocery stores in Google Maps (new tab)</a>
+              <a class="button" data-store-results target="_blank" rel="noopener noreferrer" data-i18n="view_stores" hidden>View grocery stores in Google Maps (new tab)</a>
             </section>
             <div class="aisle-grid" data-aisles></div>
-            <p class="print-only print-note">FuelWell sample grocery list for a student demo. Not medical advice.</p>
+            <p class="print-only print-note" data-i18n="print_note"></p>
           </div>
         </section>
-        <footer class="app-footer">
-          <span>FuelWell · Student product demo · Sample data only</span>
-          <span>Not medical advice. Talk with your care team before changing a diet. <a href="/how-it-works.html">How FuelWell works</a></span>
-        </footer>
       </main>
     </div>
     <div class="toast" role="status" aria-live="polite" aria-atomic="true" data-toast></div>

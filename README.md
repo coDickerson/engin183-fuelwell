@@ -12,12 +12,16 @@ It is a student product demo. All health data is sample data, and nothing in it 
 
 | Tab | What it does |
 |---|---|
-| **Today** | Overview for Heidi, caring for her mom Fung (78, CKD G3b): today's meals, nutrient status, next visit. |
+| **Today** | Overview for Heidi, caring for her mom Fung (78, CKD G3b): today's meals, nutrient status, her renal dietitian's latest message, next visit. |
 | **Meals** | A sample week of Cantonese home cooking with potassium, phosphorus and sodium bars (low/mid/high, always text-labelled). **AI recipe adapter:** type a family dish and get a kidney-friendlier version with per-ingredient numbers and swaps. |
 | **Care team** | Visits and messages. **AI question triage:** a caregiver's question is classified, checked for red flags, answered with a reviewable draft and matched with open dietitian slots. Shows "How the agent handled this". |
 | **Health & labs** | Sample lab trends (eGFR, potassium, phosphorus) explained in plain language. |
 
 The public site (Home, How it works, For families, Meal planning, Questions) and the account flow (sign in, sign up with a short matching quiz, demo login) are separate pages.
+
+### Languages
+
+The home page and all four app tabs have an **EN / 中文 / ES** toggle in the header (Traditional Chinese with Cantonese food words). The choice is saved in `localStorage` (`fuelwell.lang.v1`), so every page opens in it. Pages re-render in place when it changes, and `?lang=zh` / `?lang=es` on any link sets it. Both AI agents receive the language and reply in it. The inquiry-triage red-flag rules also match Chinese and Spanish symptom phrases, so the safety override still fires. UI copy lives in `frontend/scripts/app-strings.js` and `landing-strings.js`. Sample data is `{ en, zh, es }` in `frontend/data/fung.js`. The other public pages are English-only for now.
 
 ## Architecture
 

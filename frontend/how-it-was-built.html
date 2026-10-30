@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="theme-color" content="#fbf7f1" />
+<meta name="theme-color" content="#ffffff" />
 <meta name="description" content="How FuelWell was built: two tool-calling Claude agents with code-enforced safety, a multi-agent Claude Code workflow, a token-based design system and the research behind it." />
 <title>How it was built | FuelWell</title>
 <link rel="stylesheet" href="/styles/styles.css" />
@@ -22,7 +22,7 @@
     <div class="bs-nav-links">
       <a href="/">Home</a>
       <a href="/start.html#sign-in">Sign in</a>
-      <a class="button" href="/start.html?demo=1">Try the demo <span aria-hidden="true">&rarr;</span></a>
+      <a class="button" href="/demo.html">Try the demo <span aria-hidden="true">&rarr;</span></a>
     </div>
   </nav>
 </header>
@@ -312,7 +312,7 @@ Summary: 1 meals, 0 errors, 0 warnings. Table: 88 ingredients (USDA FDC).</code>
     <div class="wrap">
       <header>
         <p class="eyebrow">03 / Design system</p>
-        <h2>Clay &amp; Teal, rendered live</h2>
+        <h2>Emerald, rendered live</h2>
         <p class="bs-intro">Everything below is drawn from the real <code>styles.css</code> on this page, not screenshots. Pages build on the same layers, the pattern of a reusable dashboard template.</p>
         <ul class="bs-layers" aria-label="Stylesheet layers">
           <li>Tokens</li><li>Base</li><li>Components</li><li>Page styles</li>
@@ -324,7 +324,7 @@ Summary: 1 meals, 0 errors, 0 warnings. Table: 88 ingredients (USDA FDC).</code>
         <div class="bs-swatch"><span style="background:var(--primary)"></span><div><strong>Primary</strong><br><code>--primary</code></div></div>
         <div class="bs-swatch"><span style="background:var(--primary-strong)"></span><div><strong>Primary strong</strong><br><code>--primary-strong</code></div></div>
         <div class="bs-swatch"><span style="background:var(--primary-soft)"></span><div><strong>Primary soft</strong><br><code>--primary-soft</code></div></div>
-        <div class="bs-swatch"><span style="background:var(--accent)"></span><div><strong>Accent (clay)</strong><br><code>--accent</code></div></div>
+        <div class="bs-swatch"><span style="background:var(--accent)"></span><div><strong>Accent (main buttons)</strong><br><code>--accent</code></div></div>
         <div class="bs-swatch"><span style="background:var(--accent-soft)"></span><div><strong>Accent soft</strong><br><code>--accent-soft</code></div></div>
         <div class="bs-swatch"><span style="background:var(--ground)"></span><div><strong>Ground</strong><br><code>--ground</code></div></div>
         <div class="bs-swatch"><span style="background:var(--ink)"></span><div><strong>Ink</strong><br><code>--ink</code></div></div>
@@ -341,7 +341,7 @@ Summary: 1 meals, 0 errors, 0 warnings. Table: 88 ingredients (USDA FDC).</code>
           <div class="bs-type-row"><code>--text-3xl</code><span class="serif" style="font-size:var(--text-3xl);line-height:1.1">Familiar food</span></div>
           <div class="bs-type-row"><code>--text-2xl</code><span class="serif" style="font-size:var(--text-2xl)">Thoughtful care</span></div>
           <div class="bs-type-row"><code>--text-xl</code><span class="serif" style="font-size:var(--text-xl)">Doenjang jjigae</span></div>
-          <div class="bs-type-row"><code>--text-base</code><span style="font-size:var(--text-base)">18px body in Atkinson Hyperlegible</span></div>
+          <div class="bs-type-row"><code>--text-base</code><span style="font-size:var(--text-base)">18px body in Plus Jakarta Sans</span></div>
           <div class="bs-type-row"><code>--text-sm</code><span style="font-size:var(--text-sm)">16px floor: nothing smaller</span></div>
         </article>
         <article class="card">
@@ -408,7 +408,7 @@ Summary: 1 meals, 0 errors, 0 warnings. Table: 88 ingredients (USDA FDC).</code>
       <div class="bs-decision">
         <div class="card"><p class="eyebrow">Finding</p><p>Many readers are older or reading in a second language; small grey text and color-only status fail them.</p></div>
         <span class="arrow" aria-hidden="true">&rarr;</span>
-        <div class="card card--tint"><p class="eyebrow">Decision</p><p>18px body text with a 16px floor, Atkinson Hyperlegible, AA contrast on every text pair, and 48px touch targets.</p></div>
+        <div class="card card--tint"><p class="eyebrow">Decision</p><p>18px body text with a 16px floor, AA contrast on every text pair, and 48px touch targets. These rules carried over when the October redesign moved from Atkinson Hyperlegible and Clay &amp; Teal to Plus Jakarta Sans and Emerald.</p></div>
       </div>
     </div>
   </section>

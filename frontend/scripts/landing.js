@@ -1,15 +1,51 @@
+import { applyDom, langToggleHtml, onLangChange, wireLangToggle } from './i18n.js';
+import { t } from './landing-strings.js';
+
 const toggle = document.querySelector('.menu-toggle');
 const links = document.querySelector('.nav-links');
+const slot = document.querySelector('[data-lang-slot]');
+
+const menuLabel = () => t(toggle?.getAttribute('aria-expanded') === 'true' ? 'close_menu' : 'open_menu');
+
+// The other public pages share this script but are English-only for now,
+// so only the home page (which has the toggle slot) is translated.
+function paint() {
+  if (slot) {
+    document.title = t('doc_title');
+    applyDom(t);
+  }
+  toggle?.setAttribute('aria-label', menuLabel());
+}
+
+if (slot) {
+  slot.innerHTML = langToggleHtml();
+  wireLangToggle(slot);
+}
+paint();
+onLangChange(paint);
 
 toggle?.addEventListener('click', () => {
   const open = toggle.getAttribute('aria-expanded') !== 'true';
   toggle.setAttribute('aria-expanded', String(open));
-  toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  toggle.setAttribute('aria-label', menuLabel());
   links?.classList.toggle('is-open', open);
 });
 
 links?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
   toggle?.setAttribute('aria-expanded', 'false');
-  toggle?.setAttribute('aria-label', 'Open menu');
+  toggle?.setAttribute('aria-label', menuLabel());
   links.classList.remove('is-open');
 }));
+
+// Fade sections in as they scroll into view. Content stays visible without JS,
+// and people who ask for reduced motion get no animation.
+if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const targets = document.querySelectorAll('main .section-heading, main .card, main .explore-card, main .closing-inner, main .faq-list, main .experts-card');
+  const io = new IntersectionObserver((entries) => entries.forEach((entry) => {
+    if (!entry.isIntersecting) return;
+    entry.target.classList.add('is-in');
+    io.unobserve(entry.target);
+  }), { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  targets.forEach((el) => { el.classList.add('reveal'); io.observe(el); });
+  document.documentElement.classList.add('js-reveal');
+}

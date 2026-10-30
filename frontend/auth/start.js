@@ -1,15 +1,14 @@
-import { authConfigError, friendlyAuthError, getAuthenticatedUser, supabase } from './supabase.js';
-import { DEMO_EMAIL, DEMO_PASSWORD, isDemoUser } from './demo.js';
+import { authConfigError, friendlyAuthError, getAuthenticatedUser, signOutCurrentSession, supabase } from './supabase.js';
+import { isDemoUser } from './demo.js';
+import { savePendingProfile, stashPendingProfile } from './profile.js';
 
 const byId = (id) => document.getElementById(id);
 const card = byId('auth-card');
 const errorBox = byId('form-error');
 const statusBox = byId('status');
-const demoButton = byId('demo-button');
 const matchKey = 'fuelwell.match.v1';
 const MIN_PASSWORD = 8;
 const DASHBOARD = '/dashboard.html';
-const isDemoLink = new URLSearchParams(location.search).get('demo') === '1';
 
 const views = [...document.querySelectorAll('.auth-view')];
 const steps = [byId('quiz-step-1'), byId('quiz-step-2'), byId('account-step')];
@@ -98,14 +97,39 @@ document.querySelectorAll('#quiz-step-1 input[name="role"]').forEach((radio) => 
   radio.addEventListener('change', () => setRole(radio.value));
 });
 
+/* ---------- Health conditions (step 1) ---------- */
+
+const CONDITIONS = ['high_blood_pressure', 'diabetes', 'kidney_disease'];
+const STAGES = ['g1', 'g2', 'g3', 'g3b', 'g4', 'g5', 'g5d', 'unsure'];
+const GOALS = ['familiar-meals', 'eat-healthier', 'fuel-performance', 'understand-options', 'prepare-conversation'];
+const conditionBoxes = [...document.querySelectorAll('#conditions-set input[type="checkbox"]')];
+const noneBox = document.querySelector('#conditions-set input[name="no_conditions"]');
+const kidneyBox = document.querySelector('#conditions-set input[name="kidney_disease"]');
+const stageSet = byId('stage-set');
+
+function syncStage() {
+  stageSet.hidden = !kidneyBox.checked;
+  if (!kidneyBox.checked) stageSet.querySelectorAll('input').forEach((radio) => { radio.checked = false; });
+}
+
+// "None of these" and the conditions exclude each other.
+conditionBoxes.forEach((box) => box.addEventListener('change', () => {
+  if (!box.checked) { syncStage(); return; }
+  if (box === noneBox) conditionBoxes.forEach((other) => { if (other !== noneBox) other.checked = false; });
+  else noneBox.checked = false;
+  syncStage();
+}));
+
+const chosenConditions = (form) => CONDITIONS.filter((name) => form.has(name));
+
 /* ---------- Quiz result ---------- */
 
 function readMatch() {
   try {
     const match = JSON.parse(sessionStorage.getItem(matchKey) || 'null');
     return match && ['patient', 'caregiver'].includes(match.role)
-      && ['g3', 'g3b', 'g4', 'unsure'].includes(match.stage)
-      && ['familiar-meals', 'understand-options', 'prepare-conversation'].includes(match.goal)
+      && (match.stage === null || STAGES.includes(match.stage))
+      && GOALS.includes(match.goal)
       ? match : null;
   } catch { return null; }
 }
@@ -128,45 +152,82 @@ async function saveMatch(user) {
 
 async function finishAuthentication(user) {
   await saveMatch(user);
+  if (!isDemoUser(user)) {
+    // The dashboard asks for anything missing, so a failed profile save shouldn't block sign-in.
+    try { await savePendingProfile(user); } catch { /* finished from the dashboard */ }
+  }
   location.assign(DASHBOARD);
 }
 
 const nextSteps = {
-  'familiar-meals': 'List a few dishes you cook often. FuelWell will suggest kidney-friendly versions to discuss with a renal dietitian.',
-  'understand-options': 'Start with the nutrient check on your dashboard, then bring questions to a renal dietitian or the care team.',
+  'familiar-meals': 'List a few dishes you cook often. FuelWell will suggest versions that fit, to discuss with a dietitian.',
+  'eat-healthier': 'Start with this week’s plan on your dashboard and swap in the dishes you love.',
+  'fuel-performance': 'Add your favourite dishes, and FuelWell will balance them for training and recovery.',
+  'understand-options': 'Start with the nutrient check on your dashboard, then bring questions to a dietitian or the care team.',
   'prepare-conversation': 'Write down the food questions you want to raise at the next care-team visit.',
 };
+
+// What each condition means for the nutrient check, in plain words.
+const conditionFocus = {
+  high_blood_pressure: ['sodium'],
+  diabetes: ['carbs', 'sugar'],
+  kidney_disease: ['potassium', 'phosphorus', 'sodium'],
+};
+
+function joinWords(words) {
+  return words.length < 2 ? words.join('') : `${words.slice(0, -1).join(', ')} and ${words.at(-1)}`;
+}
 
 byId('quiz-step-1').addEventListener('submit', (event) => {
   event.preventDefault();
   const answers = new FormData(event.currentTarget);
-  if (!answers.get('role') || !answers.get('stage')) {
-    showError('Please choose an answer for both questions.');
+  if (!answers.get('role')) {
+    showError('Please choose who you’re setting this up for.');
     return;
   }
+  if (!chosenConditions(answers).length && !answers.has('no_conditions')) {
+    showError('Please choose any that apply, or “None of these”.');
+    return;
+  }
+  // The care-team visit goal only fits when there's a condition to discuss.
+  const none = answers.has('no_conditions');
+  document.querySelectorAll('#quiz-step-2 [data-needs-condition]').forEach((choice) => {
+    choice.hidden = none;
+    if (none) choice.querySelector('input').checked = false;
+  });
   clearMessages();
   setRole(answers.get('role'));
   showStep(2);
 });
+
+document.querySelectorAll('.cuisine-pick').forEach((pick) => pick.addEventListener('click', () => {
+  const input = byId('food-traditions');
+  input.value = pick.textContent.trim();
+  input.focus();
+}));
 
 byId('quiz-step-2').addEventListener('submit', (event) => {
   event.preventDefault();
   const first = new FormData(byId('quiz-step-1'));
   const second = new FormData(event.currentTarget);
   const role = first.get('role');
-  const stage = first.get('stage');
+  const conditions = chosenConditions(first);
+  const stage = conditions.includes('kidney_disease') ? (first.get('stage') || 'unsure') : null;
   const goal = second.get('goal');
   if (!goal) {
     showError('Please choose what would help most.');
     return;
   }
-  const hasTraditions = Boolean(String(second.get('traditions') || '').trim());
+  const cuisine = String(second.get('traditions') || '').trim();
+  const hasTraditions = Boolean(cuisine);
   const forWhom = role === 'caregiver' ? 'the person you care for' : 'you';
-  const stageLine = stage === 'unsure'
-    ? 'It’s fine not to know the kidney stage yet; the care team can confirm it.'
-    : 'We’ll keep the plan in line with the stage the care team mentioned.';
-  byId('result-intro').textContent = `We’ll start with meals for ${forWhom}`
-    + (hasTraditions ? ', built around the foods that feel like home. ' : '. ') + stageLine;
+  const focus = conditions.length
+    ? `Every dish gets a check for ${joinWords([...new Set(conditions.flatMap((c) => conditionFocus[c]))])}.`
+    : goal === 'fuel-performance'
+      ? 'Meals are balanced for energy, protein and recovery.'
+      : 'Meals are balanced for everyday energy and health.';
+  byId('result-intro').textContent = `We’ll start with ${cuisine ? `${cuisine} ` : ''}meals for ${forWhom}`
+    + (hasTraditions ? ', built around the food that feels like home. ' : '. ') + focus;
   byId('result-next-step').textContent = nextSteps[goal];
   try { sessionStorage.setItem(matchKey, JSON.stringify({ role, stage, goal, hasTraditions })); }
   catch {
@@ -204,7 +265,7 @@ async function withBusy(scope, action) {
 function requireFields(form) {
   const empty = [...form.querySelectorAll('input[required]')].find((input) => !input.value.trim());
   if (empty) {
-    showError(`Please fill in your ${empty.name === 'password' ? 'password' : 'email'}.`);
+    showError(`Please fill in your ${{ password: 'password', name: 'name' }[empty.name] || 'email'}.`);
     empty.focus();
     return false;
   }
@@ -279,6 +340,15 @@ forms.signUp.addEventListener('submit', (event) => {
     byId('sign-up-password').focus();
     return;
   }
+  const quiz = new FormData(byId('quiz-step-1'));
+  const profile = {
+    fullName: byId('sign-up-name').value,
+    cuisine: byId('food-traditions').value,
+    kidneyDisease: quiz.has('kidney_disease'),
+    stage: quiz.get('stage') || 'unsure',
+    highBloodPressure: quiz.has('high_blood_pressure'),
+    diabetes: quiz.has('diabetes'),
+  };
   withBusy(form, async () => {
     const { data, error } = await supabase.auth.signUp({
       email: byId('sign-up-email').value.trim(),
@@ -290,6 +360,8 @@ forms.signUp.addEventListener('submit', (event) => {
     if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
       throw new Error('You already have an account. Sign in instead.');
     }
+    // Held in this tab until there is a session (right away, or after the confirmation email).
+    stashPendingProfile(profile);
     form.reset();
     if (!data.session) {
       showStatus('Almost done. Open the confirmation email we sent, then come back and sign in.');
@@ -340,49 +412,13 @@ forms.newPassword.addEventListener('submit', (event) => {
   });
 });
 
-/* ---------- Demo ---------- */
-
-function setDemoLoading(on) {
-  document.documentElement.classList.toggle('is-demo-loading', on);
-}
-
-async function signInAsDemo() {
-  if (!supabase) {
-    setDemoLoading(false);
-    showError('The demo isn’t available because sign-in is not configured on this copy of the site.');
-    return;
-  }
-  demoButton.disabled = true;
-  demoButton.setAttribute('aria-busy', 'true');
-  setDemoLoading(true);
-  clearMessages();
-  try {
-    const { error } = await supabase.auth.signInWithPassword({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
-    if (error) throw error;
-    // Demo sign-in never saves quiz answers: go straight to the dashboard.
-    location.replace(DASHBOARD);
-  } catch (error) {
-    setDemoLoading(false);
-    showMode('signIn');
-    showError(/invalid login credentials/i.test(error?.message || '')
-      ? 'The demo account isn’t available right now. Please try again later.'
-      : friendlyAuthError(error, 'We couldn’t open the demo. Please try again.'));
-    demoButton.disabled = false;
-    demoButton.removeAttribute('aria-busy');
-  }
-}
-
-byId('demo-email').textContent = DEMO_EMAIL;
-byId('demo-password').textContent = DEMO_PASSWORD;
-demoButton.addEventListener('click', signInAsDemo);
-
 /* ---------- Startup ---------- */
 
 if (authConfigError) {
   const notice = byId('config-notice');
   notice.hidden = false;
   notice.querySelector('.config-text').textContent = `${authConfigError} Use a browser-safe publishable key, never a service role key.`;
-  card.querySelectorAll('form button, form input, #demo-button').forEach((control) => { control.disabled = true; });
+  card.querySelectorAll('form button, form input').forEach((control) => { control.disabled = true; });
 }
 
 if (supabase) {
@@ -401,17 +437,19 @@ async function initialize() {
   if (location.hash === '#sign-up') showMode('signUp');
   else showMode('signIn');
 
-  if (isDemoLink) {
-    await signInAsDemo();
-    return;
-  }
   if (!supabase) return;
   // A recovery link carries type=recovery; let the PASSWORD_RECOVERY handler take over.
   if (/type=recovery/.test(location.hash)) return;
   try {
     const user = await getAuthenticatedUser();
-    // Anyone already signed in (including after an email-confirmation redirect) goes to the dashboard.
-    if (user && !recoveryInProgress) await finishAuthentication(user);
+    if (!user || recoveryInProgress) return;
+    // A leftover demo session must never stand in for someone's own sign-in: end it and show the form.
+    if (isDemoUser(user)) {
+      await signOutCurrentSession();
+      return;
+    }
+    // Anyone else already signed in (including after an email-confirmation redirect) goes to the dashboard.
+    await finishAuthentication(user);
   } catch (error) {
     showError(friendlyAuthError(error, 'We could not check your account right now. Please try again.'));
   }

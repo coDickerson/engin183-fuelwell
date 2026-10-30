@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#073d30" />
+  <meta name="robots" content="noindex" />
+  <title>FuelWell family food board | Live</title>
+  <link rel="stylesheet" href="/styles/styles.css" />
+  <link rel="stylesheet" href="/styles/wall.css" />
+  <script type="module" src="/scripts/wall.js"></script>
+</head>
+
+<body class="wall">
+  <main class="wall-main">
+    <header class="wall-top">
+      <div class="wall-title">
+        <p class="wall-brand"><span class="brand-mark" aria-hidden="true"></span>FuelWell · <span class="wall-live"><span class="wall-dot" aria-hidden="true"></span>Live</span></p>
+        <h1>Our family <em>food board</em></h1>
+      </div>
+      <div class="wall-stats">
+        <div class="wall-stat"><strong id="dish-count">0</strong><span>dishes</span></div>
+        <div class="wall-stat wall-stat--accent" id="tally" hidden><strong id="tally-pct">0%</strong><span id="tally-text">know family or friends with kidney disease</span></div>
+      </div>
+      <div class="wall-qr">
+        <img src="/qr-waitlist.svg" alt="QR code for kidneyhealth.vercel.app/waitlist" width="150" height="150" />
+        <p>Add yours<br /><strong>kidneyhealth.vercel.app/waitlist</strong></p>
+      </div>
+    </header>
+
+    <p class="wall-empty" id="empty">Scan the code to add the first dish to the board.</p>
+    <ul class="wall-grid" id="grid" aria-live="polite"></ul>
+  </main>
+</body>
+</html>

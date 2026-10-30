@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#fbf7f1" />
-    <meta name="description" content="Sample messages, visits and care circle for Mom's kidney nutrition in FuelWell." />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="description" content="Messages, visits and the care circle for Mom’s kidney nutrition in FuelWell." />
     <title>Care team | FuelWell</title>
     <link rel="stylesheet" href="/styles/styles.css" />
     <link rel="stylesheet" href="/styles/dashboard.css" />
@@ -14,9 +14,9 @@
     <script defer src="/_vercel/insights/script.js"></script>
   </head>
   <body class="app-page is-loading">
-    <a class="skip-link" href="#main-content">Skip to care team</a>
+    <a class="skip-link" href="#main-content" data-i18n="skip">Skip to content</a>
     <div class="app-loader" data-app-loader role="status" aria-live="polite">
-      <span class="sr-only">Loading Mom's workspace…</span>
+      <span class="sr-only" data-i18n="loading">Loading…</span>
       <div class="sk-rail" aria-hidden="true"><div class="sk sk-logo"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div></div>
       <div class="sk-body" aria-hidden="true">
         <div class="sk sk-top"></div>
@@ -30,15 +30,14 @@
       <main class="app-main" id="main-content" tabindex="-1">
         <div class="page-head">
           <div>
-            <p class="eyebrow">Care team</p>
-            <h1>Care team</h1>
-            <p class="page-sub" data-dietitian-label></p>
+            <h1 data-i18n="care_h1">Care team</h1>
+            <p class="page-sub" data-i18n="care_sub"></p>
           </div>
         </div>
-        <div class="subtabs" role="tablist" aria-label="Care team sections">
-          <button class="subtab" type="button" role="tab" id="tab-messages" data-tab="messages" aria-controls="panel-messages" aria-selected="false" tabindex="-1"><span data-icon="care"></span>Messages</button>
-          <button class="subtab" type="button" role="tab" id="tab-visits" data-tab="visits" aria-controls="panel-visits" aria-selected="false" tabindex="-1"><span data-icon="calendar"></span>Visits</button>
-          <button class="subtab" type="button" role="tab" id="tab-circle" data-tab="circle" aria-controls="panel-circle" aria-selected="false" tabindex="-1"><span data-icon="users"></span>Care circle</button>
+        <div class="subtabs" role="tablist" data-i18n-aria="care_sections">
+          <button class="subtab" type="button" role="tab" id="tab-messages" data-tab="messages" aria-controls="panel-messages" aria-selected="false" tabindex="-1"><span data-icon="care"></span><span data-i18n="tab_messages">Messages</span></button>
+          <button class="subtab" type="button" role="tab" id="tab-visits" data-tab="visits" aria-controls="panel-visits" aria-selected="false" tabindex="-1"><span data-icon="calendar"></span><span data-i18n="tab_visits">Visits</span></button>
+          <button class="subtab" type="button" role="tab" id="tab-circle" data-tab="circle" aria-controls="panel-circle" aria-selected="false" tabindex="-1"><span data-icon="users"></span><span data-i18n="tab_circle">Care circle</span></button>
         </div>
         <section class="tabpanel" role="tabpanel" id="panel-messages" aria-labelledby="tab-messages" tabindex="0" hidden>
           <div class="messages-grid">
@@ -46,13 +45,13 @@
               <div class="thread-head" data-thread-head></div>
               <ol class="thread" data-thread aria-live="polite"></ol>
               <form class="composer" data-composer novalidate>
-                <label class="sr-only" for="composer-text">Message to the care team</label>
-                <div class="composer-suggest"><span class="muted">Try:</span><span data-question-examples></span></div>
+                <label class="sr-only" for="composer-text" data-i18n="composer_label">Message to Mei</label>
+                <div class="composer-suggest"><span class="muted" data-i18n="tryline">Try:</span><span data-question-examples></span></div>
                 <div class="composer-row">
-                  <textarea id="composer-text" rows="2" maxlength="600" placeholder="Write a question for Mei about Mom's food or visits…"></textarea>
-                  <button class="button" type="submit" data-send><span data-icon="send"></span>Send</button>
+                  <textarea id="composer-text" rows="2" maxlength="600" data-i18n-placeholder="composer_placeholder"></textarea>
+                  <button class="button" type="submit" data-send><span data-icon="send"></span><span data-i18n="send">Send</span></button>
                 </div>
-                <p class="hint">The FuelWell assistant sorts each message for the dietitian. Sample only: nothing is sent.</p>
+                <p class="hint" data-i18n="composer_hint"></p>
               </form>
             </section>
             <section class="card triage-card" aria-labelledby="triage-title" aria-live="polite" data-triage></section>
@@ -61,23 +60,18 @@
         <section class="tabpanel" role="tabpanel" id="panel-visits" aria-labelledby="tab-visits" tabindex="0" hidden>
           <div class="visits-grid">
             <div class="visits-lists">
-              <section class="card" aria-labelledby="upcoming-title"><div class="panel-title"><h2 id="upcoming-title">Upcoming</h2></div><ul class="visit-list" data-upcoming></ul></section>
-              <section class="card" aria-labelledby="past-title"><div class="panel-title"><h2 id="past-title">Past visits</h2></div><ul class="visit-list visit-list--past" data-past></ul></section>
+              <section class="card" aria-labelledby="upcoming-title"><div class="panel-title"><h2 id="upcoming-title" data-i18n="upcoming">Upcoming</h2></div><ul class="visit-list" data-upcoming></ul></section>
+              <section class="card" aria-labelledby="past-title"><div class="panel-title"><h2 id="past-title" data-i18n="past_visits">Past visits</h2></div><ul class="visit-list visit-list--past" data-past></ul></section>
             </div>
             <section class="card booker" aria-labelledby="book-title" data-booker></section>
           </div>
         </section>
         <section class="tabpanel" role="tabpanel" id="panel-circle" aria-labelledby="tab-circle" tabindex="0" hidden>
           <section class="card circle-card" aria-labelledby="circle-title">
-            <div class="panel-title"><h2 id="circle-title">Care circle</h2><button class="button button--secondary" type="button" disabled><span data-icon="plus"></span>Invite family member (demo)</button></div>
+            <div class="panel-title"><h2 id="circle-title" data-i18n="circle_h2">Care circle</h2><button class="button button--secondary" type="button" data-invite><span data-icon="plus"></span><span data-i18n="invite">Invite family member</span></button></div>
             <ul class="circle-list" data-circle></ul>
-            <p class="muted circle-note">Inviting people is turned off in this demo. Joyce's view-only access is sample data.</p>
           </section>
         </section>
-        <footer class="app-footer">
-          <span>FuelWell · Student product demo · Sample data only</span>
-          <span>Not medical advice. Talk with your care team before changing a diet. <a href="/how-it-works.html">How FuelWell works</a></span>
-        </footer>
       </main>
     </div>
     <div class="toast" role="status" aria-live="polite" aria-atomic="true" data-toast></div>

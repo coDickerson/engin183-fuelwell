@@ -4,16 +4,16 @@
 // right policy/FAQ, enforce hard safety rules in code, offer bookable slots, and draft
 // a reply a human can send.
 //
-// POST { message: string, patient_name?: string }  (signed-in users only)
+// POST { message: string, patient_name?: string, language?: 'en'|'zh'|'es' }  (signed-in users only)
 // -> the TriageInquiry shape documented in frontend/scripts/ai-client.js
 //
 // Tools: search_care_faq (BM25 over _shared/faq.ts), check_red_flags (deterministic
 // regex rules), get_open_slots (computed from today's date), submit_triage (final).
 // Red flags are ALSO checked by code on the raw message and override the model.
-import { corsHeaders, errorResponse, HttpError, json, optionalText, readJsonBody, requireText } from '../_shared/http.ts';
+import { corsHeaders, errorResponse, HttpError, json, optionalEnum, optionalText, readJsonBody, requireText } from '../_shared/http.ts';
 import { consumeQuota, enforceQuota, requireUser } from '../_shared/guard.ts';
 import { isStr, runToolLoop, type Step, type ToolSpec } from '../_shared/agent.ts';
-import { checkRedFlags, escalationMessage, FAQ, openSlots, searchFaq, type Slot } from '../_shared/faq.ts';
+import { checkRedFlags, escalationMessage, FAQ, LANGS, LANGUAGE_NAME, type Lang, openSlots, searchFaq, type Slot } from '../_shared/faq.ts';
 
 const CATEGORIES = ['meal_question', 'scheduling', 'symptoms', 'labs', 'billing', 'other'] as const;
 const URGENCIES = ['routine', 'soon', 'urgent'] as const;
@@ -162,10 +162,10 @@ function handler() {
 }
 
 /** Code-enforced safety: red flags override whatever the model (or rules) decided. */
-function enforceSafety(result: TriageResult, message: string, patientName: string | null): TriageResult {
+function enforceSafety(result: TriageResult, message: string, patientName: string | null, lang: Lang): TriageResult {
   const flags = checkRedFlags(message);
   if (!flags.red_flag) return { ...result, red_flag: false, escalation: null };
-  const escalation = escalationMessage(patientName, flags.matches);
+  const escalation = escalationMessage(patientName, flags.matches, lang);
   const steps = [...result.steps, { tool: 'safety_override', detail: `Code forced urgency to urgent because of: ${flags.matches.join(', ')}.` }];
   return {
     ...result,
@@ -246,6 +246,7 @@ Deno.serve(async (req) => {
     const body = await readJsonBody(req);
     const message = requireText(body, 'message', 'a question');
     const patientName = optionalText(body, 'patient_name', 'the patient name', 60);
+    const lang: Lang = optionalEnum(body, 'language', LANGS) ?? 'en';
     const quota = await consumeQuota(user, 'inquiry-triage');
     enforceQuota(quota);
 
@@ -255,7 +256,8 @@ Deno.serve(async (req) => {
       const h = handler();
       const run = await runToolLoop({
         system: SYSTEM,
-        userMessage: `<caregiver_message>${message}</caregiver_message>\nPatient first name: ${patientName ?? 'not given'}\nToday (UTC): ${new Date().toISOString().slice(0, 10)}`,
+        userMessage: `<caregiver_message>${message}</caregiver_message>\nPatient first name: ${patientName ?? 'not given'}\nToday (UTC): ${new Date().toISOString().slice(0, 10)}${
+          lang === 'en' ? '' : `\nThe caregiver reads ${LANGUAGE_NAME[lang]}. Write summary and draft_reply in that language. Tool queries may stay in English.`}`,
         tools: TOOLS,
         runTool: h.runTool,
         describe: h.describe,
@@ -283,7 +285,7 @@ Deno.serve(async (req) => {
         reason = run.reason;
       }
     }
-    result = enforceSafety(result ?? rulesTriage(message, patientName), message, patientName);
+    result = enforceSafety(result ?? rulesTriage(message, patientName), message, patientName, lang);
     console.log(JSON.stringify({
       fn: 'inquiry-triage', user: user.id, source: result.source, reason,
       category: result.category, urgency: result.urgency, red_flag: result.red_flag, ms: Date.now() - started,
