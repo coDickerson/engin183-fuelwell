@@ -4,9 +4,9 @@
 
 It is a student product demo. All health data is sample data, and nothing in it is medical advice.
 
-- **Live demo:** https://fuelwell-two.vercel.app. Use the one-click demo at https://fuelwell-two.vercel.app/demo
+- **Live demo:** https://kidneyhealth.vercel.app (the old fuelwell-two.vercel.app address redirects here). Use the one-click demo at https://kidneyhealth.vercel.app/start.html?demo=1
 - **Demo login:** `heidi_demo@fuelwell.app` / `FuelwellDemo` (a public, pre-confirmed account holding sample data only)
-- **How it was built:** https://fuelwell-two.vercel.app/how-it-was-built.html
+- **How it was built:** https://kidneyhealth.vercel.app/how-it-was-built.html
 
 ## Features by tab
 
