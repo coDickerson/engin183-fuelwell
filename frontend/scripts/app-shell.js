@@ -11,7 +11,6 @@ const NAV = [
   { key: 'today', href: '/dashboard.html', label: 'nav_today', icon: 'today' },
   { key: 'meals', href: '/meals.html', label: 'nav_meals', icon: 'meals' },
   { key: 'care', href: '/care-team.html', label: 'nav_care', icon: 'care' },
-  { key: 'health', href: '/health.html', label: 'nav_health', icon: 'health' },
 ];
 const brand = () => `<a class="brand" href="/" aria-label="${esc(t('home_label'))}"><span class="brand-mark" aria-hidden="true"></span>FuelWell</a>`;
 

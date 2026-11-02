@@ -1,11 +1,24 @@
-// Today tab: nutrient tiles, today's meals, the dietitian, the next visit and a recipe nudge.
-import { initShell, langBadge } from './app-shell.js';
-import { esc, fmt, icon, levelPills, num, toast } from './app-ui.js';
-import { dietitianMessages, mealSlots, persona, targets, week } from '../data/fung.js';
+// Today tab: nutrient tiles, today's meals, the next visit and compact calendar and a recipe nudge.
+import { initShell } from './app-shell.js';
+import { esc, fmt, icon, num, storage, toast } from './app-ui.js';
+import { mealSlots, persona, targets, week } from '../data/fung.js';
 import { upcomingVisits, downloadIcs } from './app-visits.js';
-import { lang, tr } from './i18n.js';
+import { tr } from './i18n.js';
 import { t } from './app-strings.js';
 import { CKD_STAGES, saveProfile } from '../auth/profile.js';
+
+import { createCalendar, dateKey } from './calendar.js';
+let calendar;
+const progressStore = storage('session');
+
+function renderProgress() {
+  const key = `fuelwell.meals.${dateKey(new Date())}`;
+  const done = progressStore.get(key, []);
+  const n = mealSlots.filter((slot) => done.includes(slot.key)).length;
+  const label = t('meals_complete', { n, total: mealSlots.length });
+  const box = document.querySelector('[data-daily-progress]');
+  box.innerHTML = `<p class="meal-progress-label" role="status">${esc(t('meals_done_short', { n, total: mealSlots.length }))}</p><div class="meter" role="progressbar" aria-label="${esc(label)}" aria-valuemin="0" aria-valuemax="${mealSlots.length}" aria-valuenow="${n}"><span style="width:${n / mealSlots.length * 100}%"></span></div>`;
+}
 
 const $ = (sel) => document.querySelector(sel);
 const todayIndex = (new Date().getDay() + 6) % 7;
@@ -26,11 +39,9 @@ function kpiTile(key, value, { target, unit, label }) {
   const pct = Math.round((value / target) * 100);
   const st = status(pct);
   const name = tr(label);
-  return `<article class="kpi kpi--${st.cls}">
-    <div class="kpi-top"><h3 class="kpi-label">${esc(name)}</h3><span class="badge badge--${st.cls}">${st.text}</span></div>
-    <p class="kpi-value">${num(value)} <span class="kpi-unit">${esc(unit)}</span></p>
+  return `<article class="nutrient-row kpi--${st.cls}">
+    <div class="nutrient-label"><h3>${esc(name)}</h3><span>${num(value)} / ${num(target)} ${esc(unit)}</span></div>
     <div class="meter" role="progressbar" aria-label="${esc(t('meter_label', { label: name, pct }))}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.min(pct, 100)}"><span style="width:${Math.min(pct, 100)}%"></span></div>
-    <p class="kpi-foot">${esc(t('of_target', { pct, target: num(target), unit }))}</p>
   </article>`;
 }
 
@@ -41,33 +52,23 @@ function renderKpis() {
 }
 
 function renderMeals() {
-  const showDish = lang() !== 'zh';
-  $('[data-today-meals]').innerHTML = mealSlots.map((slot) => {
+  const key = `fuelwell.meals.${dateKey(new Date())}`;
+  const done = progressStore.get(key, []);
+  const list = $('[data-today-meals]');
+  list.innerHTML = mealSlots.map((slot) => {
     const meal = todayPlan[slot.key];
-    return `<li class="meal-item">
-      <div class="meal-when"><span class="meal-slot">${esc(tr(slot.label))}</span><span class="muted">${fmt.clock(slot.h, slot.m)}</span></div>
-      <div class="meal-body">
-        <h3 class="meal-name">${esc(tr(meal.name))}${showDish ? ` <span class="meal-zh" lang="zh-Hant">${esc(meal.dish)}</span>` : ''}</h3>
-        ${levelPills(meal)}
+    return `<li class="meal-item meal-item--simple${done.includes(slot.key) ? ' is-complete' : ''}">
+      <label class="meal-complete"><input type="checkbox" value="${slot.key}" aria-label="${esc(tr(slot.label))}"${done.includes(slot.key) ? ' checked' : ''}></label>
+      <div class="meal-body"><div class="meal-line"><span class="meal-slot">${esc(tr(slot.label))}</span><span class="muted">${fmt.clock(slot.h, slot.m)}</span></div>
+        <h3 class="meal-name">${esc(tr(meal.name))}</h3>
       </div>
     </li>`;
   }).join('');
-}
-
-function renderDietitian() {
-  const d = persona.dietitian;
-  const last = [...dietitianMessages].reverse().find((m) => m.from === 'dietitian');
-  $('[data-dietitian]').innerHTML = `
-    <div class="dt-head">
-      <span class="avatar avatar--clay avatar--lg" aria-hidden="true">${esc(d.initials)}<span class="presence" aria-hidden="true"></span></span>
-      <div class="dt-who"><p class="eyebrow">${esc(t('dietitian_card_title'))}</p><h2 id="dt-title">${esc(d.name)}</h2></div>
-      ${langBadge()}
-    </div>
-    <blockquote class="dt-quote"><p>${esc(tr(last.text))}</p></blockquote>
-    <div class="dt-foot">
-      <span class="muted">${esc(t('latest_note', { when: fmt.relative(-last.daysAgo) }))}</span>
-      <a class="button button--secondary" href="/care-team.html#messages">${icon('care')}${esc(t('reply_mei'))}</a>
-    </div>`;
+  list.querySelectorAll('input').forEach((input) => input.addEventListener('change', () => {
+    progressStore.set(key, [...list.querySelectorAll('input:checked')].map((el) => el.value));
+    renderProgress();
+    input.closest('.meal-item').classList.toggle('is-complete', input.checked);
+  }));
 }
 
 function renderAppointment() {
@@ -230,16 +231,6 @@ function renderProfile(ctx) {
   });
 }
 
-function renderHeadMeta(ctx) {
-  const { patient } = persona;
-  if (ctx.isDemo) {
-    $('[data-patient-meta]').innerHTML = `<span class="chip">${icon('heart')}${esc(patient.name)} · ${patient.age} · ${esc(t('stage', { s: patient.stage }))} · eGFR ${patient.egfr}</span>`;
-    return;
-  }
-  const p = ctx.profile;
-  const bits = conditionsOf(p);
-  $('[data-patient-meta]').innerHTML = bits.length ? `<span class="chip">${icon('heart')}${esc(bits.join(' · '))}</span>` : '';
-}
 
 initShell({
   page: 'today',
@@ -248,10 +239,11 @@ initShell({
   render(ctx) {
     $('[data-greeting]').textContent = greeting(ctx.displayName);
     $('[data-today-date]').textContent = t('today_eyebrow', { date: fmt.day(new Date()) });
-    renderHeadMeta(ctx);
     renderKpis();
+    renderProgress();
+    if (!calendar) calendar = createCalendar($('[data-care-calendar]'), { visits: upcomingVisits, compact: true });
+    else calendar.render();
     renderMeals();
-    renderDietitian();
     renderAppointment();
     renderNextStep();
     renderProfile(ctx);

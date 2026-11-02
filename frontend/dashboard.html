@@ -13,7 +13,7 @@
     <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
     <script defer src="/_vercel/insights/script.js"></script>
   </head>
-  <body class="app-page is-loading">
+  <body class="app-page workspace-page is-loading">
     <a class="skip-link" href="#main-content" data-i18n="skip">Skip to content</a>
     <div class="app-loader" data-app-loader role="status" aria-live="polite">
       <span class="sr-only" data-i18n="loading">Loading…</span>
@@ -34,24 +34,26 @@
             <h1 data-greeting></h1>
             <p class="page-sub" data-i18n="today_sub">Here’s Mom’s day at a glance.</p>
           </div>
-          <div class="page-head-meta" data-patient-meta></div>
         </div>
         <section class="kpi-section" aria-labelledby="kpi-title">
-          <div class="section-head"><h2 id="kpi-title" data-i18n="nutrients_title">Today’s nutrients</h2><p class="muted" data-i18n="nutrients_sub"></p></div>
+          <div class="section-head"><h2 id="kpi-title" data-i18n="nutrients_title">Today’s nutrients</h2><p class="muted" data-i18n="planned_menu"></p></div>
           <div class="kpi-grid" data-kpis></div>
         </section>
         <div class="today-grid">
           <div class="today-left">
           <section class="card today-meals" aria-labelledby="meals-title">
             <div class="panel-title"><h2 id="meals-title" data-i18n="meals_today">Mom’s meals today</h2><a class="link-arrow" href="/meals.html#week"><span data-i18n="see_week">See the week</span> <span data-icon="arrow"></span></a></div>
+            <div class="meal-progress" data-daily-progress></div>
             <ol class="meal-list" data-today-meals></ol>
           </section>
           <section class="card card--tint next-step" aria-labelledby="next-title" data-next-step></section>
           </div>
           <div class="today-side">
             <section class="card profile-card" aria-labelledby="profile-title" data-profile hidden></section>
-            <section class="card dietitian-card" aria-labelledby="dt-title" data-dietitian></section>
-            <section class="card appt-card" aria-labelledby="appt-title" data-next-appt></section>
+            <section class="card appt-card care-summary" aria-labelledby="appt-title">
+              <div data-next-appt></div>
+              <div class="calendar-compact" data-care-calendar></div>
+            </section>
           </div>
         </div>
       </main>

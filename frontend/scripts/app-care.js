@@ -1,6 +1,6 @@
 // Care team tab: message thread with AI triage, visits with a slot picker, and the care circle.
-import { initShell, langBadge } from './app-shell.js';
-import { dateFromOffset, esc, fmt, icon, initTabs, toast } from './app-ui.js';
+import { initShell } from './app-shell.js';
+import { dateFromOffset, esc, fmt, icon, initTabs, storage, toast } from './app-ui.js';
 import { careCircle, dietitianMessages, exampleQuestions, persona } from '../data/fung.js';
 import { triageInquiry } from './ai-client.js';
 import { bookVisit, downloadIcs, isTaken, openSlots, pastVisits, upcomingVisits } from './app-visits.js';
@@ -8,23 +8,28 @@ import { lang, tr } from './i18n.js';
 import { appStrings, t } from './app-strings.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
+import { createCalendar, dateKey } from './calendar.js';
+let calendar;
 let tabs;
+const messageStore = storage('session');
+const MESSAGE_KEY = 'fuelwell.messages.v1';
 // Workspace messages carry a date; messages typed this session keep the time they were sent.
-const thread = dietitianMessages.map((m) => ({ ...m, at: dateFromOffset(-m.daysAgo, m.h, m.m) }));
+const thread = [...dietitianMessages.map((m) => ({ ...m, at: dateFromOffset(-m.daysAgo, m.h, m.m) })), ...messageStore.get(MESSAGE_KEY, []).map((m) => ({ ...m, at: new Date(m.at) }))];
 
 /* ---------- Messages ---------- */
 function renderThreadHead() {
   const d = persona.dietitian;
-  $('[data-thread-head]').innerHTML = `<span class="avatar avatar--clay avatar--lg" aria-hidden="true">${esc(d.initials)}<span class="presence" aria-hidden="true"></span></span>
-    <div class="thread-who"><h2 id="thread-title">${esc(d.name)} ${langBadge()}</h2><p class="muted">${esc(tr(d.role))} · ${esc(t('replies_within'))}</p></div>`;
+  $('[data-thread-head]').innerHTML = `<span class="avatar avatar--clay avatar--lg" aria-hidden="true">${esc(d.initials)}</span>
+    <div class="thread-who"><h2 id="thread-title">${esc(d.name)}</h2><p class="muted">${esc(tr(d.role))}</p></div><span class="thread-response">${icon('clock')}${esc(t('replies_within'))}</span>`;
 }
 
 function renderThread() {
   const list = $('[data-thread]');
-  list.innerHTML = thread.map((m) => {
+  list.innerHTML = thread.map((m, index) => {
     const mine = m.from === 'caregiver';
-    const when = m.sentNow ? t('today_at', { time: fmt.time(m.at) }) : `${fmt.short(m.at)} · ${fmt.time(m.at)}`;
-    return `<li class="bubble-row${mine ? ' bubble-row--mine' : ''}">
+    const when = fmt.time(m.at);
+    const newDay = !index || dateKey(new Date(thread[index - 1].at)) !== dateKey(new Date(m.at));
+    return `${newDay ? `<li class="thread-date"><span>${esc(fmt.short(m.at))}</span></li>` : ''}<li class="bubble-row${mine ? ' bubble-row--mine' : ''}">
       ${mine ? '' : `<span class="avatar avatar--clay" aria-hidden="true">${esc(persona.dietitian.initials)}</span>`}
       <div class="bubble">
         <p class="bubble-meta"><strong>${mine ? esc(t('you')) : esc(persona.dietitian.name)}</strong> <span class="muted">${esc(when)}</span></p>
@@ -148,6 +153,7 @@ function initComposer() {
     const text = box.value.trim();
     if (!text) { toast(t('write_first')); box.focus(); return; }
     thread.push({ from: 'caregiver', text, at: new Date(), sentNow: true, pending: true });
+    messageStore.set(MESSAGE_KEY, thread.filter((m) => m.sentNow));
     renderThread();
     box.value = '';
     runTriage(text);
@@ -160,16 +166,20 @@ function visitItem(v, past = false) {
   return `<li class="visit">
     <div class="date-block${past ? ' date-block--past' : ''}" aria-hidden="true"><span>${fmt.month(d)}</span><strong>${fmt.dateNum(d)}</strong></div>
     <div class="visit-body">
-      <p class="visit-title"><strong>${esc(tr(v.title))}</strong>${v.booked ? ` <span class="badge badge--low">${esc(t('booked_now'))}</span>` : ''}</p>
-      <p class="muted">${fmt.day(d)} · ${fmt.time(d)} · ${esc(t('minutes', { n: v.minutes }))}</p>
-      <p class="muted">${esc(tr(v.with))} · ${esc(tr(v.mode))}</p>
-      ${v.note ? `<p class="visit-note">${esc(tr(v.note))}</p>` : ''}
+      <p class="visit-title"><strong>${esc(tr(v.title))}</strong></p>
+      <p class="muted">${esc(tr(v.with))}</p>
+      <p class="visit-time">${fmt.time(d)} · ${esc(tr(v.mode))}</p>
+      <details class="visit-details"><summary>${esc(t('visit_details'))}</summary>
+        <p class="muted">${fmt.day(d)} · ${esc(t('minutes', { n: v.minutes }))}</p>
+        ${v.note ? `<p class="visit-note">${esc(tr(v.note))}</p>` : ''}
+        ${past ? '' : `<button class="button button--ghost" type="button" data-ics="${esc(v.id)}">${icon('calendar')}<span>${esc(t('add_calendar'))}</span></button>`}
+      </details>
     </div>
-    ${past ? '' : `<button class="button button--ghost" type="button" data-ics="${esc(v.id)}">${icon('calendar')}<span>${esc(t('add_calendar'))}</span></button>`}
   </li>`;
 }
 
 function renderVisitLists() {
+  calendar?.render();
   const upcoming = upcomingVisits();
   $('[data-upcoming]').innerHTML = upcoming.map((v) => visitItem(v)).join('') || `<li class="muted">${esc(t('no_upcoming'))}</li>`;
   $('[data-past]').innerHTML = pastVisits().map((v) => visitItem(v, true)).join('');
@@ -182,24 +192,28 @@ function renderVisitLists() {
 const REASONS = ['reason_checkin', 'reason_labs', 'reason_recipe', 'reason_holiday'];
 
 const booker = {
+  provider: 'doctor',
   day: 0,
   selected: null,
   suggested: null,
   reason: REASONS[0],
   suggest(slot) {
+    $('[data-booking-disclosure]').open = true;
     this.suggested = slot;
     this.selected = slot.iso;
     this.render();
     toast(t('selected_toast', { label: slotLabel(slot) }));
   },
   render() {
+    const reasons = this.provider === 'doctor' ? ['reason_doctor', 'reason_labs'] : REASONS;
+    if (!reasons.includes(this.reason)) this.reason = reasons[0];
     const box = $('[data-booker]');
     const days = openSlots().map((d) => ({ ...d, slots: d.slots.filter((iso) => !isTaken(iso)) }));
     const day = days[this.day] || days[0];
     const sugg = this.suggested && !isTaken(this.suggested.iso) ? this.suggested : null;
     const chosen = this.selected && !isTaken(this.selected) ? new Date(this.selected) : null;
     box.innerHTML = `<div class="panel-title"><h2 id="book-title">${esc(t('book_title'))}</h2><span class="chip">${icon('video')}${esc(t('video_30'))}</span></div>
-      <p class="muted book-with">${esc(t('with_x', { name: persona.dietitian.name }))} · ${esc(tr(persona.dietitian.role))}</p>
+      <p class="hint">${esc(t('booking_demo'))}</p><div class="field"><label for="provider">${esc(t('provider_label'))}</label><select id="provider">${['dietitian', 'doctor'].map((key) => `<option value="${key}"${this.provider === key ? ' selected' : ''}>${esc(t(`provider_${key}`))}</option>`).join('')}</select></div>
       ${sugg ? `<div class="suggested-slot"><p class="eyebrow">${icon('sparkle')} ${esc(t('suggested_by'))}</p>
         <label class="slot slot--wide"><input type="radio" name="slot" value="${esc(sugg.iso)}"${this.selected === sugg.iso ? ' checked' : ''}><span>${esc(slotLabel(sugg))}</span></label></div>` : ''}
       <fieldset class="picker"><legend>${esc(t('choose_day'))}</legend>
@@ -209,11 +223,13 @@ const booker = {
         <div class="slot-grid">${day.slots.map((iso) => `<label class="slot"><input type="radio" name="slot" value="${iso}"${this.selected === iso ? ' checked' : ''}><span>${fmt.time(new Date(iso))}</span></label>`).join('') || `<p class="muted">${esc(t('no_times'))}</p>`}</div>
       </fieldset>
       <div class="field"><label for="reason">${esc(t('reason'))}</label>
-        <select id="reason">${REASONS.map((r) => `<option value="${r}"${r === this.reason ? ' selected' : ''}>${esc(t(r))}</option>`).join('')}</select></div>
+        <select id="reason">${reasons.map((r) => `<option value="${r}"${r === this.reason ? ' selected' : ''}>${esc(t(r))}</option>`).join('')}</select></div>
       <p class="book-summary" aria-live="polite">${chosen ? t('selected', { when: esc(t('at', { day: fmt.day(chosen), time: fmt.time(chosen) })) }) : esc(t('pick_time'))}</p>
       <button class="button button--block" type="button" data-book${chosen ? '' : ' disabled'}>${icon('check')}${esc(t('book_this'))}</button>`;
     box.querySelectorAll('input[name="bday"]').forEach((r) => r.addEventListener('change', () => {
       this.day = Number(r.value);
+      this.selected = null;
+      this.suggested = null;
       this.render();
       box.querySelector(`input[name="bday"][value="${this.day}"]`).focus();
     }));
@@ -222,16 +238,18 @@ const booker = {
       this.render();
       box.querySelector(`input[name="slot"][value="${CSS.escape(this.selected)}"]`)?.focus();
     }));
+    box.querySelector('#provider').addEventListener('change', (event) => { this.provider = event.target.value; this.render(); box.querySelector('#provider').focus(); });
     box.querySelector('#reason').addEventListener('change', (e) => { this.reason = e.target.value; });
     box.querySelector('[data-book]').addEventListener('click', () => {
       if (!chosen) return;
-      const visit = bookVisit(this.selected, appStrings[this.reason]);
+      const visit = bookVisit(this.selected, appStrings[this.reason], this.provider);
+      if (!visit) { this.selected = null; this.render(); return; }
       this.selected = null;
       this.suggested = null;
       renderVisitLists();
       this.render();
       const d = new Date(visit.iso);
-      toast(t('booked_toast', { when: `${fmt.short(d)} · ${fmt.time(d)}` }));
+      toast(t('appointment_confirmed', { when: `${fmt.short(d)} · ${fmt.time(d)}`, provider: tr(visit.with) }));
       $('#upcoming-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   },
@@ -239,10 +257,9 @@ const booker = {
 
 /* ---------- Care circle ---------- */
 function renderCircle() {
-  $('[data-circle]').innerHTML = careCircle.map((p) => `<li class="person">
-    <span class="avatar avatar--${p.tone} avatar--lg" aria-hidden="true">${esc(p.initials || p.name[0])}</span>
-    <div><p class="person-name"><strong>${esc(p.name)}</strong></p><p class="muted">${esc(tr(p.detail))}</p></div>
-    <span class="chip${p.tone === 'clay' ? ' chip--clay' : ''}${p.viewOnly ? ' chip--plain' : ''}">${p.viewOnly ? icon('lock') : ''}${esc(tr(p.role))}</span>
+  $('[data-circle]').innerHTML = careCircle.map((p) => `<li class="circle-member">
+    <span class="avatar circle-avatar" aria-hidden="true">${esc(p.initials || p.name[0])}</span>
+    <div class="circle-member-info"><div class="circle-member-heading"><h3>${esc(p.name)}</h3><span class="circle-role${p.viewOnly ? ' circle-role--limited' : ''}">${p.viewOnly ? icon('lock') : ''}${esc(tr(p.role))}</span></div><p>${esc(tr(p.detail))}</p></div>
   </li>`).join('');
 }
 
@@ -255,8 +272,18 @@ initShell({
     renderThread();
     renderExamples();
     paintTriage();
+    if (!calendar) calendar = createCalendar($('[data-care-calendar]'), { visits: upcomingVisits, compact: true, onSelect(date) {
+      const index = openSlots().findIndex((day) => dateKey(day.date) === dateKey(date));
+      if (index < 0) return;
+      $('[data-booking-disclosure]').open = true;
+      booker.day = index;
+      booker.selected = null;
+      booker.suggested = null;
+      booker.render();
+    } });
     renderVisitLists();
     booker.render();
+    $('[data-i18n="composer_hint"]').textContent = t('messages_demo');
     renderCircle();
     if (!wired) {
       wired = true;

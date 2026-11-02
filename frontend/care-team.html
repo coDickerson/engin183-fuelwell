@@ -13,7 +13,7 @@
     <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
     <script defer src="/_vercel/insights/script.js"></script>
   </head>
-  <body class="app-page is-loading">
+  <body class="app-page workspace-page care-page is-loading">
     <a class="skip-link" href="#main-content" data-i18n="skip">Skip to content</a>
     <div class="app-loader" data-app-loader role="status" aria-live="polite">
       <span class="sr-only" data-i18n="loading">Loading…</span>
@@ -35,12 +35,12 @@
           </div>
         </div>
         <div class="subtabs" role="tablist" data-i18n-aria="care_sections">
-          <button class="subtab" type="button" role="tab" id="tab-messages" data-tab="messages" aria-controls="panel-messages" aria-selected="false" tabindex="-1"><span data-icon="care"></span><span data-i18n="tab_messages">Messages</span></button>
           <button class="subtab" type="button" role="tab" id="tab-visits" data-tab="visits" aria-controls="panel-visits" aria-selected="false" tabindex="-1"><span data-icon="calendar"></span><span data-i18n="tab_visits">Visits</span></button>
+          <button class="subtab" type="button" role="tab" id="tab-messages" data-tab="messages" aria-controls="panel-messages" aria-selected="false" tabindex="-1"><span data-icon="care"></span><span data-i18n="tab_messages">Messages</span></button>
           <button class="subtab" type="button" role="tab" id="tab-circle" data-tab="circle" aria-controls="panel-circle" aria-selected="false" tabindex="-1"><span data-icon="users"></span><span data-i18n="tab_circle">Care circle</span></button>
         </div>
         <section class="tabpanel" role="tabpanel" id="panel-messages" aria-labelledby="tab-messages" tabindex="0" hidden>
-          <div class="messages-grid">
+          <div class="messages-grid messages-grid--focused">
             <section class="card thread-card" aria-labelledby="thread-title">
               <div class="thread-head" data-thread-head></div>
               <ol class="thread" data-thread aria-live="polite"></ol>
@@ -54,21 +54,22 @@
                 <p class="hint" data-i18n="composer_hint"></p>
               </form>
             </section>
-            <section class="card triage-card" aria-labelledby="triage-title" aria-live="polite" data-triage></section>
+            <details class="card message-assistant"><summary data-i18n="message_assistant">Message assistant</summary><section class="triage-card" aria-labelledby="triage-title" aria-live="polite" data-triage></section></details>
           </div>
         </section>
         <section class="tabpanel" role="tabpanel" id="panel-visits" aria-labelledby="tab-visits" tabindex="0" hidden>
-          <div class="visits-grid">
+          <div class="appointments-overview">
             <div class="visits-lists">
               <section class="card" aria-labelledby="upcoming-title"><div class="panel-title"><h2 id="upcoming-title" data-i18n="upcoming">Upcoming</h2></div><ul class="visit-list" data-upcoming></ul></section>
-              <section class="card" aria-labelledby="past-title"><div class="panel-title"><h2 id="past-title" data-i18n="past_visits">Past visits</h2></div><ul class="visit-list visit-list--past" data-past></ul></section>
+              <details class="card past-visits"><summary id="past-title" data-i18n="past_visits">Past visits</summary><ul class="visit-list visit-list--past" data-past></ul></details>
             </div>
-            <section class="card booker" aria-labelledby="book-title" data-booker></section>
+            <section class="card" data-care-calendar></section>
           </div>
+          <details class="card booking-disclosure" data-booking-disclosure><summary data-i18n="book_title">Book a visit</summary><section class="booker appointment-booker" aria-labelledby="book-title" data-booker></section></details>
         </section>
         <section class="tabpanel" role="tabpanel" id="panel-circle" aria-labelledby="tab-circle" tabindex="0" hidden>
           <section class="card circle-card" aria-labelledby="circle-title">
-            <div class="panel-title"><h2 id="circle-title" data-i18n="circle_h2">Care circle</h2><button class="button button--secondary" type="button" data-invite><span data-icon="plus"></span><span data-i18n="invite">Invite family member</span></button></div>
+            <div class="panel-title"><h2 id="circle-title" data-i18n="circle_h2">Care circle</h2><button class="button button--secondary" type="button" data-invite><span data-i18n="invite">Invite family member</span></button></div>
             <ul class="circle-list" data-circle></ul>
           </section>
         </section>

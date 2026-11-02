@@ -24,8 +24,10 @@ export function pastVisits() {
 }
 
 // `reason` is a { en, zh, es } title so a booked visit follows the language too.
-export function bookVisit(iso, reason) {
-  const visit = { id: `b-${Date.now()}`, iso, title: reason, ...visits.newVisit, minutes: 30, booked: true };
+export function bookVisit(iso, reason, provider = 'dietitian') {
+  if (!Number.isFinite(new Date(iso).getTime()) || new Date(iso).getTime() <= Date.now() || isTaken(iso)) return null;
+  const clinician = provider === 'doctor' ? { with: { en: 'Dr. Lau, Nephrology', zh: '劉醫生，腎科', es: 'Dr. Lau, Nefrología' }, mode: visits.newVisit.mode, video: true } : visits.newVisit;
+  const visit = { id: `b-${Date.now()}`, iso, title: reason, ...clinician, minutes: 30, booked: true };
   store.set(KEY, [...bookedVisits(), visit]);
   return visit;
 }
