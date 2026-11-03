@@ -2,9 +2,10 @@
 import { esc, icon } from '../app-ui.js';
 import { pt } from './strings.js';
 
-export function aiNote() {
-  return `<aside class="ai-note" role="note">
+// `compact` is a single quiet line for small spaces such as the Today box.
+export function aiNote({ compact = false } = {}) {
+  return `<aside class="ai-note${compact ? ' ai-note--compact' : ''}" role="note">
     ${icon('info')}
-    <p>${esc(pt('ai_note'))} <a href="/care-team.html#visits">${esc(pt('ai_note_link'))}</a></p>
+    <p>${esc(pt(compact ? 'ai_note_short' : 'ai_note'))} <a href="/care-team.html#visits">${esc(pt('ai_note_link'))}</a></p>
   </aside>`;
 }
