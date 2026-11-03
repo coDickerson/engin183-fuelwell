@@ -10,6 +10,7 @@ import { t } from './app-strings.js';
 const NAV = [
   { key: 'today', href: '/dashboard.html', label: 'nav_today', icon: 'today' },
   { key: 'meals', href: '/meals.html', label: 'nav_meals', icon: 'meals' },
+  { key: 'notes', href: '/notes.html', label: 'nav_notes', icon: 'list' },
   { key: 'care', href: '/care-team.html', label: 'nav_care', icon: 'care' },
   { key: 'chat', href: '/ai-chat.html', label: 'nav_chat', icon: 'sparkle' },
 ];
