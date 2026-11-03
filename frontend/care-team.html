@@ -9,6 +9,7 @@
     <title>Care team | FuelWell</title>
     <link rel="stylesheet" href="/styles/styles.css" />
     <link rel="stylesheet" href="/styles/dashboard.css" />
+    <link rel="stylesheet" href="/styles/portal.css" />
     <script type="module" src="/scripts/app-care.js"></script>
     <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
     <script defer src="/_vercel/insights/script.js"></script>
@@ -41,6 +42,7 @@
         </div>
         <section class="tabpanel" role="tabpanel" id="panel-messages" aria-labelledby="tab-messages" tabindex="0" hidden>
           <div class="messages-grid messages-grid--focused">
+            <div class="care-split" role="note" data-care-split></div>
             <section class="card thread-card" aria-labelledby="thread-title">
               <div class="thread-head" data-thread-head></div>
               <ol class="thread" data-thread aria-live="polite"></ol>

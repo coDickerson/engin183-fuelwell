@@ -31,6 +31,8 @@ export const appStrings = {
   // Shell
   nav_today: s('Today', '今日', 'Hoy'),
   nav_meals: s('Meals', '餐單', 'Comidas'),
+  nav_notes: s('Notes', '筆記', 'Notas'),
+  nav_chat: s('AI Chat', 'AI 對話', 'Chat con IA'),
   nav_care: s('Appointments', '醫療團隊', 'Equipo de salud'),
   nav_health: s('Health & labs', '健康與化驗', 'Salud y análisis'),
   nav_main: s('Main', '主選單', 'Principal'),

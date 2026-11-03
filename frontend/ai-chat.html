@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="description" content="Ask FuelWell AI how to keep Mom’s own dishes kidney-friendly." />
+    <title>AI Chat | FuelWell</title>
+    <link rel="stylesheet" href="/styles/styles.css" />
+    <link rel="stylesheet" href="/styles/dashboard.css" />
+    <link rel="stylesheet" href="/styles/portal.css" />
+    <script type="module" src="/scripts/portal/ai-chat.js"></script>
+    <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+    <script defer src="/_vercel/insights/script.js"></script>
+  </head>
+  <body class="app-page workspace-page is-loading">
+    <a class="skip-link" href="#main-content" data-i18n="skip">Skip to content</a>
+    <div class="app-loader" data-app-loader role="status" aria-live="polite">
+      <span class="sr-only" data-i18n="loading">Loading…</span>
+      <div class="sk-rail" aria-hidden="true"><div class="sk sk-logo"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div></div>
+      <div class="sk-body" aria-hidden="true">
+        <div class="sk sk-top"></div>
+        <div class="sk sk-title"></div>
+        <div class="sk sk-line"></div>
+        <div class="sk-grid sk-grid--2"><div class="sk sk-card"></div><div class="sk sk-card"></div></div>
+      </div>
+    </div>
+    <div class="app-frame" data-app-frame hidden>
+      <main class="app-main" id="main-content" tabindex="-1">
+        <div class="page-head">
+          <div>
+            <h1 data-pt="chat_h1">AI Chat</h1>
+            <p class="page-sub" data-pt="chat_sub"></p>
+          </div>
+        </div>
+        <div class="chat-page">
+          <div data-ai-note></div>
+          <section class="card thread-card" aria-labelledby="chat-who">
+            <div class="thread-head">
+              <span class="avatar avatar--lg ai-avatar" aria-hidden="true"><span data-icon="sparkle"></span></span>
+              <div class="thread-who"><h2 id="chat-who" data-pt="ai_name">FuelWell AI</h2></div>
+              <span class="source-tag source-tag--ai" data-pt="ai_tag"></span>
+            </div>
+            <ol class="thread chat-thread" data-chat aria-live="polite"></ol>
+            <form class="composer" data-chat-form novalidate>
+              <label class="sr-only" for="chat-text" data-pt="chat_label">Your question for FuelWell AI</label>
+              <div class="composer-suggest"><span class="muted" data-pt="chat_try">Try:</span><span data-chat-suggestions></span></div>
+              <div class="composer-row">
+                <textarea id="chat-text" rows="2" maxlength="600" data-pt-placeholder="chat_placeholder"></textarea>
+                <button class="button" type="submit" data-chat-send><span data-icon="send"></span><span data-pt="chat_send">Send</span></button>
+              </div>
+              <p class="hint" data-pt="chat_demo"></p>
+            </form>
+          </section>
+        </div>
+      </main>
+    </div>
+    <div class="toast" role="status" aria-live="polite" aria-atomic="true" data-toast></div>
+  </body>
+</html>

@@ -9,6 +9,7 @@ import { appStrings, t } from './app-strings.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 import { createCalendar, dateKey } from './calendar.js';
+import { renderCareSplit } from './portal/care-split.js';
 let calendar;
 let tabs;
 const messageStore = storage('session');
@@ -285,6 +286,7 @@ initShell({
     booker.render();
     $('[data-i18n="composer_hint"]').textContent = t('messages_demo');
     renderCircle();
+    renderCareSplit();
     if (!wired) {
       wired = true;
       initComposer();
