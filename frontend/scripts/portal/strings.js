@@ -54,6 +54,29 @@ export const portalStrings = {
   written_on: s('Written {date}', '{date} 撰寫', 'Escrita el {date}'),
   saved_on: s('Saved {date}', '{date} 儲存', 'Guardado el {date}'),
   notes_empty: s('No notes here yet.', '暫時未有筆記。', 'Todavía no hay notas aquí.'),
+  // Today: zone bar
+  zone_title: s('How Mom’s week looks', '媽媽這星期的情況', 'Cómo va la semana de mamá'),
+  zone_ok: s('On track', '進度良好', 'Va bien'),
+  zone_close: s('Getting close', '接近上限', 'Cerca del límite'),
+  zone_talk: s('Talk to your dietitian', '請找營養師商量', 'Habla con tu dietista'),
+  zone_aria: s('Mom’s zone this week: {zone}', '媽媽本週的範圍：{zone}', 'Zona de mamá esta semana: {zone}'),
+  zone_ok_why: s('Mom’s meal plan this week fits her goals. Keep it up!', '媽媽本週的餐單符合目標，繼續保持！', 'El plan de comidas de mamá esta semana va con sus metas. ¡Sigan así!'),
+  zone_close_why: s('{nutrient} is getting close to Mom’s limit.', '{nutrient}接近媽媽的上限。', 'El {nutrient} se acerca al límite de mamá.'),
+  zone_talk_why: s('{nutrient} is over Mom’s limit this week. Please talk to Mei.', '{nutrient}本週超出媽媽的上限，請和 Mei 商量。', 'El {nutrient} pasa el límite de mamá esta semana. Por favor habla con Mei.'),
+  zone_tip_k: s('Go easy on long-boiled soups, bananas and oranges.', '少飲老火湯，少吃香蕉和橙。', 'Con calma con las sopas largas, el plátano y la naranja.'),
+  zone_tip_p: s('Go easy on dairy, dried seafood and packaged foods.', '少吃奶類、海味乾貨和包裝食品。', 'Con calma con los lácteos, mariscos secos y alimentos empacados.'),
+  zone_tip_na: s('Measure soy and oyster sauce instead of pouring.', '豉油和蠔油要用匙量，不要直接倒。', 'Mide la soya y la salsa de ostión en vez de servirlas a ojo.'),
+  zone_basis: s('Based on this week’s meal plan.', '根據本週餐單計算。', 'Según el plan de comidas de esta semana.'),
+  zone_see_guide: s('See this week’s guide', '查看本週指南', 'Ver la guía de esta semana'),
+  zone_message_mei: s('Message Mei', '傳訊息給 Mei', 'Escribir a Mei'),
+
+  // Today: AI preview
+  preview_title: s('Ask FuelWell AI', '問 FuelWell AI', 'Pregunta a FuelWell AI'),
+  ai_short: s('AI', 'AI', 'IA'),
+  preview_last: s('Last answer', '上一個回答', 'Última respuesta'),
+  preview_empty: s('Ask how to make Mom’s favourite dishes kidney-friendly.', '問問怎樣讓媽媽愛吃的菜更適合腎臟。', 'Pregunta cómo adaptar los platos favoritos de mamá para sus riñones.'),
+  preview_placeholder: s('Ask about a dish…', '問問某道菜…', 'Pregunta por un plato…'),
+  preview_ask: s('Ask', '發問', 'Preguntar'),
   plan_check: s('Check this plan with Mei before big changes.', '作出較大改動前，請先和 Mei 確認這份餐單。', 'Revisa este plan con Mei antes de hacer cambios grandes.'),
 };
 

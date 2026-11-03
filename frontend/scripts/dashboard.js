@@ -8,6 +8,7 @@ import { t } from './app-strings.js';
 import { CKD_STAGES, saveProfile } from '../auth/profile.js';
 
 import { createCalendar, dateKey } from './calendar.js';
+import { renderTodayExtras } from './portal/today-extras.js';
 let calendar;
 const progressStore = storage('session');
 
@@ -247,6 +248,7 @@ initShell({
     renderAppointment();
     renderNextStep();
     renderProfile(ctx);
+    renderTodayExtras();
   },
 });
 
