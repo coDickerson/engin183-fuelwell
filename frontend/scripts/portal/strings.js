@@ -63,6 +63,10 @@ export const portalStrings = {
   ai_note_short: s('Ideas, not medical advice. It doesn’t replace Mei.', '只提供建議，並非醫療意見，不能取代 Mei。', 'Ideas, no consejos médicos. No reemplaza a Mei.'),
   preview_placeholder: s('Ask about a dish…', '問問某道菜…', 'Pregunta por un plato…'),
   preview_ask: s('Ask', '發問', 'Preguntar'),
+  // Appointments: real dietitian banner
+  split_real: s('You’re messaging {name}, a real person.', '你正在傳訊息給 {name}，她是真人營養師。', 'Estás escribiendo a {name}, una persona real.'),
+  split_not_ai: s('Her replies are not from the AI.', '她的回覆並非來自 AI。', 'Sus respuestas no vienen de la IA.'),
+  split_ai_link: s('Quick food ideas? Try AI Chat', '想快速找飲食建議？試試 AI 對話', '¿Ideas rápidas de comida? Prueba el chat con IA'),
   plan_check: s('Check this plan with Mei before big changes.', '作出較大改動前，請先和 Mei 確認這份餐單。', 'Revisa este plan con Mei antes de hacer cambios grandes.'),
 };
 
