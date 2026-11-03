@@ -1,0 +1,43 @@
+/* Portal pieces Megan owns: AI Chat, Notes, Today zone bar and AI preview, Appointments banner.
+   Built only from the tokens in styles.css and the shared classes in dashboard.css. */
+
+/* ---------- AI note (wherever FuelWell AI appears) ---------- */
+.ai-note {
+  display: flex; align-items: flex-start; gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent); border-radius: var(--radius);
+  background: var(--accent-soft); color: var(--ink);
+}
+.ai-note > .icon { flex: none; width: 24px; height: 24px; margin-top: 2px; color: var(--accent); }
+.ai-note p { margin: 0; font-size: var(--text-base); }
+.ai-note a { font-weight: 700; white-space: nowrap; }
+
+.ai-avatar { background: var(--accent-soft); color: var(--accent); }
+
+/* ---------- AI Chat page ---------- */
+.chat-page { display: grid; gap: var(--space-4); max-width: 900px; }
+.chat-thread { max-height: 58vh; min-height: 320px; }
+.chat-page .bubble-text { font-size: var(--text-base); line-height: 1.55; }
+.bubble--urgent { border: 2px solid var(--high); background: var(--high-soft); }
+.urgent-label { display: flex; align-items: center; gap: 6px; margin-bottom: 6px !important; color: var(--high); font-weight: 800; }
+.urgent-label .icon { width: 20px; height: 20px; }
+
+.plan-card {
+  margin-top: var(--space-3) !important; padding: var(--space-4);
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface);
+}
+.plan-card h3 { margin: 0 0 var(--space-3); font-size: var(--text-lg); }
+.plan-days { display: grid; gap: var(--space-3); margin: 0 0 var(--space-3); padding: 0; list-style: none; }
+.plan-days h4 { margin: 0 0 4px; font-size: var(--text-base); color: var(--primary-strong); }
+.plan-days ul { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.plan-slot { display: inline-block; min-width: 6.5em; color: var(--ink-3); font-weight: 700; }
+.plan-card .hint { margin: 0 0 var(--space-3); color: var(--ink-3); font-size: var(--text-sm); }
+.plan-saved { display: flex; flex-wrap: wrap; align-items: center; gap: 6px var(--space-2); margin: 0; color: var(--ok); font-weight: 700; }
+.plan-saved .icon { width: 22px; height: 22px; }
+.plan-saved a { min-height: 48px; display: inline-flex; align-items: center; }
+
+@media (max-width: 640px) {
+  .chat-thread { max-height: none; }
+  .plan-slot { display: block; min-width: 0; }
+  .ai-note a { white-space: normal; }
+}
