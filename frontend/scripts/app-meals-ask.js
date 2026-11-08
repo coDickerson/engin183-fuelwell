@@ -1,6 +1,6 @@
 // Meals > "Swap & eat out": Swap a meal (text or photo), Eating out and Family recipe,
-// answered by the LangChain routes (/api/swap, /api/eatout, /api/recipe), plus
-// "Browse swaps" from FuelWell's swap catalog (/api/catalog, no AI call).
+// answered by the LangChain routes (/api/swap, /api/eatout, /api/recipe).
+// "Browse swaps" (its own sub-tab) lives in app-meals-browse.js and calls personalize().
 // Uses the app's own components (card, filter, chip, notice, data-table); no new look.
 import { esc, icon, toast } from './app-ui.js';
 import { persona } from '../data/fung.js';
@@ -14,16 +14,14 @@ const MODES = {
   eatout: { endpoint: '/api/eatout', submit: 'sw_submit_eatout', error: 'sw_err_eatout', examples: ['Panda Express', 'El Pollo Loco', 'Dim sum', "McDonald's", 'A pho restaurant'] },
   recipe: { endpoint: '/api/recipe', submit: 'sw_submit_recipe', error: 'sw_err_recipe', examples: ["Grandma's braised pork belly", 'Steamed fish with soy sauce', 'Lo mein with char siu'] },
 };
-const KINDS = { takeout: 'br_takeout', frozen: 'br_frozen', home: 'br_home' };
 const NUTRIENT_KEY = { Na: 'sodium', K: 'potassium', P: 'phosphorus' };
 
 // The app's patient (Fung, CKD G3b, Cantonese home cooking) is the profile the AI tailors to.
 const PROFILE = { for_whom: 'family', stage: 'stage3', cuisines: ['Chinese'], usually: 'home', notes: 'Cantonese home cooking; age 78' };
 
-const state = { mode: 'swap', photo: null, busy: false, view: { state: 'empty' }, last: null, rows: null, rowsError: false, kind: 'all', cuisine: 'all' };
+const state = { mode: 'swap', photo: null, busy: false, view: { state: 'empty' }, last: null };
 
 const nutrient = (n) => (NUTRIENT_KEY[n] ? `${n} · ${t(NUTRIENT_KEY[n])}` : n);
-const cuisineGroup = (c) => String(c || '').split(/\s*[/-]\s*/)[0].replace(/\s+fast food$/i, '').trim();
 
 /* ---------- Form ---------- */
 function paintForm() {
@@ -174,38 +172,16 @@ function recipeBody(data) {
   };
 }
 
-function catalogBody(data) {
-  const r = data.card;
-  const kind = KINDS[r.eater_type] ? t(KINDS[r.eater_type]) : r.eater_type;
-  const cuisine = cuisineGroup(r.cuisine);
-  return {
-    title: r.meal,
-    tag: '',
-    lead: `<p class="muted">${esc(kind)}${cuisine && cuisine !== 'Any' ? ` · ${esc(cuisine)}` : ''}</p>`,
-    body: `
-      <div class="instead">
-        <div><span class="instead-label">${esc(t('br_instead'))}</span><p>${esc(r.meal)}</p></div>
-        <span class="instead-arrow" aria-hidden="true">${icon('arrow')}</span>
-        <div class="instead-try"><span class="instead-label">${esc(t('br_try'))}</span><p>${esc(r.swap)}</p></div>
-      </div>
-      <p><strong>${esc(t('br_why'))}:</strong> ${esc(r.why)}</p>
-      ${r.watch?.length ? `<h4 class="result-sub">${esc(t('sw_watch'))}</h4><p class="ask-badges">${r.watch.map((n) => `<span class="chip chip--plain">${esc(nutrient(n))}</span>`).join('')}</p>` : ''}
-      <div class="helper-actions"><button class="button" type="button" data-personalize>${icon('sparkle')}<span>${esc(t('br_personalize'))}</span></button></div>
-      <p class="muted">${esc(t('sw_for', { who: tr(persona.patient.relation) }))}</p>`,
-  };
-}
-
-const BODY = { swap: swapBody, eatout: eatoutBody, recipe: recipeBody, catalog: catalogBody };
+const BODY = { swap: swapBody, eatout: eatoutBody, recipe: recipeBody };
 
 function renderResult(data, focus = true) {
   result().setAttribute('aria-busy', 'false');
   const part = BODY[data.mode](data);
-  const ai = data.mode !== 'catalog';
   const note = data.coverage === 'guidelines' && data.mode === 'swap' ? `<p class="muted">${esc(t('sw_not_in_list'))}</p>` : '';
   result().innerHTML = `
     <div class="result-head">
-      <div><p class="eyebrow">${esc(t(`sw_mode_${data.mode === 'catalog' ? 'swap' : data.mode}`))}</p><h3 class="result-title" tabindex="-1">${esc(part.title)}</h3></div>
-      <span class="source-tag source-tag--${ai ? 'ai' : 'rules'}">${icon(ai ? 'sparkle' : 'list')}${esc(t(ai ? 'sw_ai_tag' : 'sw_list_tag'))}</span>
+      <div><p class="eyebrow">${esc(t(`sw_mode_${data.mode}`))}</p><h3 class="result-title" tabindex="-1">${esc(part.title)}</h3></div>
+      <span class="source-tag source-tag--ai">${icon('sparkle')}${esc(t('sw_ai_tag'))}</span>
     </div>
     ${part.tag ? `<p>${part.tag}</p>` : ''}
     ${part.lead}
@@ -216,7 +192,6 @@ function renderResult(data, focus = true) {
     <div class="ask-actions"><button class="button button--secondary" type="button" data-ask-copy>${esc(t('sw_copy'))}</button></div>
     <p class="notice">${icon('info')}<span>${esc(t('sw_disclaimer'))}</span></p>`;
   $('[data-ask-copy]', result()).addEventListener('click', async () => toast(t((await copyText(cardText(data))) ? 'sw_copied' : 'sw_copy_failed')));
-  $('[data-personalize]', result())?.addEventListener('click', () => personalize(data.card));
   if (focus) $('.result-title', result()).focus({ preventScroll: true });
 }
 
@@ -238,9 +213,7 @@ async function copyText(text) {
 function cardText(data) {
   const c = data.card;
   const L = [];
-  if (data.mode === 'catalog') {
-    L.push(c.meal, `Instead of: ${c.meal}`, `Try: ${c.swap}`, `Why: ${c.why}`);
-  } else if (data.mode === 'swap') {
+  if (data.mode === 'swap') {
     L.push(c.dish, c.headline, '');
     for (const w of c.watch || []) L.push(`- ${nutrient(w.nutrient)}: ${w.note}`);
     L.push('');
@@ -288,8 +261,8 @@ async function request(mode, body, what) {
   }
 }
 
-/** "Personalize for me" on a Browse card: the normal AI swap, tailored to the profile. */
-function personalize(row) {
+/** "Personalize for me" on a Browse swaps card: the normal AI swap, tailored to the profile. */
+export function personalize(row) {
   state.mode = 'swap';
   setPhoto(null);
   $('#ask-meal').value = row.meal;
@@ -297,45 +270,6 @@ function personalize(row) {
   paintForm();
   result().scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
   request('swap', { meal: row.meal, profile: PROFILE }, row.meal);
-}
-
-/* ---------- Browse swaps (no AI) ---------- */
-function paintBrowse() {
-  const kindBox = $('[data-browse-kind]');
-  const cuisineBox = $('[data-browse-cuisine]');
-  const count = $('[data-browse-count]');
-  const grid = $('[data-browse-grid]');
-  if (state.rowsError) { count.textContent = t('br_failed'); return; }
-  if (!state.rows) { count.textContent = t('br_loading'); return; }
-  const pressed = (on) => `aria-pressed="${on}"`;
-  kindBox.innerHTML = [['all', 'br_all'], ...Object.entries(KINDS)].map(([k, key]) => `<button class="filter" type="button" data-browse-kind-btn="${k}" ${pressed(state.kind === k)}>${esc(t(key))}</button>`).join('');
-  const cuisines = [...new Set(state.rows.map((r) => cuisineGroup(r.cuisine)).filter((c) => c && c !== 'Any'))].sort();
-  cuisineBox.innerHTML = [['all', t('br_all_cuisines')], ...cuisines.map((c) => [c, c])].map(([c, label]) => `<button class="filter" type="button" data-browse-cuisine-btn="${esc(c)}" ${pressed(state.cuisine === c)}>${esc(label)}</button>`).join('');
-  const shown = state.rows.filter((r) => (state.kind === 'all' || r.eater_type === state.kind) && (state.cuisine === 'all' || cuisineGroup(r.cuisine) === state.cuisine));
-  count.textContent = `${t('br_count', { n: shown.length })} · ${t('br_english_note')}`;
-  grid.innerHTML = shown.length
-    ? shown.map((r, i) => {
-      const cuisine = cuisineGroup(r.cuisine);
-      return `<li><button class="browse-item" type="button" data-browse-open="${state.rows.indexOf(r)}">
-        <span class="browse-item-meal">${esc(r.meal)}</span>
-        <span class="muted browse-item-meta">${esc(KINDS[r.eater_type] ? t(KINDS[r.eater_type]) : r.eater_type)}${cuisine && cuisine !== 'Any' ? ` · ${esc(cuisine)}` : ''}</span>
-        <span class="browse-item-try"><strong>${esc(t('br_try'))}:</strong> ${esc(r.swap)}</span>
-        <span class="ask-badges">${(r.watch || []).map((n) => `<span class="chip chip--plain">${esc(nutrient(n))}</span>`).join('')}</span>
-      </button></li>`;
-    }).join('')
-    : `<li class="muted">${esc(t('br_none'))}</li>`;
-}
-
-async function loadCatalog() {
-  try {
-    const res = await fetch('/api/catalog');
-    const data = await res.json();
-    if (!res.ok || !Array.isArray(data.rows)) throw new Error('bad response');
-    state.rows = data.rows;
-  } catch {
-    state.rowsError = true;
-  }
-  paintBrowse();
 }
 
 /* ---------- Wire up ---------- */
@@ -374,22 +308,6 @@ export function initAsk() {
     try { setPhoto(await shrinkImage(file)); showError(''); } catch { showError(t('sw_photo_bad')); }
   });
   $('[data-ask-photo-remove]').addEventListener('click', () => setPhoto(null));
-  $('[data-browse-kind]').addEventListener('click', (e) => {
-    const b = e.target.closest('[data-browse-kind-btn]');
-    if (b) { state.kind = b.dataset.browseKindBtn; paintBrowse(); }
-  });
-  $('[data-browse-cuisine]').addEventListener('click', (e) => {
-    const b = e.target.closest('[data-browse-cuisine-btn]');
-    if (b) { state.cuisine = b.dataset.browseCuisineBtn; paintBrowse(); }
-  });
-  $('[data-browse-grid]').addEventListener('click', (e) => {
-    const b = e.target.closest('[data-browse-open]');
-    if (!b) return;
-    const row = state.rows[Number(b.dataset.browseOpen)];
-    state.view = { state: 'result', data: { mode: 'catalog', card: row, sources: [{ title: 'FuelWell swap catalog (draft, pending renal dietitian review)', url: null }] } };
-    renderResult(state.view.data);
-    result().scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
-  });
   // Links like /meals.html?dish=...#ask (from Today) open Family recipe with the dish filled in.
   const dish = new URLSearchParams(location.search).get('dish');
   if (dish) {
@@ -398,12 +316,10 @@ export function initAsk() {
     paintForm();
     toast(t('sw_prefilled'));
   }
-  loadCatalog();
 }
 
 /** Runs on first paint and again whenever the language changes. */
 export function renderAsk() {
   paintForm();
   paintResult();
-  paintBrowse();
 }

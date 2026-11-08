@@ -38,6 +38,7 @@
         <div class="subtabs" role="tablist" data-i18n-aria="meals_sections">
           <button class="subtab" type="button" role="tab" id="tab-ask" data-tab="ask" aria-controls="panel-ask" aria-selected="false" tabindex="-1"><span data-icon="sparkle"></span><span data-i18n="tab_ask">Swap &amp; eat out</span></button>
           <button class="subtab" type="button" role="tab" id="tab-grocery" data-tab="grocery" aria-controls="panel-grocery" aria-selected="false" tabindex="-1"><span data-icon="list"></span><span data-i18n="tab_grocery">Grocery list</span></button>
+          <button class="subtab" type="button" role="tab" id="tab-browse" data-tab="browse" aria-controls="panel-browse" aria-selected="false" tabindex="-1"><span data-icon="heart"></span><span data-i18n="tab_browse">Browse swaps</span></button>
           <button class="subtab" type="button" role="tab" id="tab-week" data-tab="week" aria-controls="panel-week" aria-selected="false" tabindex="-1"><span data-icon="week"></span><span data-i18n="tab_week">This week</span></button>
         </div>
         <section class="tabpanel" role="tabpanel" id="panel-week" aria-labelledby="tab-week" tabindex="0" hidden>
@@ -115,15 +116,17 @@
             </form>
             <section class="card helper-result" aria-live="polite" aria-busy="false" data-ask-result></section>
           </div>
+        </section>
 
-          <section class="card browse" aria-labelledby="browse-title">
+        <section class="tabpanel" role="tabpanel" id="panel-browse" aria-labelledby="tab-browse" tabindex="0" hidden>
+          <div class="browse">
             <div class="panel-title"><h2 id="browse-title" data-i18n="br_h2">Browse swaps</h2></div>
             <p class="muted" data-i18n="br_intro"></p>
             <div class="filter-group" role="group" data-i18n-aria="br_kind" data-browse-kind></div>
             <div class="filter-group" role="group" data-i18n-aria="filter_cuisine" data-browse-cuisine></div>
             <p class="muted browse-count" data-browse-count aria-live="polite"></p>
             <ul class="browse-grid" data-browse-grid></ul>
-          </section>
+          </div>
         </section>
 
         <aside class="card card--tint resources" aria-labelledby="resources-title">
