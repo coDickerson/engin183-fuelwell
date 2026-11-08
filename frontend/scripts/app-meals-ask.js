@@ -84,8 +84,18 @@ function setPhoto(dataUrl) {
 /* ---------- Result ---------- */
 const result = () => $('[data-ask-result]');
 
+// On phones and narrow screens the answer sits below the form, so bring it into view.
+const stacked = () => matchMedia('(max-width: 1099px)').matches;
+const motion = () => (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth');
+/** Scrolls so `el` starts just below the sticky top bar. */
+function reveal(el) {
+  const bar = $('.app-top')?.getBoundingClientRect().height || 0;
+  window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - bar - 12, behavior: motion() });
+}
+
 function paintResult() {
   const v = state.view;
+  result().dataset.state = v.state;
   if (v.state === 'loading') return loadingState(v.what);
   if (v.state === 'error') return errorState(v.message);
   if (v.state === 'result') return renderResult(v.data, false);
@@ -175,6 +185,7 @@ function recipeBody(data) {
 const BODY = { swap: swapBody, eatout: eatoutBody, recipe: recipeBody };
 
 function renderResult(data, focus = true) {
+  result().dataset.state = 'result';
   result().setAttribute('aria-busy', 'false');
   const part = BODY[data.mode](data);
   const note = data.coverage === 'guidelines' && data.mode === 'swap' ? `<p class="muted">${esc(t('sw_not_in_list'))}</p>` : '';
@@ -192,7 +203,10 @@ function renderResult(data, focus = true) {
     <div class="ask-actions"><button class="button button--secondary" type="button" data-ask-copy>${esc(t('sw_copy'))}</button></div>
     <p class="notice">${icon('info')}<span>${esc(t('sw_disclaimer'))}</span></p>`;
   $('[data-ask-copy]', result()).addEventListener('click', async () => toast(t((await copyText(cardText(data))) ? 'sw_copied' : 'sw_copy_failed')));
-  if (focus) $('.result-title', result()).focus({ preventScroll: true });
+  if (focus) {
+    $('.result-title', result()).focus({ preventScroll: true });
+    if (stacked()) reveal(result());
+  }
 }
 
 async function copyText(text) {
@@ -244,6 +258,7 @@ async function request(mode, body, what) {
   submit.setAttribute('aria-busy', 'true');
   state.view = { state: 'loading', what };
   paintResult();
+  if (stacked()) reveal(result());
   try {
     const res = await fetch(MODES[mode].endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     let data = null;
@@ -268,7 +283,7 @@ export function personalize(row) {
   $('#ask-meal').value = row.meal;
   showError('');
   paintForm();
-  result().scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  if (!stacked()) reveal($('[data-ask-form]'));
   request('swap', { meal: row.meal, profile: PROFILE }, row.meal);
 }
 

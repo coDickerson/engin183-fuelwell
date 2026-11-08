@@ -974,3 +974,29 @@
 .resource-links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); }
 .resource-links a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 700; }
 .resource-links .icon { width: 18px; height: 18px; }
+
+/* ---------- Swap & eat out / Browse swaps on phones: one clear path, nothing extra ---------- */
+@media (max-width: 1099px) {
+  /* The answer appears below the form; no empty placeholder box before the first question. */
+  .helper-result[data-state="empty"] { display: none; }
+}
+@media (max-width: 640px) {
+  /* Modes: one row of three equal buttons. */
+  .ask-modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .ask-modes .filter { min-height: 48px; padding: 6px 4px; line-height: 1.15; text-align: center; }
+  /* Examples and filters: one swipeable row instead of many wrapped rows. */
+  [data-ask-form] .example-chips { flex-wrap: nowrap; overflow-x: auto; margin-inline: calc(var(--space-4) * -1); padding: 2px var(--space-4) 6px; scrollbar-width: none; }
+  [data-ask-form] .example-chips::-webkit-scrollbar, .browse .filter-group::-webkit-scrollbar { display: none; }
+  [data-ask-form] .example-chips > span:last-child { display: flex; gap: var(--space-2); }
+  [data-ask-form] .chip-button { flex: none; white-space: nowrap; }
+  .ask-for { font-size: var(--text-sm); }
+  [data-ask-submit] { width: 100%; }
+  .ask-photo .button { width: 100%; }
+  .browse .filter-group { flex-wrap: nowrap; overflow-x: auto; margin-inline: calc(var(--space-4) * -1); padding: 2px var(--space-4) 6px; scrollbar-width: none; }
+  .browse .filter { flex: none; white-space: nowrap; min-height: 44px; }
+  .browse-grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
+  /* One Save button per card on phones (the labelled one). */
+  .swap-card-save { display: none; }
+  .swap-card-actions .button { flex: 1 1 0; min-height: 48px; font-size: var(--text-base); }
+  .ask-actions .button { width: 100%; }
+}
