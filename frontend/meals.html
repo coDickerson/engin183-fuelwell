@@ -36,10 +36,11 @@
           <div class="page-head-meta" data-reviewed></div>
         </div>
         <div class="subtabs" role="tablist" data-i18n-aria="meals_sections">
+          <button class="subtab" type="button" role="tab" id="tab-ask" data-tab="ask" aria-controls="panel-ask" aria-selected="false" tabindex="-1"><span data-icon="sparkle"></span><span data-i18n="tab_ask">Swap &amp; eat out</span></button>
+          <button class="subtab" type="button" role="tab" id="tab-grocery" data-tab="grocery" aria-controls="panel-grocery" aria-selected="false" tabindex="-1"><span data-icon="list"></span><span data-i18n="tab_grocery">Grocery list</span></button>
           <button class="subtab" type="button" role="tab" id="tab-week" data-tab="week" aria-controls="panel-week" aria-selected="false" tabindex="-1"><span data-icon="week"></span><span data-i18n="tab_week">This week</span></button>
           <button class="subtab" type="button" role="tab" id="tab-helper" data-tab="helper" aria-controls="panel-helper" aria-selected="false" tabindex="-1"><span data-icon="sparkle"></span><span data-i18n="tab_helper">Recipe adapter</span></button>
           <button class="subtab" type="button" role="tab" id="tab-swaps" data-tab="swaps" aria-controls="panel-swaps" aria-selected="false" tabindex="-1"><span data-icon="swap"></span><span data-i18n="tab_swaps">Smart swaps</span></button>
-          <button class="subtab" type="button" role="tab" id="tab-grocery" data-tab="grocery" aria-controls="panel-grocery" aria-selected="false" tabindex="-1"><span data-icon="list"></span><span data-i18n="tab_grocery">Grocery list</span></button>
         </div>
         <section class="tabpanel" role="tabpanel" id="panel-week" aria-labelledby="tab-week" tabindex="0" hidden>
           <div class="day-picker" role="group" data-i18n-aria="choose_day" data-day-picker></div>
@@ -108,6 +109,73 @@
             <p class="print-only print-note" data-i18n="print_note"></p>
           </div>
         </section>
+        <section class="tabpanel" role="tabpanel" id="panel-ask" aria-labelledby="tab-ask" tabindex="0" hidden>
+          <div class="helper-grid">
+            <form class="card helper-form" data-ask-form novalidate>
+              <div class="panel-title"><h2 data-i18n="sw_h2">Ask FuelWell</h2><span class="chip chip--clay"><span data-icon="sparkle"></span>AI</span></div>
+              <div class="filter-group ask-modes" role="group" data-i18n-aria="sw_modes" data-ask-modes>
+                <button class="filter" type="button" data-ask-mode="swap" aria-pressed="true" data-i18n="sw_mode_swap">Swap a meal</button>
+                <button class="filter" type="button" data-ask-mode="eatout" aria-pressed="false" data-i18n="sw_mode_eatout">Eating out</button>
+                <button class="filter" type="button" data-ask-mode="recipe" aria-pressed="false" data-i18n="sw_mode_recipe">Family recipe</button>
+              </div>
+              <div data-ask-fields="swap">
+                <div class="field">
+                  <label for="ask-meal" data-i18n="sw_meal_label"></label>
+                  <textarea id="ask-meal" rows="3" maxlength="300" data-i18n-placeholder="sw_meal_ph" aria-describedby="ask-error"></textarea>
+                </div>
+                <div class="ask-photo">
+                  <button class="button button--secondary" type="button" data-ask-photo-btn><span data-i18n="sw_photo">Add a photo</span></button>
+                  <input type="file" accept="image/*" data-ask-photo-input hidden />
+                  <span class="chip chip--plain ask-photo-chip" data-ask-photo-chip hidden>
+                    <img alt="" data-ask-photo-thumb /><span data-i18n="sw_photo_added">Photo added</span>
+                    <button type="button" class="ask-photo-remove" data-ask-photo-remove data-i18n-aria="sw_photo_remove">✕</button>
+                  </span>
+                </div>
+              </div>
+              <div data-ask-fields="eatout" hidden>
+                <div class="field">
+                  <label for="ask-restaurant" data-i18n="sw_restaurant_label"></label>
+                  <input id="ask-restaurant" maxlength="120" data-i18n-placeholder="sw_restaurant_ph" aria-describedby="ask-error" />
+                </div>
+                <div class="field">
+                  <label for="ask-usual" data-i18n="sw_usual_label"></label>
+                  <textarea id="ask-usual" rows="2" maxlength="300"></textarea>
+                </div>
+              </div>
+              <div data-ask-fields="recipe" hidden>
+                <div class="field">
+                  <label for="ask-recipe" data-i18n="sw_recipe_label"></label>
+                  <textarea id="ask-recipe" rows="6" maxlength="6000" data-i18n-placeholder="sw_recipe_ph" aria-describedby="ask-error"></textarea>
+                </div>
+              </div>
+              <div class="example-chips" data-i18n-aria="examples"><span class="muted" data-i18n="tryline">Try:</span><span data-ask-examples></span></div>
+              <p class="field-error" id="ask-error" data-ask-error hidden></p>
+              <p class="hint ask-for" data-ask-for></p>
+              <div class="helper-actions">
+                <button class="button" type="submit" data-ask-submit><span data-icon="sparkle"></span><span data-ask-submit-label></span></button>
+              </div>
+            </form>
+            <section class="card helper-result" aria-live="polite" aria-busy="false" data-ask-result></section>
+          </div>
+
+          <section class="card browse" aria-labelledby="browse-title">
+            <div class="panel-title"><h2 id="browse-title" data-i18n="br_h2">Browse swaps</h2></div>
+            <p class="muted" data-i18n="br_intro"></p>
+            <div class="filter-group" role="group" data-i18n-aria="br_kind" data-browse-kind></div>
+            <div class="filter-group" role="group" data-i18n-aria="filter_cuisine" data-browse-cuisine></div>
+            <p class="muted browse-count" data-browse-count aria-live="polite"></p>
+            <ul class="browse-grid" data-browse-grid></ul>
+          </section>
+        </section>
+
+        <aside class="card card--tint resources" aria-labelledby="resources-title">
+          <h2 id="resources-title" data-i18n="res_h">Trusted kidney resources</h2>
+          <ul class="resource-links">
+            <li><a href="https://www.kidney.org/" target="_blank" rel="noopener noreferrer"><span data-i18n="res_nkf">National Kidney Foundation (NKF)</span> <span class="sr-only" data-i18n="res_new_tab"></span><span data-icon="arrow"></span></a></li>
+            <li><a href="https://www.niddk.nih.gov/health-information/kidney-disease" target="_blank" rel="noopener noreferrer"><span data-i18n="res_niddk">NIDDK</span> <span class="sr-only" data-i18n="res_new_tab"></span><span data-icon="arrow"></span></a></li>
+            <li><a href="https://www.kidneyfund.org/" target="_blank" rel="noopener noreferrer"><span data-i18n="res_akf">American Kidney Fund</span> <span class="sr-only" data-i18n="res_new_tab"></span><span data-icon="arrow"></span></a></li>
+          </ul>
+        </aside>
       </main>
     </div>
     <div class="toast" role="status" aria-live="polite" aria-atomic="true" data-toast></div>

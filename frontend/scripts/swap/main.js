@@ -1,7 +1,8 @@
 // FuelWell v1 (/swap): one screen, three modes, a result card, saved meals and a profile.
 // Profile and saved meals live only in this browser (localStorage). The AI runs on the
 // server (/api/swap, /api/eatout, /api/recipe); no keys are ever in this file.
-import { cardText, renderCard, renderError } from './card.js';
+import { cardText, catalogResult, renderCard, renderError } from './card.js';
+import { initBrowse } from './browse.js';
 import { TIPS } from './tips.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -162,7 +163,7 @@ function updateSavedCount() { $('[data-saved-count]').textContent = String(readS
 
 function titleOf(result) {
   const c = result.card || {};
-  return c.dish || c.restaurant || c.title || 'Saved meal';
+  return c.dish || c.restaurant || c.title || c.meal || 'Saved meal';
 }
 
 function isSaved(result) { return readSaved().some((s) => s.key === result._key); }
@@ -196,7 +197,7 @@ function renderSavedList() {
     const open = document.createElement('button');
     open.type = 'button';
     open.className = 'open';
-    const label = { swap: 'Swap a meal', eatout: 'Eating out', recipe: 'Family recipe' }[s.result.mode] || '';
+    const label = { swap: 'Swap a meal', eatout: 'Eating out', recipe: 'Family recipe', catalog: 'Browse swaps' }[s.result.mode] || '';
     open.innerHTML = `<span></span><small></small>`;
     open.firstChild.textContent = titleOf(s.result);
     open.lastChild.textContent = `${label} · ${new Date(s.savedAt).toLocaleDateString()}`;
@@ -259,6 +260,9 @@ function showResult(result) {
       }
     },
     onCopy: async () => toast((await copyText(cardText(result))) ? 'Copied. Paste it in a text to your family.' : "Couldn't copy on this browser"),
+    hasProfile: Boolean(readProfile() && Object.keys(readProfile()).length),
+    onOpenProfile: openProfile,
+    onPersonalize: result.mode === 'catalog' ? () => personalize(result.card) : undefined,
   }));
   root.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
 }
@@ -301,14 +305,27 @@ async function submit(event) {
   const built = buildBody();
   if (built.error) { showFormError(built.error); return; }
   showFormError('');
-  const mode = state.mode;
+  await request(state.mode, built.body);
+}
+
+/** "Personalize for me" on a catalog card: the normal AI swap chain, with the profile. */
+async function personalize(row) {
+  if (state.controller) return;
+  setMode('swap');
+  setPhoto(null);
+  $('#meal').value = row.meal;
+  await request('swap', { meal: row.meal, profile: readProfile() || undefined });
+}
+
+async function request(mode, body) {
   state.controller = new AbortController();
   startLoading();
+  $('[data-loading]').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
   try {
     const res = await fetch(MODES[mode].endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(built.body),
+      body: JSON.stringify(body),
       signal: state.controller.signal,
     });
     let data = null;
@@ -330,6 +347,11 @@ async function submit(event) {
     stopLoading();
     state.controller = null;
   }
+}
+
+function openProfile() {
+  fillProfileForm();
+  $('[data-profile-sheet]').showModal();
 }
 
 // ---------------------------------------------------------------------------
@@ -376,13 +398,14 @@ function init() {
   $('[data-photo-remove]').addEventListener('click', () => setPhoto(null));
 
   const profileSheet = $('[data-profile-sheet]');
-  $('[data-open-profile]').addEventListener('click', () => { fillProfileForm(); profileSheet.showModal(); });
+  $('[data-open-profile]').addEventListener('click', openProfile);
   $('[data-profile-form]').addEventListener('submit', (e) => {
     e.preventDefault();
     const p = profileFromForm();
     if (Object.keys(p).length) store.set(KEYS.profile, p); else store.remove(KEYS.profile);
     updateProfileButton();
     profileSheet.close();
+    if (state.current?.mode === 'catalog') showResult(state.current);
     toast('Profile saved on this phone');
   });
   $('[data-profile-clear]').addEventListener('click', () => {
@@ -404,6 +427,7 @@ function init() {
   setMode(params.get('mode') || store.get(KEYS.mode, 'swap'));
   updateProfileButton();
   updateSavedCount();
+  initBrowse({ onOpen: (row) => showResult(catalogResult(row)) });
 }
 
 init();

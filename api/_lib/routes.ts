@@ -2,12 +2,12 @@
 // (api/*.ts), the local dev server and the test script all run the same code.
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { identifyDish, runCard, type CardResult } from './chain.js';
-import { missingConfig } from './env.js';
+import { missingConfig, supabaseServiceKey, supabaseUrl } from './env.js';
 import { checkImage } from './images.js';
 import {
   DISCLAIMER, EatOutInputSchema, parseProfile, RecipeInputSchema, SwapInputSchema, type Mode, type Profile,
 } from './schemas.js';
-import type { Retrieved } from './retrieve.js';
+import { supabase, type Retrieved } from './retrieve.js';
 
 export interface RouteResult { status: number; body: Record<string, unknown> }
 
@@ -111,6 +111,34 @@ export async function runRoute(mode: Mode, body: unknown): Promise<RouteResult> 
     console.error(JSON.stringify({ route: mode, msg: 'failed', ms: Date.now() - started, error: String(err).slice(0, 300) }));
     return fail(502, 'FuelWell could not answer just now. Please try again.', 'upstream_error');
   }
+}
+
+/**
+ * "Browse swaps": the whole swap catalog, read straight from Supabase. No AI call.
+ * The rows are the same as the public seed CSV, so they can be cached.
+ */
+export async function listCatalog(): Promise<RouteResult> {
+  if (!supabaseUrl() || !supabaseServiceKey()) return fail(503, 'FuelWell is not set up on this server yet.', 'not_configured');
+  const { data, error } = await supabase()
+    .from('swap_catalog')
+    .select('id, meal, eater_type, cuisine, watch, swap, why')
+    .order('meal');
+  if (error) {
+    console.error(JSON.stringify({ route: 'catalog', msg: 'failed', error: error.message.slice(0, 300) }));
+    return fail(502, 'Could not load swaps just now.', 'upstream_error');
+  }
+  return { status: 200, body: { rows: data ?? [], disclaimer: DISCLAIMER } };
+}
+
+export async function catalogVercelHandler(req: VercelRequest, res: VercelResponse) {
+  if (req.method !== 'GET') {
+    res.setHeader('Allow', 'GET');
+    res.status(405).json({ error: 'Use GET.', code: 'method_not_allowed' });
+    return;
+  }
+  const result = await listCatalog();
+  res.setHeader('Cache-Control', result.status === 200 ? 'public, s-maxage=600, stale-while-revalidate=86400' : 'no-store');
+  res.status(result.status).json(result.body);
 }
 
 /** Wraps a route as a Vercel Node function. */

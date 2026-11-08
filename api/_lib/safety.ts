@@ -55,10 +55,17 @@ export interface CheckContext {
   allowedSources: Set<string>;
 }
 
+// Shaming words. FuelWell says "Instead of -> Try", never that a food is bad.
+const SHAMING = /\b(unhealthy|junk[- ]?food|bad for you|bad food|guilt(y|-free)?|cheat (meal|day)|forbidden)\b/i;
+export const hasShamingWords = (text: string) => SHAMING.test(text);
+
 /** Problems worth one repair round, in words the model can act on. */
 export function findProblems(card: Card, ctx: CheckContext): string[] {
   const problems: string[] = [];
   const suggestions = suggestionTexts(ctx.mode, card);
+  if (hasShamingWords(allText(card))) {
+    problems.push('Never call a food "unhealthy", "junk", "bad" or "guilty". Describe what to watch and what to try instead, kindly.');
+  }
   if (suggestions.some(suggestsSaltSubstitute)) {
     problems.push('Remove every suggestion of salt substitutes or "lite salt" (many contain potassium chloride).');
   }

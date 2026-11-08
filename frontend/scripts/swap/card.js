@@ -2,10 +2,44 @@
 // Everything from the AI is inserted as text (esc), never as HTML.
 const DISCLAIMER = 'FuelWell student prototype. Not medical advice. Check with your dietitian or care team.';
 
-const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
 const VERDICT = { good_pick: 'Already a good pick', tweak: 'Keep it, tweak it', swap: 'Try a swap' };
-const NUTRIENT = { Na: 'sodium', K: 'potassium', P: 'phosphorus', Fluid: 'fluid', Sugar: 'sugar' };
+export const NUTRIENT = { Na: 'sodium', K: 'potassium', P: 'phosphorus', Fluid: 'fluid', Sugar: 'sugar' };
+
+export const KIND = { takeout: 'Fast food', frozen: 'Frozen/microwave', home: 'Home cooked' };
+const CATALOG_SOURCE = 'FuelWell swap catalog (draft, pending renal dietitian review)';
+
+/** A catalog row shown as a card, before any AI. */
+export function catalogResult(row) {
+  return { mode: 'catalog', card: row, sources: [{ id: row.id, kind: 'catalog', title: CATALOG_SOURCE, url: null }], _key: `catalog:${row.id}` };
+}
+
+/** "Chinese-American" -> "Chinese", "Filipino / Hawaiian" -> "Filipino"; "Any" fits every cuisine. */
+export const cuisineGroup = (c) => String(c || '').split(/\s*[/-]\s*/)[0].replace(/\s+fast food$/i, '').trim();
+
+export function badges(watch) {
+  return (watch || []).map((n) => `<span class="badge ${esc(n)}">${esc(n === 'Fluid' || n === 'Sugar' ? n : `${n} · ${NUTRIENT[n] || n}`)}</span>`).join('');
+}
+
+function catalogBody(result) {
+  const r = result.card;
+  const cuisine = cuisineGroup(r.cuisine);
+  const watch = badges(r.watch);
+  return `
+    <div class="card-top">
+      <span class="pill tweak">From the swap list</span>
+      <h2>${esc(r.meal)}</h2>
+      <p class="note">${esc(KIND[r.eater_type] || r.eater_type)}${cuisine && cuisine !== 'Any' ? ` · ${esc(cuisine)}` : ''}</p>
+    </div>
+    <div class="instead">
+      <div><span class="lbl">Instead of</span><p>${esc(r.meal)}</p></div>
+      <span class="down" aria-hidden="true">↓</span>
+      <div class="try-box"><span class="lbl">Try</span><p>${esc(r.swap)}</p></div>
+    </div>
+    <p class="headline"><strong>Why:</strong> ${esc(r.why)}</p>
+    ${watch ? `<div><h3 class="section-title">What to watch</h3><div class="badges">${watch}</div></div>` : ''}`;
+}
 
 function sourcesLine(result) {
   const list = result.sources || [];
@@ -80,12 +114,20 @@ function recipeBody(result) {
     ${headsUp(c)}`;
 }
 
-export function renderCard(result, { saved, onSave, onCopy }) {
+const BODY = { swap: swapBody, eatout: eatoutBody, recipe: recipeBody, catalog: catalogBody };
+
+export function renderCard(result, { saved, onSave, onCopy, onPersonalize, hasProfile, onOpenProfile }) {
   const el = document.createElement('article');
   el.className = 'card';
-  const body = result.mode === 'eatout' ? eatoutBody(result) : result.mode === 'recipe' ? recipeBody(result) : swapBody(result);
+  const body = (BODY[result.mode] || swapBody)(result);
+  const personalize = result.mode === 'catalog' && onPersonalize ? `
+    <div class="personalize">
+      <button type="button" class="primary" data-personalize>Personalize for me</button>
+      <p class="hint">${hasProfile ? 'Uses your profile to tailor these swaps.' : 'Gives general tips. <button type="button" data-set-profile>Add your profile</button> for tips that fit you.'}</p>
+    </div>` : '';
   el.innerHTML = `
     ${body}
+    ${personalize}
     ${sourcesLine(result)}
     <div class="card-actions">
       <button type="button" data-save aria-pressed="${saved}">${saved ? 'Saved ✓' : 'Save'}</button>
@@ -95,6 +137,8 @@ export function renderCard(result, { saved, onSave, onCopy }) {
   const save = el.querySelector('[data-save]');
   save.addEventListener('click', () => onSave(save));
   el.querySelector('[data-copy]').addEventListener('click', onCopy);
+  el.querySelector('[data-personalize]')?.addEventListener('click', onPersonalize);
+  el.querySelector('[data-set-profile]')?.addEventListener('click', onOpenProfile);
   return el;
 }
 
@@ -110,7 +154,10 @@ export function renderError(message) {
 export function cardText(result) {
   const c = result.card || {};
   const lines = [];
-  if (result.mode === 'swap') {
+  if (result.mode === 'catalog') {
+    lines.push(c.meal, '', `Instead of: ${c.meal}`, `Try: ${c.swap}`, `Why: ${c.why}`);
+    if (c.watch?.length) lines.push('', `What to watch: ${c.watch.map((n) => NUTRIENT[n] || n).join(', ')}`);
+  } else if (result.mode === 'swap') {
     lines.push(`${c.dish} (${VERDICT[c.verdict] || ''})`, c.headline, '');
     if (c.watch?.length) lines.push('What to watch:', ...c.watch.map((w) => `- ${NUTRIENT[w.nutrient] || w.nutrient}: ${w.note}`), '');
     if (c.swaps?.length) lines.push('Swaps:', ...c.swaps.map((s) => `- ${s.title}: ${s.how} (${s.why})`), '');

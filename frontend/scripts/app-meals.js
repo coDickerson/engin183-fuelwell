@@ -1,9 +1,11 @@
-// Meals tab: weekly plan, AI recipe adapter, smart swaps and a printable grocery list.
+// Meals tab: weekly plan, AI recipe adapter, smart swaps, a printable grocery list,
+// and "Swap & eat out" (see app-meals-ask.js).
 import { initShell } from './app-shell.js';
 import { badge, esc, fmt, icon, initTabs, nutrientName, nutrientRow, storage, toast } from './app-ui.js';
 import { grocery, mealSlots, persona, recipeExamples, swaps, week } from '../data/fung.js';
 import { adaptRecipe } from './ai-client.js';
 import { initStoreFinder } from './store-finder.js';
+import { initAsk, renderAsk } from './app-meals-ask.js';
 import { lang, tr } from './i18n.js';
 import { t } from './app-strings.js';
 
@@ -241,6 +243,7 @@ function wireOnce() {
   });
   $('[data-print]').addEventListener('click', () => window.print());
   initStoreFinder();
+  initAsk();
   initTabs($('[role="tablist"]'));
   if (new URLSearchParams(location.search).get('dish')) toast(t('helper_prefilled'));
 }
@@ -254,6 +257,7 @@ initShell({
     paintResult();
     renderSwaps();
     renderGrocery();
+    renderAsk();
     wireOnce();
   },
 });
