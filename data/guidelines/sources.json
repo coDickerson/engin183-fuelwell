@@ -1,0 +1,122 @@
+{
+  "_readme": "Every guideline the AI may cite. scripts/ingest.ts reads the files listed here from this folder. The files themselves are NOT committed (they are copyrighted); run `npm run fetch:guidelines` for the NKF pages and download the PDFs by hand (see README.md in this folder). 'pages' limits a PDF to its diet and nutrition sections; leave it out to read the whole file.",
+  "sources": [
+    {
+      "id": "kdoqi-2020",
+      "title": "KDOQI Clinical Practice Guideline for Nutrition in CKD: 2020 Update (Ikizler et al., AJKD 2020)",
+      "url": "https://doi.org/10.1053/j.ajkd.2020.05.006",
+      "file": "kdoqi-2020-nutrition.pdf",
+      "kind": "pdf",
+      "pages": [
+        [
+          39,
+          51
+        ],
+        [
+          74,
+          86
+        ]
+      ],
+      "pages_note": "Guideline 2 (medical nutrition therapy), 3 (protein, energy, dietary patterns) and 6 (acid load, calcium, phosphorus, potassium, sodium). PDF page = printed S-page."
+    },
+    {
+      "id": "kdigo-2024-ckd",
+      "title": "KDIGO 2024 Clinical Practice Guideline for the Evaluation and Management of CKD (diet and nutrition sections)",
+      "url": "https://kdigo.org/wp-content/uploads/2024/03/KDIGO-2024-CKD-Guideline.pdf",
+      "file": "kdigo-2024-ckd.pdf",
+      "kind": "pdf",
+      "pages": [
+        [
+          90,
+          97
+        ],
+        [
+          111,
+          113
+        ],
+        [
+          133,
+          133
+        ]
+      ],
+      "pages_note": "3.2 Lifestyle, 3.3 Diet (protein, sodium), 3.11.5 hyperkalemia dietary considerations, Figure 45 herbal remedies and supplements."
+    },
+    {
+      "id": "kdigo-2022-diabetes",
+      "title": "KDIGO 2022 Clinical Practice Guideline for Diabetes Management in CKD (nutrition sections)",
+      "url": "https://kdigo.org/guidelines/diabetes-ckd/",
+      "file": "kdigo-2022-diabetes-ckd.pdf",
+      "kind": "pdf",
+      "pages": [
+        [
+          64,
+          70
+        ]
+      ],
+      "pages_note": "Chapter 3.1 Nutrition intake."
+    },
+    {
+      "id": "nkf-nutrition-ckd",
+      "title": "NKF: Nutrition and Kidney Disease, Stages 1-5 (Not on Dialysis)",
+      "url": "https://www.kidney.org/kidney-topics/nutrition-and-kidney-disease-stages-1-5-not-dialysis",
+      "file": "nkf-nutrition-ckd.txt",
+      "kind": "web"
+    },
+    {
+      "id": "nkf-kidney-plate",
+      "title": "NKF: How to Plan Meals for Chronic Kidney Disease",
+      "url": "https://www.kidney.org/kidney-topics/creating-kidney-friendly-plate",
+      "file": "nkf-kidney-plate.txt",
+      "kind": "web"
+    },
+    {
+      "id": "nkf-sodium",
+      "title": "NKF: The Importance of Sodium Restrictions in Chronic Kidney Disease",
+      "url": "https://www.kidney.org/sites/default/files/the_importance_of_sodium_restrictions_in_chronic_kidney_disease.pdf",
+      "file": "nkf-sodium.pdf",
+      "kind": "pdf-download"
+    },
+    {
+      "id": "nkf-potassium",
+      "title": "NKF: Potassium",
+      "url": "https://www.kidney.org/kidney-topics/potassium",
+      "file": "nkf-potassium.txt",
+      "kind": "web"
+    },
+    {
+      "id": "nkf-phosphorus",
+      "title": "NKF: Phosphorus and Your Diet",
+      "url": "https://www.kidney.org/kidney-topics/phosphorus-and-your-ckd-diet",
+      "file": "nkf-phosphorus.txt",
+      "kind": "web"
+    },
+    {
+      "id": "nkf-labels",
+      "title": "NKF: How to Read Nutrition Labels for Kidney Health",
+      "url": "https://www.kidney.org/kidney-topics/reading-nutrition-facts-labels-to-make-kidney-healthy-choices",
+      "file": "nkf-labels.txt",
+      "kind": "web"
+    },
+    {
+      "id": "nkf-hemodialysis-diet",
+      "title": "NKF: Hemodialysis and Your Diet",
+      "url": "https://www.kidney.org/kidney-topics/hemodialysis-and-your-diet",
+      "file": "nkf-hemodialysis-diet.txt",
+      "kind": "web"
+    },
+    {
+      "id": "nkf-dining-out",
+      "title": "NKF: Dining Out with Confidence (Stages 1-5)",
+      "url": "https://www.kidney.org/sites/default/files/dining_out_with_confidence_1.pdf",
+      "file": "nkf-dining-out.pdf",
+      "kind": "pdf-download"
+    },
+    {
+      "id": "nkf-dining-out-dialysis",
+      "title": "NKF: Dining Out With Confidence - On Dialysis",
+      "url": "https://www.kidney.org/kidney-topics/dining-out-confidence-dialysis",
+      "file": "nkf-dining-out-dialysis.txt",
+      "kind": "web"
+    }
+  ]
+}

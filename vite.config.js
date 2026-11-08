@@ -4,6 +4,8 @@ import { resolve } from 'node:path';
 export default defineConfig({
   root: resolve(import.meta.dirname, 'frontend'),
   envDir: import.meta.dirname,
+  // Local dev: /api/* goes to `npm run dev:api` (on Vercel the api/ folder serves it).
+  server: { proxy: { '/api': 'http://localhost:8787' } },
   build: {
     outDir: resolve(import.meta.dirname, 'dist'),
     emptyOutDir: true,
@@ -27,6 +29,7 @@ export default defineConfig({
         waitlist: resolve(import.meta.dirname, 'frontend/waitlist.html'),
         wall: resolve(import.meta.dirname, 'frontend/wall.html'),
         dishes: resolve(import.meta.dirname, 'frontend/dishes.html'),
+        swap: resolve(import.meta.dirname, 'frontend/swap.html'),
       },
     },
   },

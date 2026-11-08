@@ -23,6 +23,15 @@
     {
       "source": "/dishes",
       "destination": "/dishes.html"
+    },
+    {
+      "source": "/swap",
+      "destination": "/swap.html"
     }
-  ]
+  ],
+  "functions": {
+    "api/*.ts": {
+      "maxDuration": 60
+    }
+  }
 }

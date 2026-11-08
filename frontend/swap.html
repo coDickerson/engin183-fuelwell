@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>FuelWell · What's for dinner?</title>
+    <meta name="description" content="Kidney-friendlier swaps for the food you already love. A FuelWell student prototype." />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles/swap.css" />
+    <script type="module" src="/scripts/swap/main.js"></script>
+  </head>
+  <body>
+    <header class="top">
+      <a class="brand" href="/swap" aria-label="FuelWell home">
+        <span class="brand-mark" aria-hidden="true">●</span> FuelWell
+      </a>
+      <button class="profile-btn" type="button" data-open-profile aria-haspopup="dialog">
+        <span data-profile-label>Profile</span>
+      </button>
+    </header>
+
+    <main class="wrap">
+      <h1>What's for dinner?</h1>
+
+      <div class="modes" role="radiogroup" aria-label="What do you need help with?">
+        <button type="button" role="radio" aria-checked="true" data-mode="swap">Swap a meal</button>
+        <button type="button" role="radio" aria-checked="false" data-mode="eatout">Eating out</button>
+        <button type="button" role="radio" aria-checked="false" data-mode="recipe">Family recipe</button>
+      </div>
+
+      <form class="ask" data-form novalidate>
+        <div data-fields="swap">
+          <label class="sr-only" for="meal">The meal</label>
+          <div class="box">
+            <textarea id="meal" name="meal" rows="2" maxlength="300" autocomplete="off"></textarea>
+            <button type="button" class="photo-btn" data-photo-btn aria-label="Add a photo of the meal">📷</button>
+            <input type="file" accept="image/*" data-photo-input hidden />
+          </div>
+          <div class="photo-chip" data-photo-chip hidden>
+            <img alt="" data-photo-thumb />
+            <span>Photo added</span>
+            <button type="button" data-photo-remove aria-label="Remove photo">✕</button>
+          </div>
+        </div>
+
+        <div data-fields="eatout" hidden>
+          <label class="field-label" for="restaurant">Restaurant</label>
+          <div class="box"><input id="restaurant" name="restaurant" maxlength="120" autocomplete="off" /></div>
+          <label class="field-label" for="usual">What do you usually order? <span class="optional">(optional)</span></label>
+          <div class="box"><textarea id="usual" name="usual" rows="2" maxlength="300" autocomplete="off"></textarea></div>
+        </div>
+
+        <div data-fields="recipe" hidden>
+          <label class="sr-only" for="recipe">The recipe or dish</label>
+          <div class="box"><textarea id="recipe" name="recipe" rows="5" maxlength="6000" autocomplete="off"></textarea></div>
+        </div>
+
+        <div class="chips" data-chips aria-label="Examples"></div>
+        <p class="form-error" data-form-error role="alert" hidden></p>
+        <button type="submit" class="primary" data-submit>Get swaps</button>
+      </form>
+
+      <section class="loading" data-loading hidden aria-live="polite">
+        <p class="loading-kicker">Did you know?</p>
+        <p class="loading-tip" data-tip></p>
+        <div class="loading-bar" aria-hidden="true"><span></span></div>
+        <button type="button" class="ghost" data-stop>Stop</button>
+      </section>
+
+      <section class="result" data-result aria-live="polite"></section>
+
+      <button type="button" class="saved-link" data-open-saved aria-haspopup="dialog">
+        My saved meals (<span data-saved-count>0</span>) <span aria-hidden="true">→</span>
+      </button>
+    </main>
+
+    <dialog class="sheet" data-profile-sheet aria-labelledby="profile-title">
+      <form method="dialog" class="sheet-body" data-profile-form>
+        <div class="sheet-head">
+          <h2 id="profile-title">Your profile</h2>
+          <button type="button" class="icon-btn" data-close aria-label="Close">✕</button>
+        </div>
+        <p class="hint">Optional. It stays on this phone and helps FuelWell tailor tips. Without it you get general advice.</p>
+
+        <fieldset>
+          <legend>Who is it for?</legend>
+          <div class="options">
+            <label><input type="radio" name="for_whom" value="me" /> Me</label>
+            <label><input type="radio" name="for_whom" value="family" /> A family member</label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Kidney stage</legend>
+          <div class="options">
+            <label><input type="radio" name="stage" value="stage3" /> Stage 3</label>
+            <label><input type="radio" name="stage" value="stage4" /> Stage 4</label>
+            <label><input type="radio" name="stage" value="dialysis" /> On dialysis</label>
+            <label><input type="radio" name="stage" value="not_sure" /> Not sure</label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Also managing</legend>
+          <div class="options">
+            <label><input type="checkbox" name="also" value="diabetes" /> Diabetes</label>
+            <label><input type="checkbox" name="also" value="high_blood_pressure" /> High blood pressure</label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Favorite cuisines</legend>
+          <div class="options" data-cuisines></div>
+          <label class="field-label" for="cuisine-other">Others</label>
+          <input id="cuisine-other" name="cuisine_other" maxlength="80" placeholder="e.g. Thai, Ethiopian" />
+        </fieldset>
+
+        <fieldset>
+          <legend>Usually</legend>
+          <div class="options">
+            <label><input type="radio" name="usually" value="home" /> Cook at home</label>
+            <label><input type="radio" name="usually" value="frozen" /> Frozen / microwave</label>
+            <label><input type="radio" name="usually" value="takeout" /> Takeout</label>
+          </div>
+        </fieldset>
+
+        <label class="field-label" for="notes">Notes</label>
+        <textarea id="notes" name="notes" rows="2" maxlength="300" placeholder="e.g. Mom doesn't like spicy food"></textarea>
+
+        <div class="sheet-actions">
+          <button type="button" class="ghost" data-profile-clear>Clear</button>
+          <button type="submit" class="primary" data-profile-save>Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="sheet" data-saved-sheet aria-labelledby="saved-title">
+      <div class="sheet-body">
+        <div class="sheet-head">
+          <h2 id="saved-title">My saved meals</h2>
+          <button type="button" class="icon-btn" data-close aria-label="Close">✕</button>
+        </div>
+        <ul class="saved-list" data-saved-list></ul>
+      </div>
+    </dialog>
+
+    <div class="toast" data-toast role="status" hidden></div>
+  </body>
+</html>
