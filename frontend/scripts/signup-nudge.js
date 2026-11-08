@@ -31,6 +31,9 @@ export function inlineJoinHtml() {
   return `<p class="demo-join-inline">${icon('heart')}<span>${esc(t('join_inline'))} <a href="${JOIN_URL}" data-join-link="answer">${esc(t('join_cta_short'))}</a></span></p>`;
 }
 
+// Phones: if they look around for a while without asking or saving, offer it once anyway.
+setTimeout(() => offerJoin('time'), 40000);
+
 // Count clicks on any join link (rail, answer line, phone card).
 document.addEventListener('click', (e) => {
   const link = e.target.closest('[data-join-link]');

@@ -6,7 +6,7 @@ import { persona } from '../data/fung.js';
 import { esc, icon, toast } from './app-ui.js';
 import { applyDom, langToggleHtml, onLangChange, tr, wireLangToggle } from './i18n.js';
 import { t } from './app-strings.js';
-import { railJoinHtml } from './signup-nudge.js';
+import { joinHref, railJoinHtml } from './signup-nudge.js';
 import { setDemoSession } from './track.js';
 
 const NAV = [
@@ -74,6 +74,7 @@ function topHtml(ctx) {
         </div>
       </div>
       <div class="top-actions">
+        ${ctx.isDemo ? `<a class="button top-join" href="${joinHref}" data-join-link="top">${icon('heart')}<span>${esc(t('join_top'))}</span></a>` : ''}
         ${langToggleHtml()}
         <div class="account">
           <button class="account-button" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="account-menu" aria-label="${esc(t('account'))}" data-account-button>

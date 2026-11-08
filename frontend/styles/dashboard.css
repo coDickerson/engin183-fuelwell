@@ -1024,3 +1024,9 @@
   .join-sheet-close:focus-visible { outline: 3px solid var(--primary); }
 }
 @media (prefers-reduced-motion: reduce) { .join-sheet { transition: none; } }
+.top-join { min-height: 40px; padding: 6px 14px; gap: 6px; font-size: var(--text-sm); white-space: nowrap; }
+.top-join .icon { width: 16px; height: 16px; }
+@media (max-width: 640px) {
+  .top-join { min-height: 36px; padding: 4px 10px; }
+  .top-join .icon { display: none; }
+}
