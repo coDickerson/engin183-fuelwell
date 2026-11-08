@@ -5,7 +5,7 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#ffffff" />
-    <meta name="description" content="Mom’s kidney-friendly week, the recipe adapter, smart swaps and a grocery list." />
+    <meta name="description" content="Mom’s kidney-friendly week, meal swaps, eating out, family recipes and a grocery list." />
     <title>Meals | FuelWell</title>
     <link rel="stylesheet" href="/styles/styles.css" />
     <link rel="stylesheet" href="/styles/dashboard.css" />
@@ -39,52 +39,10 @@
           <button class="subtab" type="button" role="tab" id="tab-ask" data-tab="ask" aria-controls="panel-ask" aria-selected="false" tabindex="-1"><span data-icon="sparkle"></span><span data-i18n="tab_ask">Swap &amp; eat out</span></button>
           <button class="subtab" type="button" role="tab" id="tab-grocery" data-tab="grocery" aria-controls="panel-grocery" aria-selected="false" tabindex="-1"><span data-icon="list"></span><span data-i18n="tab_grocery">Grocery list</span></button>
           <button class="subtab" type="button" role="tab" id="tab-week" data-tab="week" aria-controls="panel-week" aria-selected="false" tabindex="-1"><span data-icon="week"></span><span data-i18n="tab_week">This week</span></button>
-          <button class="subtab" type="button" role="tab" id="tab-helper" data-tab="helper" aria-controls="panel-helper" aria-selected="false" tabindex="-1"><span data-icon="sparkle"></span><span data-i18n="tab_helper">Recipe adapter</span></button>
-          <button class="subtab" type="button" role="tab" id="tab-swaps" data-tab="swaps" aria-controls="panel-swaps" aria-selected="false" tabindex="-1"><span data-icon="swap"></span><span data-i18n="tab_swaps">Smart swaps</span></button>
         </div>
         <section class="tabpanel" role="tabpanel" id="panel-week" aria-labelledby="tab-week" tabindex="0" hidden>
           <div class="day-picker" role="group" data-i18n-aria="choose_day" data-day-picker></div>
           <div class="meal-grid" data-week-meals></div>
-        </section>
-        <section class="tabpanel" role="tabpanel" id="panel-helper" aria-labelledby="tab-helper" tabindex="0" hidden>
-          <div class="helper-grid">
-            <form class="card helper-form" data-helper-form novalidate>
-              <div class="panel-title"><h2 data-i18n="helper_h2">Recipe adapter</h2><span class="chip chip--clay"><span data-icon="sparkle"></span>AI</span></div>
-              <div class="field">
-                <label for="dish" data-i18n="helper_label"></label>
-                <textarea id="dish" name="dish" rows="3" maxlength="400" data-i18n-placeholder="helper_placeholder" aria-describedby="dish-hint dish-error"></textarea>
-                <p class="hint" id="dish-hint" data-i18n="helper_hint"></p>
-                <p class="field-error" id="dish-error" data-i18n="helper_error" hidden></p>
-              </div>
-              <div class="example-chips" data-i18n-aria="examples"><span class="muted" data-i18n="tryline">Try:</span><span data-recipe-examples></span></div>
-              <div class="helper-actions">
-                <div class="field field--inline">
-                  <label for="cuisine" data-i18n="cuisine">Cuisine</label>
-                  <select id="cuisine" name="cuisine">
-                    <option value="chinese" data-i18n="cuisine_chinese">Chinese</option>
-                    <option value="korean" data-i18n="cuisine_korean">Korean</option>
-                    <option value="vietnamese" data-i18n="cuisine_vietnamese">Vietnamese</option>
-                  </select>
-                </div>
-                <button class="button" type="submit" data-helper-submit><span data-icon="sparkle"></span><span data-i18n="helper_submit">Make it kidney-friendly</span></button>
-              </div>
-            </form>
-            <section class="card helper-result" aria-live="polite" aria-busy="false" data-helper-result></section>
-          </div>
-        </section>
-        <section class="tabpanel" role="tabpanel" id="panel-swaps" aria-labelledby="tab-swaps" tabindex="0" hidden>
-          <div class="card">
-            <div class="panel-title"><h2 data-i18n="swaps_h2">Smart swaps</h2>
-              <div class="filter-group" role="group" data-i18n-aria="filter_cuisine" data-swap-filter>
-                <button class="filter" type="button" data-cuisine="all" aria-pressed="true" data-i18n="all">All</button>
-                <button class="filter" type="button" data-cuisine="chinese" aria-pressed="false" data-i18n="cuisine_chinese">Chinese</button>
-                <button class="filter" type="button" data-cuisine="korean" aria-pressed="false" data-i18n="cuisine_korean">Korean</button>
-                <button class="filter" type="button" data-cuisine="vietnamese" aria-pressed="false" data-i18n="cuisine_vietnamese">Vietnamese</button>
-              </div>
-            </div>
-            <p class="muted swaps-intro" data-i18n="swaps_intro"></p>
-            <ul class="swap-list" data-i18n-aria="swaps_list" data-swap-list></ul>
-          </div>
         </section>
         <section class="tabpanel" role="tabpanel" id="panel-grocery" aria-labelledby="tab-grocery" tabindex="0" hidden>
           <div class="card print-area" data-grocery>

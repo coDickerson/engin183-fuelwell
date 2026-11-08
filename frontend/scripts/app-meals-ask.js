@@ -390,6 +390,14 @@ export function initAsk() {
     renderResult(state.view.data);
     result().scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
   });
+  // Links like /meals.html?dish=...#ask (from Today) open Family recipe with the dish filled in.
+  const dish = new URLSearchParams(location.search).get('dish');
+  if (dish) {
+    state.mode = 'recipe';
+    $('#ask-recipe').value = dish.slice(0, 6000);
+    paintForm();
+    toast(t('sw_prefilled'));
+  }
   loadCatalog();
 }
 
