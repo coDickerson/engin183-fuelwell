@@ -98,7 +98,7 @@ function renderNextStep() {
   $('[data-next-step]').innerHTML = `
     <h2 id="next-title">${esc(t('recipe_cta_title'))}</h2>
     <p>${esc(t('recipe_cta_body'))}</p>
-    <a class="link-arrow" href="/meals.html?dish=${encodeURIComponent(tr(dish))}#helper">${icon('sparkle')}${esc(t('recipe_cta_button'))} ${icon('arrow')}</a>`;
+    <a class="link-arrow" href="/meals.html?dish=${encodeURIComponent(tr(dish))}#ask">${icon('sparkle')}${esc(t('recipe_cta_button'))} ${icon('arrow')}</a>`;
 }
 
 const goalKey = { 'familiar-meals': 'goal_familiar', 'eat-healthier': 'goal_healthier', 'fuel-performance': 'goal_fuel', 'understand-options': 'goal_understand', 'prepare-conversation': 'goal_prepare' };

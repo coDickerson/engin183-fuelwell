@@ -1,22 +1,25 @@
-// Notes: every weekly guide and meal plan, doctor and dietitian notes, and meal plans saved
-// from AI Chat, grouped by week. Each note shows who wrote it and when.
+// Notes: every weekly guide and meal plan, doctor and dietitian notes, meal plans saved
+// from AI Chat and swaps saved from Meals > Browse swaps, grouped by week.
+// Each note shows who wrote it and when.
 import { initShell } from '../app-shell.js';
 import { dateFromOffset, esc, fmt, icon } from '../app-ui.js';
 import { tr } from '../i18n.js';
 import { mealSlots, week } from '../../data/fung.js';
 import { careNotes, noteAuthors } from '../../data/portal.js';
 import { savedNotes } from './chat-store.js';
+import { removeSwap, savedSwaps } from '../swap-store.js';
+import { photoUrl, swapPhotos } from '../../data/swap-photos.js';
 import { fillPortalText, pt } from './strings.js';
 
 const $ = (sel) => document.querySelector(sel);
 
 const FILTERS = {
   all: () => true,
-  food: (n) => ['guide', 'plan', 'ai'].includes(n.type),
+  food: (n) => ['guide', 'plan', 'ai', 'swap'].includes(n.type),
   team: (n) => ['dietitian', 'doctor'].includes(n.type),
 };
 const FILTER_LABELS = { all: 'filter_all', food: 'filter_food', team: 'filter_team' };
-const TYPE_ICONS = { guide: 'leaf', plan: 'week', dietitian: 'care', doctor: 'health', ai: 'sparkle' };
+const TYPE_ICONS = { guide: 'leaf', plan: 'week', dietitian: 'care', doctor: 'health', ai: 'sparkle', swap: 'heart' };
 let filter = 'all';
 
 function mondayOf(date) {
@@ -40,7 +43,8 @@ function carePlanDays(note) {
 function allNotes() {
   const team = careNotes.map((n) => ({ ...n, at: dateFromOffset(-n.daysAgo, n.h, n.m) }));
   const fromAi = savedNotes().map((n) => ({ id: n.id, type: 'ai', at: new Date(n.savedAt), title: n.plan.title, aiPlan: n.plan }));
-  return [...team, ...fromAi].sort((a, b) => b.at - a.at);
+  const swaps = savedSwaps().map((w) => ({ id: `swap-${w.id}`, type: 'swap', at: new Date(w.savedAt), title: w.meal, swap: w }));
+  return [...team, ...fromAi, ...swaps].sort((a, b) => b.at - a.at);
 }
 
 function planList(days) {
@@ -49,6 +53,10 @@ function planList(days) {
 }
 
 function byline(note) {
+  if (note.type === 'swap') {
+    return `<p class="note-byline"><span class="avatar ai-avatar" aria-hidden="true">${icon('heart')}</span>
+      <span><strong>${esc(pt('swap_saved_by'))}</strong><span class="note-date">${esc(pt('saved_on', { date: fmt.date(note.at) }))}</span></span></p>`;
+  }
   if (note.type === 'ai') {
     return `<p class="note-byline"><span class="avatar ai-avatar" aria-hidden="true">${icon('sparkle')}</span>
       <span><strong>${esc(pt('ai_name'))}</strong><span class="note-date">${esc(pt('saved_on', { date: fmt.date(note.at) }))}</span></span></p>`;
@@ -58,7 +66,35 @@ function byline(note) {
     <span><strong>${esc(tr(a.name))}</strong> · ${esc(tr(a.role))}<span class="note-date">${esc(pt('written_on', { date: fmt.date(note.at) }))}</span></span></p>`;
 }
 
+const NUTRIENT = { Na: 'sodium', K: 'potassium', P: 'phosphorus' };
+
+function swapCard(note) {
+  const w = note.swap;
+  const photo = swapPhotos[w.meal];
+  return `<article class="card note-card note-card--swap" aria-labelledby="note-${esc(note.id)}">
+    <div class="note-top">
+      <span class="note-type">${icon('heart')}${esc(pt('type_swap'))}</span>
+      <span class="note-flag">${icon('alert')}${esc(pt('swap_flag'))}</span>
+    </div>
+    <div class="note-swap">
+      ${photo ? `<img class="note-swap-photo" src="${esc(photoUrl(photo, 320, 240))}" alt="" loading="lazy" width="160" height="120">` : ''}
+      <div>
+        <h3 id="note-${esc(note.id)}">${esc(w.meal)}</h3>
+        ${byline(note)}
+        <p class="note-summary"><strong>${esc(pt('swap_try'))}</strong> ${esc(w.swap)}</p>
+      </div>
+    </div>
+    <details class="note-more"><summary>${icon('chevron')}${esc(pt('read_more'))}</summary><div class="note-body">
+      <p><strong>${esc(pt('swap_why'))}</strong> ${esc(w.why)}</p>
+      ${w.watch?.length ? `<p><strong>${esc(pt('swap_watch'))}</strong> ${w.watch.map((n) => esc(NUTRIENT[n] ? pt(NUTRIENT[n]) : n)).join(', ')}</p>` : ''}
+      <p class="note-swap-actions"><a class="link-arrow" href="/meals.html#browse">${esc(pt('swap_open'))} ${icon('arrow')}</a>
+        <button class="button button--ghost" type="button" data-unsave-swap="${esc(w.id)}">${icon('x')}${esc(pt('swap_remove'))}</button></p>
+    </div></details>
+  </article>`;
+}
+
 function noteCard(note) {
+  if (note.type === 'swap') return swapCard(note);
   const ai = note.type === 'ai';
   const full = [
     ...(note.body || []).map((p) => `<p>${esc(tr(p))}</p>`),
@@ -116,6 +152,12 @@ initShell({
         renderFilters();
         renderNotes();
         $(`[data-filter="${filter}"]`).focus();
+      });
+      $('[data-notes]').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-unsave-swap]');
+        if (!b) return;
+        removeSwap(b.dataset.unsaveSwap);
+        renderNotes();
       });
     }
   },

@@ -84,6 +84,32 @@ Levels use per-meal **demo heuristics** derived from NKF/KDOQI daily ranges: K <
 - `max_tokens` capped, wall-clock deadline per run, per-request timeouts, turn cap, one SDK retry, strict tool schemas, `fallbacks: "default"` for refusals.
 - **Reliability fallback:** no API key, an API error, a timeout, a refusal or output that is still invalid after one repair round all return a deterministic rules-based answer with `source: 'rules'`. The demo never shows a blank error.
 
+## FuelWell v1: `/swap` (LangChain + retrieval)
+
+One phone-first screen at `/swap`, no sign-in: **Swap a meal** (text or photo), **Eating out** and **Family recipe**. Each answer is a card with what to watch (Na, K, P, Fluid, Sugar), swaps, one easy step, a heads-up when needed and the sources used. The profile and saved meals stay in the browser (localStorage).
+
+```
+frontend/swap.html ── fetch ──> api/swap.ts | api/eatout.ts | api/recipe.ts   (Vercel functions)
+                                   └─ api/_lib/chain.ts (LangChain RunnableSequence)
+                                        1. retrieve   Supabase: swap_catalog + guideline_chunks (top 4 each)
+                                        2. prompt     ChatPromptTemplate: rules + profile + rows tagged by ID
+                                        3. generate   ChatAnthropic (claude-sonnet-5-5), zod structured output
+                                        4. check      code safety checks, one repair round, then enforce
+```
+
+- **Retrieval:** pgvector when `OPENAI_API_KEY` is set and rows are embedded; otherwise Postgres keyword search (full text + trigram). If nothing relevant matches, the card says FuelWell doesn't have that one yet and gives only general, safe tips.
+- **Safety in code**, not just in the prompt: no salt-substitute suggestions; a star fruit warning whenever star fruit appears; on dialysis, no cutting protein and a fluid reminder for soups; no personal daily mg/gram targets; sources limited to retrieved IDs.
+- **Data:** `data/swap_catalog.csv` (30 rows) is a **draft that needs renal dietitian review before public launch.** Guideline sources are listed in `data/guidelines/sources.json`; the files are not committed (see `data/guidelines/README.md`).
+- **Database:** `supabase/migrations/20261108080000_fuelwell_v1_retrieval.sql`. Both tables have RLS on with no policies, so only the server (service-role key) can read them.
+- **No usage limits in the app.** Cost is controlled with the spending limit on the Anthropic account.
+
+```bash
+npm run fetch:guidelines   # download the NKF pages (PDFs for KDOQI/KDIGO: by hand)
+npm run ingest             # load catalog + guidelines into Supabase (safe to re-run)
+npm run dev:api & npm run dev   # site on :5173, /api proxied to :8787
+npm run test:meals         # 10 test meals x 2 profiles, prints pass/fail
+```
+
 ## AI-assisted development workflow
 
 Built with Claude Code as an orchestrated multi-agent workflow:

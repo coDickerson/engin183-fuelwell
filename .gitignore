@@ -8,3 +8,9 @@ dist/
 .DS_Store
 TEAM_PLAN.md
 team_plan.md
+
+# Guideline files are copyrighted: keep only the list of sources in git.
+data/guidelines/*
+!data/guidelines/sources.json
+!data/guidelines/README.md
+.env*

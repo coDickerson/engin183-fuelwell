@@ -1,4 +1,5 @@
 import { authConfigError, friendlyAuthError, getAuthenticatedUser, signOutCurrentSession, supabase } from './supabase.js';
+import { track } from '../scripts/track.js';
 import { isDemoUser } from './demo.js';
 import { savePendingProfile, stashPendingProfile } from './profile.js';
 
@@ -360,6 +361,7 @@ forms.signUp.addEventListener('submit', (event) => {
     if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
       throw new Error('You already have an account. Sign in instead.');
     }
+    track('signup', 'account');
     // Held in this tab until there is a session (right away, or after the confirmation email).
     stashPendingProfile(profile);
     form.reset();

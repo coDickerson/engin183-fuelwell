@@ -6,6 +6,8 @@ import { persona } from '../data/fung.js';
 import { esc, icon, toast } from './app-ui.js';
 import { applyDom, langToggleHtml, onLangChange, tr, wireLangToggle } from './i18n.js';
 import { t } from './app-strings.js';
+import { joinHref, railJoinHtml } from './signup-nudge.js';
+import { setDemoSession } from './track.js';
 
 const NAV = [
   { key: 'today', href: '/dashboard.html', label: 'nav_today', icon: 'today' },
@@ -72,6 +74,7 @@ function topHtml(ctx) {
         </div>
       </div>
       <div class="top-actions">
+        ${ctx.isDemo ? `<a class="button top-join" href="${joinHref}" data-join-link="top">${icon('heart')}<span>${esc(t('join_top'))}</span></a>` : ''}
         ${langToggleHtml()}
         <div class="account">
           <button class="account-button" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="account-menu" aria-label="${esc(t('account'))}" data-account-button>
@@ -129,6 +132,7 @@ function buildShell(frame, page, ctx) {
     closers.length = 0;
     rail.setAttribute('aria-label', t('app_label'));
     rail.innerHTML = railHtml(page);
+    if (ctx.isDemo) rail.querySelector('.rail-foot')?.insertAdjacentHTML('afterbegin', railJoinHtml());
     top.innerHTML = topHtml(ctx);
     bottom.setAttribute('aria-label', t('nav_main'));
     bottom.innerHTML = navLinks(page, 'bottom-link');
@@ -157,6 +161,7 @@ async function signOut(event) {
   btn.disabled = true;
   try {
     await signOutCurrentSession();
+    setDemoSession(false);
     try { sessionStorage.removeItem('fuelwell.match.v1'); } catch { /* storage unavailable */ }
     clearPendingProfile();
     location.replace('/start.html#sign-in');
@@ -205,6 +210,7 @@ export async function initShell({ page, withQuiz = false, title, render }) {
   if (!user) { location.replace('/start.html#sign-in'); return null; }
 
   const isDemo = isDemoUser(user);
+  setDemoSession(isDemo);
   const [quiz, profile] = await Promise.all([
     withQuiz && !isDemo ? loadQuiz(user) : null,
     // The demo keeps its curated persona; real accounts show their own profile.

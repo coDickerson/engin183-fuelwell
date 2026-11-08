@@ -108,3 +108,10 @@
 .care-split > .icon { flex: none; width: 24px; height: 24px; margin-top: 2px; }
 .care-split p { margin: 0; font-size: var(--text-base); }
 .care-split a { font-weight: 700; }
+
+/* Saved swap notes (from Meals > Browse swaps) */
+.note-swap { display: flex; gap: var(--space-4); align-items: flex-start; }
+.note-swap-photo { flex: none; width: 160px; height: 120px; object-fit: cover; border-radius: var(--radius); }
+.note-swap h3 { margin-top: 0; }
+.note-swap-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+@media (max-width: 640px) { .note-swap { flex-direction: column; } .note-swap-photo { width: 100%; height: 160px; } }
