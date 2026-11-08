@@ -25,6 +25,10 @@
       "destination": "/dishes.html"
     },
     {
+      "source": "/stats",
+      "destination": "/stats.html"
+    },
+    {
       "source": "/swap",
       "destination": "/swap.html"
     }

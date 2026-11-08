@@ -30,6 +30,7 @@ export default defineConfig({
         wall: resolve(import.meta.dirname, 'frontend/wall.html'),
         dishes: resolve(import.meta.dirname, 'frontend/dishes.html'),
         swap: resolve(import.meta.dirname, 'frontend/swap.html'),
+        stats: resolve(import.meta.dirname, 'frontend/stats.html'),
       },
     },
   },

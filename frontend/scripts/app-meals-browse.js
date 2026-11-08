@@ -6,6 +6,8 @@ import { t } from './app-strings.js';
 import { photoPage, photoUrl, swapPhotos } from '../data/swap-photos.js';
 import { isSwapSaved, savedSwaps, toggleSwap } from './swap-store.js';
 import { personalize } from './app-meals-ask.js';
+import { track } from './track.js';
+import { offerJoin } from './signup-nudge.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const KINDS = { takeout: 'br_takeout', frozen: 'br_frozen', home: 'br_home' };
@@ -90,6 +92,7 @@ export function initBrowse() {
       const index = save.dataset.saveSwap;
       const now = toggleSwap(state.rows[Number(index)]);
       toast(t(now ? 'br_saved_toast' : 'br_unsaved_toast'));
+      if (now) { track('swap_saved', state.rows[Number(index)].meal); offerJoin('save'); }
       paint();
       $(`.swap-card-actions [data-save-swap="${index}"]`)?.focus();
       return;

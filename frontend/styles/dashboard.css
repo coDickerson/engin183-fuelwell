@@ -1000,3 +1000,27 @@
   .swap-card-actions .button { flex: 1 1 0; min-height: 48px; font-size: var(--text-base); }
   .ask-actions .button { width: 100%; }
 }
+
+/* ---------- Demo: gentle "join the waitlist" prompts ---------- */
+.demo-join { display: grid; gap: 6px; margin-bottom: var(--space-2); padding: var(--space-3); border-radius: var(--radius); background: var(--surface-tint); border: 1px solid var(--line); }
+.demo-join-kicker { margin: 0; color: var(--primary-strong); font-size: var(--text-sm); font-weight: 700; }
+.demo-join-text { margin: 0; color: var(--ink-2); font-size: var(--text-sm); line-height: 1.4; }
+.demo-join-button { justify-self: start; min-height: 40px; padding: 6px 14px; font-size: var(--text-sm); }
+.demo-join-inline { display: flex; align-items: flex-start; gap: var(--space-2); margin: var(--space-3) 0 0; color: var(--ink-2); }
+.demo-join-inline .icon { flex: none; margin-top: 4px; color: var(--accent); }
+.demo-join-inline a { font-weight: 700; color: var(--primary-strong); }
+.join-sheet { display: none; }
+@media (max-width: 899px) {
+  .join-sheet {
+    display: grid; gap: 4px; position: fixed; left: var(--space-3); right: var(--space-3); bottom: calc(78px + env(safe-area-inset-bottom)); z-index: 40;
+    padding: var(--space-4) var(--space-4) var(--space-3); border-radius: var(--radius-lg); background: var(--surface); border: 1px solid var(--line-strong); box-shadow: var(--shadow-2);
+    opacity: 0; transform: translateY(16px); transition: opacity .2s ease, transform .2s ease;
+  }
+  .join-sheet.is-visible { opacity: 1; transform: none; }
+  .join-sheet-title { margin: 0; padding-right: 40px; font-weight: 700; font-size: var(--text-lg); }
+  .join-sheet-text { margin: 0 0 var(--space-2); color: var(--ink-2); }
+  .join-sheet-button { width: 100%; min-height: 48px; }
+  .join-sheet-close { position: absolute; top: 6px; right: 6px; width: 44px; height: 44px; border: 0; border-radius: 50%; background: transparent; color: var(--ink-3); font-size: 18px; cursor: pointer; }
+  .join-sheet-close:focus-visible { outline: 3px solid var(--primary); }
+}
+@media (prefers-reduced-motion: reduce) { .join-sheet { transition: none; } }

@@ -6,6 +6,8 @@ import { esc, icon, toast } from './app-ui.js';
 import { persona } from '../data/fung.js';
 import { tr } from './i18n.js';
 import { t } from './app-strings.js';
+import { track } from './track.js';
+import { inlineJoinHtml, offerJoin } from './signup-nudge.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 
@@ -201,6 +203,7 @@ function renderResult(data, focus = true) {
     ${data.card.heads_up ? `<p class="notice ask-headsup">${icon('alert')}<span><strong>${esc(t('sw_heads_up'))}:</strong> ${esc(data.card.heads_up)}</span></p>` : ''}
     ${sourcesBlock(data)}
     <div class="ask-actions"><button class="button button--secondary" type="button" data-ask-copy>${esc(t('sw_copy'))}</button></div>
+    ${inlineJoinHtml()}
     <p class="notice">${icon('info')}<span>${esc(t('sw_disclaimer'))}</span></p>`;
   $('[data-ask-copy]', result()).addEventListener('click', async () => toast(t((await copyText(cardText(data))) ? 'sw_copied' : 'sw_copy_failed')));
   if (focus) {
@@ -266,6 +269,8 @@ async function request(mode, body, what) {
     if (!res.ok || !data?.card) throw new Error(data?.error || 'FuelWell could not answer just now. Please try again.');
     state.view = { state: 'result', data };
     renderResult(data);
+    track('try_finished', mode);
+    offerJoin('answer');
   } catch (err) {
     state.view = { state: 'error', message: navigator.onLine === false ? 'You seem to be offline.' : err.message };
     paintResult();

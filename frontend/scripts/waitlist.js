@@ -1,4 +1,5 @@
 import { authConfigError, supabase } from '../auth/supabase.js';
+import { track } from './track.js';
 import { locales, strings } from './waitlist-i18n.js';
 
 const LANG_KEY = 'fuelwell.waitlist.lang.v1';
@@ -174,6 +175,7 @@ form.addEventListener('submit', async (event) => {
     // 23505 = this email already joined; treat a repeat signup as success.
     if (error && error.code !== '23505') throw error;
     window.va?.('event', { name: 'waitlist_signup', data: { role: row.role || 'none', language: row.language } });
+    track('signup', `waitlist${new URLSearchParams(location.search).get('from') === 'demo' ? ':from_demo' : ''}`);
     showThanks();
   } catch (error) {
     const offline = /failed to fetch|network|load failed/i.test(error?.message || '');
