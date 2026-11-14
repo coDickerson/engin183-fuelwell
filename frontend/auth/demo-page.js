@@ -5,7 +5,7 @@ import { DEMO_EMAIL, DEMO_PASSWORD } from './demo.js';
 import { setDemoSession, track } from '../scripts/track.js';
 
 // /demo?to=meals opens a page other than Today (only these, never an outside URL).
-const PAGES = { today: '/dashboard.html', meals: '/meals.html#ask', browse: '/meals.html#browse', notes: '/notes.html', chat: '/ai-chat.html' };
+const PAGES = { today: '/dashboard.html', meals: '/meals.html#ask', browse: '/meals.html#browse', notes: '/notes.html' };
 const next = PAGES[new URLSearchParams(location.search).get('to')] || PAGES.today;
 
 const byId = (id) => document.getElementById(id);

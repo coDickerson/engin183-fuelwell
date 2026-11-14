@@ -1,10 +1,10 @@
 // Meals tab: "Swap & eat out" (app-meals-ask.js), a printable grocery list,
 // "Browse swaps" (app-meals-browse.js) and the weekly plan.
 import { initShell } from './app-shell.js';
-import { esc, fmt, icon, initTabs, nutrientRow, storage } from './app-ui.js';
+import { esc, fmt, icon, initTabs, storage } from './app-ui.js';
 import { grocery, mealSlots, persona, week } from '../data/fung.js';
 import { initStoreFinder } from './store-finder.js';
-import { initAsk, renderAsk } from './app-meals-ask.js';
+import { initAsk, renderAsk, setAskAccount } from './app-meals-ask.js';
 import { initBrowse, renderBrowse } from './app-meals-browse.js';
 import { lang, tr } from './i18n.js';
 import { t } from './app-strings.js';
@@ -42,7 +42,6 @@ function showDay(index) {
       <h3 class="meal-name">${esc(tr(meal.name))}</h3>
       ${showDish ? `<p class="meal-dish" lang="zh-Hant">${esc(meal.dish)}</p>` : ''}
       <p class="meal-note">${esc(tr(meal.note))}</p>
-      ${nutrientRow(meal)}
     </article>`;
   }).join('');
 }
@@ -91,7 +90,8 @@ function wireOnce() {
 initShell({
   page: 'meals',
   title: 'title_meals',
-  render() {
+  render(ctx) {
+    setAskAccount(ctx);
     renderWeek();
     renderGrocery();
     renderAsk();

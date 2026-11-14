@@ -36,7 +36,8 @@ export const mealSlots = [
 // name: full description per language. dish: the Chinese dish name the family uses.
 const m = (name, dish, note, k, p, na) => ({ name, dish, note, k, p, na });
 
-// Index 0 = Monday … 6 = Sunday. Rough K/P/Na in mg per portion.
+// Index 0 = Monday … 6 = Sunday. k/p/na are rough mg guesses with no source, so the app no
+// longer shows them (a nephrologist will check numbers). Re-show only with USDA-sourced values.
 export const week = [
   {
     breakfast: m({ en: 'White rice congee with ginger and shredded chicken', zh: '薑絲雞絲白粥', es: 'Congee de arroz con jengibre y pollo deshebrado' }, '薑絲雞粥',

@@ -7,7 +7,7 @@ import { EMBEDDING_MODEL, EMBEDDING_MODEL_ID, openaiKey, supabaseServiceKey, sup
 
 export interface CatalogHit {
   id: string; meal: string; eater_type: string; cuisine: string; watch: string[];
-  swap: string; why: string; score: number; method: 'vector' | 'keyword';
+  swap: string; why: string; portion: string | null; score: number; method: 'vector' | 'keyword';
 }
 export interface GuidelineHit {
   id: string; source_id: string; title: string; section: string | null; page: number | null;
@@ -122,7 +122,7 @@ export async function retrieve(meal: string, topics: string): Promise<Retrieved>
 export function formatCatalog(rows: CatalogHit[]): string {
   if (!rows.length) return '(none)';
   return rows
-    .map((r) => `[${r.id}] ${r.meal} (${r.cuisine}, usually ${r.eater_type}). Watch: ${r.watch.join(', ')}. Swap: ${r.swap}. Why: ${r.why}`)
+    .map((r) => `[${r.id}] ${r.meal} (${r.cuisine}, usually ${r.eater_type}). Watch: ${r.watch.join(', ')}. Swap: ${r.swap}. Why: ${r.why}.${r.portion ? ` Portion: ${r.portion}.` : ''}`)
     .join('\n');
 }
 
