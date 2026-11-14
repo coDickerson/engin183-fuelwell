@@ -18,8 +18,45 @@ const MODES = {
 };
 const NUTRIENT_KEY = { Na: 'sodium', K: 'potassium', P: 'phosphorus' };
 
-// The app's patient (Fung, CKD G3b, Cantonese home cooking) is the profile the AI tailors to.
-const PROFILE = { for_whom: 'family', stage: 'stage3', cuisines: ['Chinese'], usually: 'home', notes: 'Cantonese home cooking; age 78' };
+// The demo tailors to its sample patient (Fung, CKD G3b, Cantonese home cooking).
+// Real accounts tailor to their own profile from Today; no profile means general advice.
+const DEMO_PROFILE = { for_whom: 'family', stage: 'stage3', cuisines: ['Chinese'], usually: 'home', notes: 'Cantonese home cooking; age 78' };
+const STAGE_FOR_API = { g1: 'early', g2: 'early', g3: 'stage3', g3a: 'stage3', g3b: 'stage3', g4: 'stage4', g5: 'stage5', g5d: 'dialysis', unsure: 'not_sure' };
+let PROFILE = DEMO_PROFILE;
+let account = { isDemo: true, profile: null };
+
+/** Account profile (auth/profile.js shape) -> the profile the API expects. */
+export function apiProfile(p) {
+  if (!p) return {};
+  const also = [p.diabetes && 'diabetes', p.highBloodPressure && 'high_blood_pressure'].filter(Boolean);
+  return {
+    ...(p.kidneyDisease && STAGE_FOR_API[p.stage] ? { stage: STAGE_FOR_API[p.stage] } : {}),
+    ...(also.length ? { also } : {}),
+    ...(p.cuisine ? { cuisines: [p.cuisine] } : {}),
+  };
+}
+
+/** Called by app-meals.js on every render with the shell context. */
+export function setAskAccount(ctx) {
+  account = { isDemo: Boolean(ctx?.isDemo), profile: ctx?.profile ?? null };
+  PROFILE = account.isDemo ? DEMO_PROFILE : apiProfile(account.profile);
+}
+
+const stageWords = (stage) => (stage === 'g5d' ? t('stage_dialysis') : stage === 'unsure' ? t('stage_unsure') : t('stage', { s: `G${stage.slice(1)}` }));
+
+/** "Personalized for ..." line under the form: what the AI knows about this person. */
+function forLine() {
+  if (account.isDemo) return esc(`${t('sw_for', { who: tr(persona.patient.relation) })} ${t('sw_english_note')}`);
+  const p = account.profile;
+  const facts = p ? [
+    p.kidneyDisease && (p.stage ? `${t('cond_kidney')} · ${stageWords(p.stage)}` : t('cond_kidney')),
+    p.diabetes && t('cond_diabetes'),
+    p.highBloodPressure && t('cond_hbp'),
+    p.cuisine,
+  ].filter(Boolean) : [];
+  const lead = facts.length ? t('sw_for_you', { facts: facts.join(', ') }) : t('sw_for_none');
+  return `${esc(lead)} <a href="/dashboard.html#profile-title">${esc(t('sw_for_edit'))}</a> ${esc(t('sw_english_note'))}`;
+}
 
 const state = { mode: 'swap', photo: null, busy: false, view: { state: 'empty' }, last: null };
 
@@ -31,7 +68,7 @@ function paintForm() {
   document.querySelectorAll('[data-ask-fields]').forEach((f) => { f.hidden = f.dataset.askFields !== state.mode; });
   $('[data-ask-submit-label]').textContent = t(MODES[state.mode].submit);
   $('[data-ask-examples]').innerHTML = MODES[state.mode].examples.map((ex) => `<button class="chip-button" type="button" data-ask-example="${esc(ex)}">${esc(ex)}</button>`).join('');
-  $('[data-ask-for]').textContent = `${t('sw_for', { who: tr(persona.patient.relation) })} ${t('sw_english_note')}`;
+  $('[data-ask-for]').innerHTML = forLine();
 }
 
 function mainField() {
@@ -137,6 +174,8 @@ function sourcesBlock(data) {
 
 const tipList = (arr) => `<ul class="tip-list">${arr.map((x) => `<li>${icon('check')}<span>${x}</span></li>`).join('')}</ul>`;
 
+const portionNote = (c) => (c.portion ? `<p class="notice ask-tonight">${icon('check')}<span><strong>${esc(t('sw_portion'))}:</strong> ${esc(c.portion)}</span></p>` : '');
+
 function swapBody(data) {
   const c = data.card;
   const watch = (c.watch || []).map((w) => `<li><span class="chip chip--plain">${esc(nutrient(w.nutrient))}</span><span>${esc(w.note)}</span></li>`).join('');
@@ -148,7 +187,8 @@ function swapBody(data) {
     body: `
       ${watch ? `<h4 class="result-sub">${esc(t('sw_watch'))}</h4><ul class="ask-watch">${watch}</ul>` : ''}
       ${swaps ? `<h4 class="result-sub">${esc(t('sw_swaps'))}</h4><ul class="tip-list">${swaps}</ul>` : ''}
-      <p class="notice ask-tonight">${icon('leaf')}<span><strong>${esc(t('sw_tonight'))}:</strong> ${esc(c.tonight)}</span></p>`,
+      <p class="notice ask-tonight">${icon('leaf')}<span><strong>${esc(t('sw_tonight'))}:</strong> ${esc(c.tonight)}</span></p>
+      ${portionNote(c)}`,
   };
 }
 
@@ -162,7 +202,8 @@ function eatoutBody(data) {
     body: `
       <h4 class="result-sub">${esc(t('sw_picks'))}</h4><ul class="tip-list">${picks}</ul>
       ${c.skip ? `<h4 class="result-sub">${esc(t('sw_skip'))}</h4><p><strong>${esc(c.skip.item)}</strong><br><span class="muted">${esc(c.skip.why)}</span></p>` : ''}
-      <p class="notice ask-tonight">${icon('leaf')}<span><strong>${esc(t('sw_tip'))}:</strong> ${esc(c.tip)}</span></p>`,
+      <p class="notice ask-tonight">${icon('leaf')}<span><strong>${esc(t('sw_tip'))}:</strong> ${esc(c.tip)}</span></p>
+      ${portionNote(c)}`,
   };
 }
 
@@ -180,7 +221,8 @@ function recipeBody(data) {
         ${c.ingredients?.length ? `<div><h4 class="result-sub">${esc(t('ingredients_h'))}</h4><ul class="ask-ing">${c.ingredients.map((i) => `<li>${esc(i)}</li>`).join('')}</ul></div>` : ''}
         ${c.steps?.length ? `<div><h4 class="result-sub">${esc(t('sw_steps'))}</h4><ol class="ask-steps">${c.steps.map((s) => `<li>${esc(s)}</li>`).join('')}</ol></div>` : ''}
       </div>
-      ${c.keep_flavor?.length ? `<h4 class="result-sub">${esc(t('sw_keep_flavor'))}</h4>${tipList(c.keep_flavor.map(esc))}` : ''}`,
+      ${c.keep_flavor?.length ? `<h4 class="result-sub">${esc(t('sw_keep_flavor'))}</h4>${tipList(c.keep_flavor.map(esc))}` : ''}
+      ${portionNote(c)}`,
   };
 }
 
@@ -231,7 +273,7 @@ function cardText(data) {
   const c = data.card;
   const L = [];
   if (data.mode === 'swap') {
-    L.push(c.dish, c.headline, '');
+    L.push(c.dish, ...(c.answer ? [c.answer] : []), c.headline, '');
     for (const w of c.watch || []) L.push(`- ${nutrient(w.nutrient)}: ${w.note}`);
     L.push('');
     for (const s of c.swaps || []) L.push(`- ${s.title}: ${s.how}`);
@@ -247,6 +289,7 @@ function cardText(data) {
     if (c.ingredients?.length) L.push('', 'Ingredients:', ...c.ingredients.map((i) => `- ${i}`));
     if (c.steps?.length) L.push('', 'Steps:', ...c.steps.map((s, i) => `${i + 1}. ${s}`));
   }
+  if (c.portion) L.push('', `${t('sw_portion')}: ${c.portion}`);
   if (c.heads_up) L.push('', `Heads up: ${c.heads_up}`);
   L.push('', t('sw_disclaimer'));
   return L.join('\n').replace(/\n{3,}/g, '\n\n').trim();

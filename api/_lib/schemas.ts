@@ -7,7 +7,7 @@ import { z } from 'zod';
 export const ProfileSchema = z
   .object({
     for_whom: z.enum(['me', 'family']).optional(),
-    stage: z.enum(['stage3', 'stage4', 'dialysis', 'not_sure']).optional(),
+    stage: z.enum(['early', 'stage3', 'stage4', 'stage5', 'dialysis', 'not_sure']).optional(),
     also: z.array(z.enum(['diabetes', 'high_blood_pressure'])).max(2).optional(),
     cuisines: z.array(z.string().trim().min(1).max(40)).max(8).optional(),
     usually: z.enum(['home', 'frozen', 'takeout']).optional(),
@@ -53,6 +53,10 @@ const sources = z
   .array(z.string())
   .describe('IDs of the catalog rows and guideline passages you actually used, copied exactly, e.g. "catalog:pho" or "nkf-potassium:3". Never invent IDs.');
 
+const portion = z
+  .string()
+  .describe('One portion tip in plain words that keeps the dish, e.g. "Same bowl, fewer noodles: fill the space with bok choy and the chicken." No grams, cups or mg for the person.');
+
 const headsUp = z
   .string()
   .nullable()
@@ -81,6 +85,7 @@ export const SwapCardSchema = z.object({
     )
     .describe('2 or 3 swaps or add-ons, additions and easy tweaks first'),
   tonight: z.string().describe('One easy step they can take tonight'),
+  portion,
   heads_up: headsUp,
   sources,
 });
@@ -99,6 +104,7 @@ export const EatOutCardSchema = z.object({
     .describe('Exactly 3 picks'),
   skip: z.object({ item: z.string(), why: z.string() }).describe('One item to skip'),
   tip: z.string().describe('One short tip for eating out'),
+  portion,
   heads_up: headsUp,
   sources,
 });
@@ -113,6 +119,7 @@ export const RecipeCardSchema = z.object({
   ingredients: z.array(z.string()).describe('Ingredient lines with amounts for the adapted version'),
   steps: z.array(z.string()).describe('At most 8 short steps'),
   keep_flavor: z.array(z.string()).describe('2 or 3 tips that keep the family flavor'),
+  portion,
   heads_up: headsUp,
   sources,
 });

@@ -90,8 +90,9 @@ async function catalogRows(): Promise<Row[]> {
     for (let n = 2; seen.has(id); n += 1) id = `catalog:${slug(r.meal)}-${n}`;
     seen.add(id);
     const watch = r.watch.split('|').map((w) => w.trim()).filter(Boolean);
-    const content = `${r.meal}. Cuisine: ${r.cuisine}. Usually ${r.eater_type}. Watch: ${watch.join(', ')}. Swap: ${r.swap}. Why: ${r.why}`;
-    return { id, meal: r.meal, eater_type: r.eater_type, cuisine: r.cuisine, watch, swap: r.swap, why: r.why, content, content_hash: sha(content) };
+    const portion = r.portion?.trim() || null;
+    const content = `${r.meal}. Cuisine: ${r.cuisine}. Usually ${r.eater_type}. Watch: ${watch.join(', ')}. Swap: ${r.swap}. Why: ${r.why}${portion ? `. Portion: ${portion}` : ''}`;
+    return { id, meal: r.meal, eater_type: r.eater_type, cuisine: r.cuisine, watch, swap: r.swap, why: r.why, portion, content, content_hash: sha(content) };
   });
 }
 

@@ -34,14 +34,14 @@ export function suggestsCuttingProtein(text: string): boolean {
 export function suggestionTexts(mode: Mode, card: Card): string[] {
   if (mode === 'swap') {
     const c = card as SwapCard;
-    return [c.answer ?? '', c.headline, c.tonight, ...c.swaps.flatMap((s) => [s.title, s.how])];
+    return [c.answer ?? '', c.headline, c.tonight, c.portion ?? '', ...c.swaps.flatMap((s) => [s.title, s.how])];
   }
   if (mode === 'eatout') {
     const c = card as EatOutCard;
-    return [c.tip, ...c.picks.flatMap((p) => [p.item, p.say])];
+    return [c.tip, c.portion ?? '', ...c.picks.flatMap((p) => [p.item, p.say])];
   }
   const c = card as RecipeCard;
-  return [c.intro, ...c.changes.map((x) => x.to), ...c.ingredients, ...c.steps, ...c.keep_flavor];
+  return [c.intro, c.portion ?? '', ...c.changes.map((x) => x.to), ...c.ingredients, ...c.steps, ...c.keep_flavor];
 }
 
 function allText(card: Card): string {
@@ -58,6 +58,9 @@ export interface CheckContext {
 // Shaming words. FuelWell says "Instead of -> Try", never that a food is bad.
 const SHAMING = /\b(unhealthy|junk[- ]?food|bad for you|bad food|guilt(y|-free)?|cheat (meal|day)|forbidden)\b/i;
 export const hasShamingWords = (text: string) => SHAMING.test(text);
+
+// A portion tip must not hand a person numbers to eat ("1 cup rice", "3 oz chicken").
+const PORTION_NUMBER = /\b\d[\d./]*\s?(g|grams?|oz|ounces?|cups?|mg|milligrams?|tbsp|tablespoons?|tsp|teaspoons?)\b/i;
 
 /** Problems worth one repair round, in words the model can act on. */
 export function findProblems(card: Card, ctx: CheckContext): string[] {
@@ -91,6 +94,9 @@ export function findProblems(card: Card, ctx: CheckContext): string[] {
   if (card.sources.some((s) => !ctx.allowedSources.has(s))) {
     problems.push('sources may only contain IDs shown in square brackets in the context.');
   }
+  const portionText = (card as { portion?: string }).portion ?? '';
+  if (!portionText.trim()) problems.push('Add one portion tip for this dish in plain household words.');
+  else if (PORTION_NUMBER.test(portionText)) problems.push('The portion tip must not give the person grams, cups, ounces or mg. Use relative words (less rice, more vegetables, sauce on the side).');
   if (ctx.mode === 'eatout' && (card as EatOutCard).picks.length !== 3) problems.push('Give exactly 3 picks.');
   if (ctx.mode === 'swap' && (card as SwapCard).swaps.length < 2) problems.push('Give 2 or 3 swaps or add-ons.');
   if (ctx.mode === 'recipe' && (card as RecipeCard).changes.length < 3) problems.push('Give 3 to 5 changes.');
@@ -98,6 +104,12 @@ export function findProblems(card: Card, ctx: CheckContext): string[] {
 }
 
 /** Last line of defence: trims to the card limits and removes anything still unsafe. */
+const PORTION_FALLBACK = 'Keep your usual plate, and ask your kidney dietitian which portions fit you.';
+const portionLine = (t: string | undefined, unsafe: (s: string) => boolean) => {
+  const text = (t ?? '').trim();
+  return text && !unsafe(text) && !PORTION_NUMBER.test(text) ? text : PORTION_FALLBACK;
+};
+
 export function enforce(card: Card, ctx: CheckContext): Card {
   const dialysis = ctx.profile.stage === 'dialysis';
   const unsafe = (t: string) => suggestsSaltSubstitute(t) || (dialysis && suggestsCuttingProtein(t)) || DAILY_TARGET.test(t);
@@ -117,6 +129,7 @@ export function enforce(card: Card, ctx: CheckContext): Card {
       watch: c.watch.slice(0, 3),
       swaps: c.swaps.filter((s) => !unsafe(`${s.title} ${s.how}`)).slice(0, 3),
       tonight: safeLine(c.tonight, 'Taste before adding any salt or sauce, and ask your dietitian about this meal.'),
+      portion: portionLine(c.portion, unsafe),
       heads_up: headsUp,
       sources,
     };
@@ -127,6 +140,7 @@ export function enforce(card: Card, ctx: CheckContext): Card {
       ...c,
       picks: c.picks.filter((p) => !unsafe(`${p.item} ${p.say}`)).slice(0, 3),
       tip: safeLine(c.tip, 'Ask for sauces and dressings on the side.'),
+      portion: portionLine(c.portion, unsafe),
       heads_up: headsUp,
       sources,
     };
@@ -139,6 +153,7 @@ export function enforce(card: Card, ctx: CheckContext): Card {
     ingredients: c.ingredients.filter((x) => !unsafe(x)).slice(0, 25),
     steps: c.steps.filter((x) => !unsafe(x)).slice(0, 8),
     keep_flavor: c.keep_flavor.filter((x) => !unsafe(x)).slice(0, 3),
+    portion: portionLine(c.portion, unsafe),
     heads_up: headsUp,
     sources,
   };
