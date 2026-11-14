@@ -328,6 +328,14 @@ export function initAsk() {
     try { setPhoto(await shrinkImage(file)); showError(''); } catch { showError(t('sw_photo_bad')); }
   });
   $('[data-ask-photo-remove]').addEventListener('click', () => setPhoto(null));
+  // A question typed in the Today box arrives through session storage (not the address bar).
+  let handOff = null;
+  try { handOff = sessionStorage.getItem('fuelwell.ask.meal'); sessionStorage.removeItem('fuelwell.ask.meal'); } catch {}
+  if (handOff) {
+    state.mode = 'swap';
+    $('#ask-meal').value = handOff;
+    paintForm();
+  }
   // Links like /meals.html?dish=...#ask (from Today) open Family recipe with the dish filled in.
   const dish = new URLSearchParams(location.search).get('dish');
   if (dish) {
