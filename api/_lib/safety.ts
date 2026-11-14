@@ -34,7 +34,7 @@ export function suggestsCuttingProtein(text: string): boolean {
 export function suggestionTexts(mode: Mode, card: Card): string[] {
   if (mode === 'swap') {
     const c = card as SwapCard;
-    return [c.headline, c.tonight, ...c.swaps.flatMap((s) => [s.title, s.how])];
+    return [c.answer ?? '', c.headline, c.tonight, ...c.swaps.flatMap((s) => [s.title, s.how])];
   }
   if (mode === 'eatout') {
     const c = card as EatOutCard;
@@ -112,6 +112,7 @@ export function enforce(card: Card, ctx: CheckContext): Card {
     const c = card as SwapCard;
     return {
       ...c,
+      answer: c.answer && c.answer.trim() ? safeLine(c.answer.trim(), 'Your dietitian is the best person to answer that for you. Here are some general tips for this meal.') : null,
       headline: safeLine(c.headline, 'A few small changes can make this kidney-friendlier.'),
       watch: c.watch.slice(0, 3),
       swaps: c.swaps.filter((s) => !unsafe(`${s.title} ${s.how}`)).slice(0, 3),

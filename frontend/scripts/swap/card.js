@@ -73,6 +73,7 @@ function swapBody(result) {
       <span class="pill ${esc(c.verdict)}">${esc(VERDICT[c.verdict] || '')}</span>
       <h2>${esc(c.dish)}</h2>
       ${result.photo_dish ? `<p class="note">From your photo: ${esc(result.photo_dish)}</p>` : ''}
+      ${c.answer ? `<p class="headline"><strong>${esc(c.answer)}</strong></p>` : ''}
       <p class="headline">${esc(c.headline)}</p>
       ${coverageNote(result)}
     </div>
@@ -158,7 +159,7 @@ export function cardText(result) {
     lines.push(c.meal, '', `Instead of: ${c.meal}`, `Try: ${c.swap}`, `Why: ${c.why}`);
     if (c.watch?.length) lines.push('', `What to watch: ${c.watch.map((n) => NUTRIENT[n] || n).join(', ')}`);
   } else if (result.mode === 'swap') {
-    lines.push(`${c.dish} (${VERDICT[c.verdict] || ''})`, c.headline, '');
+    lines.push(`${c.dish} (${VERDICT[c.verdict] || ''})`, ...(c.answer ? [c.answer] : []), c.headline, '');
     if (c.watch?.length) lines.push('What to watch:', ...c.watch.map((w) => `- ${NUTRIENT[w.nutrient] || w.nutrient}: ${w.note}`), '');
     if (c.swaps?.length) lines.push('Swaps:', ...c.swaps.map((s) => `- ${s.title}: ${s.how} (${s.why})`), '');
     lines.push(`Tonight: ${c.tonight}`);

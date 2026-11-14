@@ -60,6 +60,10 @@ const headsUp = z
 
 export const SwapCardSchema = z.object({
   dish: z.string().describe('Short dish name, e.g. "Mom\'s congee with salted egg"'),
+  answer: z
+    .string()
+    .nullable()
+    .describe('If the person asked a question, a direct answer to that exact question in 2 to 4 short sentences. Otherwise null.'),
   verdict: z
     .enum(['good_pick', 'tweak', 'swap'])
     .describe('good_pick = already a good pick; tweak = keep it, tweak it; swap = try a swap'),

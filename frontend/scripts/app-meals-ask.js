@@ -144,7 +144,7 @@ function swapBody(data) {
   return {
     title: c.dish,
     tag: `<span class="chip">${esc(t(`sw_verdict_${c.verdict}`))}</span>`,
-    lead: `${data.photo_dish ? `<p class="muted">${esc(t('sw_from_photo', { dish: data.photo_dish }))}</p>` : ''}<p class="result-summary">${esc(c.headline)}</p>`,
+    lead: `${data.photo_dish ? `<p class="muted">${esc(t('sw_from_photo', { dish: data.photo_dish }))}</p>` : ''}${c.answer ? `<p class="result-summary">${esc(c.answer)}</p>` : ''}<p class="${c.answer ? 'muted' : 'result-summary'}">${esc(c.headline)}</p>`,
     body: `
       ${watch ? `<h4 class="result-sub">${esc(t('sw_watch'))}</h4><ul class="ask-watch">${watch}</ul>` : ''}
       ${swaps ? `<h4 class="result-sub">${esc(t('sw_swaps'))}</h4><ul class="tip-list">${swaps}</ul>` : ''}

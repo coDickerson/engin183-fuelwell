@@ -314,7 +314,7 @@ export const appStrings = {
   sw_mode_eatout: s('Eating out', '外出用餐', 'Comer fuera'),
   sw_mode_recipe: s('Family recipe', '家常食譜', 'Receta familiar'),
   sw_meal_label: s('What is Mom eating?', '媽媽想吃甚麼？', '¿Qué va a comer mamá?'),
-  sw_meal_ph: s('e.g. congee with salted egg, or a Big Mac and fries', '例如：鹹蛋粥，或巨無霸加薯條', 'p. ej. congee con huevo salado, o una Big Mac con papas'),
+  sw_meal_ph: s('e.g. congee with salted egg, or ask: "She had pho for lunch, was that okay?"', '例如：鹹蛋粥，或問：「她午餐吃了河粉，可以嗎？」', 'p. ej. congee con huevo salado, o pregunta: «Comió pho al mediodía, ¿estuvo bien?»'),
   sw_prefilled: s('We filled in the dish for you. Press “Adapt it” when ready.', '已為你填好菜式，準備好就按「調整食譜」。', 'Llenamos el platillo por ti. Presiona “Adaptarla” cuando quieras.'),
   sw_photo: s('Add a photo', '加相片', 'Agregar foto'),
   sw_photo_added: s('Photo added', '已加相片', 'Foto agregada'),
