@@ -96,23 +96,6 @@ conditionOtherBox.addEventListener('change', () => {
 });
 syncConditionOther();
 
-// Saying yes to the swap guide makes email the way we send it.
-function wantsUpdates() {
-  return form.elements.wants_updates.value === 'yes';
-}
-function syncEmailTag() {
-  const tag = byId('email-tag');
-  const needed = wantsUpdates();
-  tag.dataset.i18n = needed ? 'required' : 'optional';
-  tag.textContent = t(tag.dataset.i18n);
-  tag.classList.toggle('tag--req', needed);
-}
-form.querySelectorAll('input[name="wants_updates"]').forEach((input) => input.addEventListener('change', () => {
-  syncEmailTag();
-  if (errorBox.dataset.key === 'err_email_needed') showError(null);
-}));
-syncEmailTag();
-
 applyLocale(locale, { save: false });
 
 /* ---------- Submit ---------- */
@@ -129,6 +112,12 @@ function showError(key, field) {
 }
 
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+// 7 to 15 digits, allowing spaces, dashes, dots, brackets and a leading +.
+const PHONE = /^\+?[\d\s().-]+$/;
+function phoneOk(value) {
+  const digits = (value.match(/\d/g) || []).length;
+  return PHONE.test(value) && digits >= 7 && digits <= 15;
+}
 let submitted = { name: '', guide: false };
 
 function readForm() {
@@ -157,11 +146,13 @@ form.addEventListener('submit', async (event) => {
   const row = readForm();
 
   if (!row.first_name) return showError('err_name', byId('first-name'));
-  if (row.wants_updates && !row.email) return showError('err_email_needed', byId('email'));
-  if (row.email && !EMAIL.test(row.email)) return showError('err_email', byId('email'));
+  if (!row.email) return showError('err_email_missing', byId('email'));
+  if (!EMAIL.test(row.email)) return showError('err_email', byId('email'));
+  if (!row.phone) return showError('err_phone_missing', byId('phone'));
+  if (!phoneOk(row.phone)) return showError('err_phone', byId('phone'));
   showError(null);
 
-  submitted = { name: row.first_name, guide: Boolean(row.wants_updates && row.email) };
+  submitted = { name: row.first_name, guide: Boolean(row.wants_updates) };
 
   // Bots that fill the hidden field get the thank-you page without a saved row.
   if (byId('company').value) return showThanks();
