@@ -4,6 +4,7 @@ import { resolve } from 'node:path';
 export default defineConfig({
   root: resolve(import.meta.dirname, 'frontend'),
   envDir: import.meta.dirname,
+  server: { proxy: { '/api': 'http://127.0.0.1:8787' } },
   build: {
     outDir: resolve(import.meta.dirname, 'dist'),
     emptyOutDir: true,
@@ -19,8 +20,11 @@ export default defineConfig({
         demo: resolve(import.meta.dirname, 'frontend/demo.html'),
         dashboard: resolve(import.meta.dirname, 'frontend/dashboard.html'),
         demoDashboard: resolve(import.meta.dirname, 'frontend/demo-dashboard.html'),
+        workspaceDemo: resolve(import.meta.dirname, 'frontend/workspace-demo.html'),
         meals: resolve(import.meta.dirname, 'frontend/meals.html'),
         careTeam: resolve(import.meta.dirname, 'frontend/care-team.html'),
+        notes: resolve(import.meta.dirname, 'frontend/notes.html'),
+        aiChat: resolve(import.meta.dirname, 'frontend/ai-chat.html'),
         health: resolve(import.meta.dirname, 'frontend/health.html'),
         howItWasBuilt: resolve(import.meta.dirname, 'frontend/how-it-was-built.html'),
         join: resolve(import.meta.dirname, 'frontend/join.html'),

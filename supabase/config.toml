@@ -9,3 +9,6 @@ verify_jwt = true
 
 [functions.inquiry-triage]
 verify_jwt = true
+
+[functions.chat-agent]
+verify_jwt = true

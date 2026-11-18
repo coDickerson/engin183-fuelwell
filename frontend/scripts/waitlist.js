@@ -2,7 +2,6 @@ import { authConfigError, supabase } from '../auth/supabase.js';
 import { locales, strings } from './waitlist-i18n.js';
 
 const LANG_KEY = 'fuelwell.waitlist.lang.v1';
-const SITE_LANG_KEY = 'fuelwell.lang.v1';
 const byId = (id) => document.getElementById(id);
 const form = byId('waitlist-form');
 const errorBox = byId('form-error');
@@ -38,34 +37,21 @@ function initialLocale() {
     }
     return null;
   };
-  const siteChoice = (() => { try { return localStorage.getItem(SITE_LANG_KEY); } catch { return null; } })();
-  return pick(fromUrl) || pick(siteChoice) || pick(storage('get')) || fromBrowser() || 'en';
+  return pick(fromUrl) || pick(storage('get')) || fromBrowser() || 'en';
 }
 
 let locale = initialLocale();
 const t = (key) => strings[locale][key] ?? strings.en[key] ?? '';
 
-function role() {
-  return form.elements.role.value || null;
-}
-
-
 function applyLocale(next, { save = true } = {}) {
   locale = next;
-  if (save) {
-    storage('set', next);
-    try { localStorage.setItem(SITE_LANG_KEY, next.startsWith('zh') ? 'zh' : next); } catch { /* storage unavailable */ }
-  }
+  if (save) storage('set', next);
   document.documentElement.lang = next;
   document.title = t('title');
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-html]').forEach((el) => { el.innerHTML = t(el.dataset.i18nHtml); });
   document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => { el.placeholder = t(el.dataset.i18nPlaceholder); });
   document.querySelectorAll('[data-i18n-aria]').forEach((el) => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
-  // "Your" vs "their" wording follows the chosen role.
-  document.querySelectorAll('[data-i18n-role]').forEach((el) => {
-    el.textContent = t(`${el.dataset.i18nRole}_${role() === 'patient' ? 'self' : 'other'}`);
-  });
 
   const isChinese = next.startsWith('zh');
   document.querySelectorAll('.lang-option').forEach((b) => {
@@ -85,25 +71,46 @@ document.querySelectorAll('.lang-option').forEach((button) => button.addEventLis
 }));
 document.querySelectorAll('.script-option').forEach((button) => button.addEventListener('click', () => applyLocale(button.dataset.script)));
 
-// Pre-select "How did you hear about us?" from ?ref=reddit / ?ref=facebook links.
-const ref = params.get('ref')?.toLowerCase();
-const heardFrom = byId('heard-from');
-if ([...heardFrom.options].some((o) => o.value && o.value === ref)) heardFrom.value = ref;
-
-// Wording of "your" vs "their" questions follows the chosen role.
-form.querySelectorAll('input[name="role"]').forEach((input) => input.addEventListener('change', () => {
-  applyLocale(locale, { save: false });
-  if (errorBox.dataset.key === 'err_role') showError(null);
-}));
-
-// The kidney stage question only appears when kidney disease is ticked.
-const kidneyBox = form.querySelector('input[name="conditions"][value="kidney_disease"]');
-function syncStage() {
-  byId('stage-field').hidden = !kidneyBox.checked;
-  if (!kidneyBox.checked) byId('kidney-stage').value = '';
+// Picking "Other" for who you are opens a box to say more.
+function syncRoleOther() {
+  const isOther = form.elements.role.value === 'other';
+  byId('role-other-field').hidden = !isOther;
+  if (!isOther) byId('role-other').value = '';
 }
-kidneyBox.addEventListener('change', syncStage);
-syncStage();
+form.querySelectorAll('input[name="role"]').forEach((input) => input.addEventListener('change', () => {
+  syncRoleOther();
+  if (form.elements.role.value === 'other') byId('role-other').focus();
+}));
+syncRoleOther();
+
+// Ticking "Other" under conditions opens a box to name it.
+const conditionOtherBox = form.querySelector('input[name="conditions"][value="other"]');
+function syncConditionOther() {
+  byId('condition-other-field').hidden = !conditionOtherBox.checked;
+  if (!conditionOtherBox.checked) byId('condition-other').value = '';
+}
+conditionOtherBox.addEventListener('change', () => {
+  syncConditionOther();
+  if (conditionOtherBox.checked) byId('condition-other').focus();
+});
+syncConditionOther();
+
+// Saying yes to the swap guide makes email the way we send it.
+function wantsUpdates() {
+  return form.elements.wants_updates.value === 'yes';
+}
+function syncEmailTag() {
+  const tag = byId('email-tag');
+  const needed = wantsUpdates();
+  tag.dataset.i18n = needed ? 'required' : 'optional';
+  tag.textContent = t(tag.dataset.i18n);
+  tag.classList.toggle('tag--req', needed);
+}
+form.querySelectorAll('input[name="wants_updates"]').forEach((input) => input.addEventListener('change', () => {
+  syncEmailTag();
+  if (errorBox.dataset.key === 'err_email_needed') showError(null);
+}));
+syncEmailTag();
 
 applyLocale(locale, { save: false });
 
@@ -121,19 +128,24 @@ function showError(key, field) {
 }
 
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-let submitted = { name: '', phone: false };
+let submitted = { name: '', guide: false };
 
 function readForm() {
   const data = new FormData(form);
   const text = (name) => (data.get(name) || '').toString().trim();
+  const updates = text('wants_updates');
   return {
     first_name: text('first_name'),
-    email: text('email').toLowerCase(),
+    email: text('email').toLowerCase() || null,
     phone: text('phone') || null,
-    role: text('role'),
-    kidney_stage: text('kidney_stage') || null,
-    interests: data.getAll('interests'),
+    role: text('role') || null,
+    role_other: text('role') === 'other' ? text('role_other') || null : null,
     conditions: data.getAll('conditions'),
+    condition_other: data.getAll('conditions').includes('other') ? text('condition_other') || null : null,
+    usual_food: text('usual_food') || null,
+    hardest_part: text('hardest_part') || null,
+    interests: data.getAll('interests'),
+    wants_updates: updates ? updates === 'yes' : null,
     heard_from: text('heard_from') || null,
     language: locale,
   };
@@ -143,12 +155,12 @@ form.addEventListener('submit', async (event) => {
   event.preventDefault();
   const row = readForm();
 
-  if (!row.role) return showError('err_role', form.querySelector('input[name="role"]'));
   if (!row.first_name) return showError('err_name', byId('first-name'));
-  if (!EMAIL.test(row.email)) return showError('err_email', byId('email'));
+  if (row.wants_updates && !row.email) return showError('err_email_needed', byId('email'));
+  if (row.email && !EMAIL.test(row.email)) return showError('err_email', byId('email'));
   showError(null);
 
-  submitted = { name: row.first_name, phone: Boolean(row.phone) };
+  submitted = { name: row.first_name, guide: Boolean(row.wants_updates && row.email) };
 
   // Bots that fill the hidden field get the thank-you page without a saved row.
   if (byId('company').value) return showThanks();
@@ -161,7 +173,7 @@ form.addEventListener('submit', async (event) => {
     const { error } = await supabase.from('waitlist_signups').insert(row);
     // 23505 = this email already joined; treat a repeat signup as success.
     if (error && error.code !== '23505') throw error;
-    window.va?.('event', { name: 'waitlist_signup', data: { role: row.role, language: row.language } });
+    window.va?.('event', { name: 'waitlist_signup', data: { role: row.role || 'none', language: row.language } });
     showThanks();
   } catch (error) {
     const offline = /failed to fetch|network|load failed/i.test(error?.message || '');
@@ -177,7 +189,7 @@ form.addEventListener('submit', async (event) => {
 
 function renderThanks() {
   byId('thanks-title').textContent = t('thanks_title').replace('{name}', submitted.name);
-  byId('thanks-body').textContent = t(submitted.phone ? 'thanks_body_phone' : 'thanks_body');
+  byId('thanks-body').textContent = t(submitted.guide ? 'thanks_body_guide' : 'thanks_body');
 }
 
 function showThanks() {

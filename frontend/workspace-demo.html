@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#073d30" />
+  <meta name="description" content="FuelWell caregiver workspace concept for meals, notes, appointments, and chat." />
+  <title>Caregiver workspace concept | FuelWell</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="stylesheet" href="/styles/styles.css" />
+  <link rel="stylesheet" href="/styles/workspace-demo.css" />
+  <script type="module" src="/scripts/workspace-demo.js"></script>
+</head>
+<body class="workspace-demo">
+  <a class="skip-link" href="#workspace-main">Skip to content</a>
+  <div class="workspace-layout">
+    <aside class="workspace-rail" aria-label="Workspace navigation">
+      <a class="workspace-brand" href="/"><span class="brand-mark" aria-hidden="true"></span>FuelWell</a>
+      <span class="workspace-demo-tag">Concept demo</span>
+      <nav class="workspace-nav" aria-label="Main">
+        <a href="#dashboard" data-route="dashboard">Overview</a>
+        <a href="#notes" data-route="notes">Notes & plans</a>
+        <a href="#appointments" data-route="appointments">Appointments</a>
+        <a href="#chat" data-route="chat">AI chat</a>
+      </nav>
+      <div class="workspace-rail-foot">
+        <p>Built for the person helping with meals and care.</p>
+        <a href="/demo-dashboard.html">Open current demo</a>
+      </div>
+    </aside>
+    <div class="workspace-body">
+      <header class="workspace-top">
+        <div><span class="workspace-top-kicker">Caregiver workspace</span><strong>Fung’s care</strong></div>
+        <span class="workspace-demo-pill">Fictional preview · no patient data</span>
+      </header>
+      <main id="workspace-main" class="workspace-main" tabindex="-1">
+        <div id="workspace-view"></div>
+      </main>
+    </div>
+  </div>
+  <div class="workspace-toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

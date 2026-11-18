@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="description" content="Weekly guides, meal plans and notes from Mom’s care team in FuelWell." />
+    <title>Notes | FuelWell</title>
+    <link rel="stylesheet" href="/styles/styles.css" />
+    <link rel="stylesheet" href="/styles/dashboard.css" />
+    <link rel="stylesheet" href="/styles/portal.css" />
+    <script type="module" src="/scripts/portal/notes.js"></script>
+    <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+    <script defer src="/_vercel/insights/script.js"></script>
+  </head>
+  <body class="app-page workspace-page is-loading">
+    <a class="skip-link" href="#main-content" data-i18n="skip">Skip to content</a>
+    <div class="app-loader" data-app-loader role="status" aria-live="polite">
+      <span class="sr-only" data-i18n="loading">Loading…</span>
+      <div class="sk-rail" aria-hidden="true"><div class="sk sk-logo"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div></div>
+      <div class="sk-body" aria-hidden="true">
+        <div class="sk sk-top"></div>
+        <div class="sk sk-title"></div>
+        <div class="sk sk-line"></div>
+        <div class="sk-grid sk-grid--2"><div class="sk sk-card"></div><div class="sk sk-card"></div></div>
+      </div>
+    </div>
+    <div class="app-frame" data-app-frame hidden>
+      <main class="app-main" id="main-content" tabindex="-1">
+        <div class="page-head">
+          <div>
+            <h1 data-pt="notes_h1">Notes</h1>
+            <p class="page-sub" data-pt="notes_sub"></p>
+          </div>
+        </div>
+        <div class="subtabs notes-filters" role="group" data-pt-aria="notes_filters" data-note-filters></div>
+        <div class="notes-weeks" data-notes></div>
+      </main>
+    </div>
+    <div class="toast" role="status" aria-live="polite" aria-atomic="true" data-toast></div>
+  </body>
+</html>

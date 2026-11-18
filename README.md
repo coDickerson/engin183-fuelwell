@@ -17,6 +17,10 @@ It is a student product demo. All health data is sample data, and nothing in it 
 | **Care team** | Visits and messages. **AI question triage:** a caregiver's question is classified, checked for red flags, answered with a reviewable draft and matched with open dietitian slots. Shows "How the agent handled this". |
 | **Health & labs** | Sample lab trends (eGFR, potassium, phosphorus) explained in plain language. |
 
+### Caregiver workspace concept
+
+Run `npm run dev:api` and `npm run dev` in separate terminals, then open `/workspace-demo.html` to review the chat-centered workspace. Its Overview, Notes & plans, Appointments, and AI chat views share calendar and chat components. The local API loads a fictional selected patient, retrieves source guidance, and gives inspectable meal adaptations or menu comparisons. Text attachments can be analyzed; notes, taste feedback, food preferences, appointments, and chat history are stored in this browser. Nutrient targets remain unset until a reviewed clinician plan can supply them. See [backend/mvp/README.md](backend/mvp/README.md) for the complete backend walkthrough and limits.
+
 The public site offers three clear paths: try the fictional demo, join the waitlist, or create an account. Account creation asks only for name, email and password. Real accounts open a private starting page with optional preferences; only the demo account opens the fictional care dashboard.
 
 ### Languages
