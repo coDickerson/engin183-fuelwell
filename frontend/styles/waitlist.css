@@ -1,7 +1,7 @@
 /*
-  Waitlist feedback page (/join). Builds on styles.css tokens.
-  Mobile first: intro → form → culture. On wide screens the form sits on the
-  right and stays in view while the intro and culture column scrolls.
+  Swap guide and waitlist page (/join). Builds on styles.css tokens.
+  Mobile first: intro → form → swap guide. On wide screens the form sits on the
+  right and stays in view while the intro and swap guide scroll.
 */
 
 /* Header with language switch */
@@ -16,12 +16,14 @@
 
 /* Layout */
 .wl-main { padding: var(--space-6) 0 var(--space-8); }
-.wl-grid { display: grid; gap: var(--space-6); grid-template-areas: "intro" "form" "culture"; }
+.wl-grid { display: grid; gap: var(--space-6); grid-template-areas: "intro" "form" "guide"; }
 .wl-intro { grid-area: intro; }
 .wl-form-card { grid-area: form; }
-.wl-culture { grid-area: culture; }
 @media (min-width: 960px) {
-  .wl-grid { grid-template-columns: 1.05fr 1fr; grid-template-rows: auto 1fr; grid-template-areas: "intro form" "culture form"; column-gap: clamp(32px, 5vw, 72px); align-items: start; }
+  .wl-grid { grid-template-columns: 1.05fr 1fr; grid-template-rows: auto 1fr; grid-template-areas: "intro form" "guide form"; column-gap: clamp(32px, 5vw, 72px); align-items: start; }
+}
+/* Keep the form in view only when the whole card fits on screen, so Submit is never cut off. */
+@media (min-width: 960px) and (min-height: 1080px) {
   .wl-form-card { position: sticky; top: 96px; }
 }
 
@@ -36,36 +38,10 @@
 .wl-form-card { padding: clamp(20px, 3vw, 32px); box-shadow: var(--shadow-2); }
 .wl-form-card h2 { margin-bottom: var(--space-1); }
 .wl-form-sub { font-size: var(--text-sm); }
-.wl-fieldset { border: 0; padding: 0; margin: 0 0 var(--space-4); min-width: 0; }
-.wl-legend { padding: 0; margin-bottom: var(--space-2); font-weight: 700; font-size: var(--text-base); }
 .tag { display: inline-block; margin-left: 4px; padding: 0 8px; border-radius: var(--radius-pill); background: var(--ground-alt); color: var(--ink-3); font-size: var(--text-sm); font-weight: 700; vertical-align: 1px; }
 .tag--req { background: var(--accent-soft); color: var(--accent); }
 .wl-row { display: grid; gap: 0 var(--space-4); }
 @media (min-width: 560px) { .wl-row { grid-template-columns: 1fr 1fr; align-items: end; } }
-
-/* "Who are you?" tiles: real radio inputs, styled as large tap targets */
-.role-tiles { display: grid; gap: var(--space-2); }
-.role-tile { position: relative; display: flex; align-items: center; gap: var(--space-3); min-height: 64px; padding: var(--space-3) var(--space-4); border: 2px solid var(--line-strong); border-radius: var(--radius); background: var(--surface); cursor: pointer; }
-.role-tile:hover { border-color: var(--primary); background: var(--surface-tint); }
-.role-tile input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
-.role-tile-icon { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: 50%; background: var(--primary-soft); color: var(--primary-strong); }
-.role-tile-text { display: grid; gap: 1px; }
-.role-tile-text strong { font-size: var(--text-base); }
-.role-tile-text span { font-size: var(--text-sm); color: var(--ink-3); }
-.role-tile:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 2px var(--accent) inset; }
-.role-tile:has(input:checked) .role-tile-icon { background: var(--accent); color: var(--white); }
-.role-tile:has(input:focus-visible) { outline: 3px solid var(--focus); outline-offset: 2px; }
-
-/* Numbered questions */
-.wl-q { margin-bottom: var(--space-5); }
-.wl-q .wl-legend { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 4px var(--space-2); }
-.wl-num { display: inline-grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--primary-soft); color: var(--primary-strong); font-size: var(--text-sm); font-weight: 800; }
-.wl-q .wl-legend > span:nth-child(2) { flex: 1 1 0; min-width: 12ch; padding-top: 2px; }
-.wl-legend-hint { font-weight: 400; font-size: var(--text-sm); color: var(--ink-3); padding-top: 4px; }
-@media (min-width: 400px) { .role-tiles--grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.role-tiles--grid .role-tile { padding-inline: var(--space-3); }
-
-.wl-other { margin: var(--space-3) 0 0; }
 
 /* UC Berkeley thank-you note */
 .wl-note { display: flex; gap: var(--space-3); align-items: flex-start; margin: var(--space-4) 0 var(--space-5); padding: var(--space-3) var(--space-4); border-radius: var(--radius); background: var(--accent-soft); }
@@ -73,29 +49,8 @@
 .wl-note p { margin: 0; font-size: var(--text-sm); color: var(--ink-2); }
 .wl-note .wl-note-title { margin-bottom: 2px; font-size: var(--text-base); font-weight: 800; color: var(--ink); }
 
-
-/* Conditions: tap chips (real checkboxes) */
-.wl-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-.wl-chip { position: relative; cursor: pointer; }
-.wl-chip input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
-.wl-chip span { display: inline-flex; align-items: center; min-height: var(--target); padding: 0 var(--space-4); border: 2px solid var(--line-strong); border-radius: var(--radius-pill); background: var(--surface); font-weight: 700; }
-.wl-chip:hover span { border-color: var(--primary); }
-.wl-chip input:checked + span { border-color: var(--primary); background: var(--primary); color: var(--white); }
-.wl-chip input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 2px; }
-
-/* Swap guide: yes / no */
-.wl-yesno { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-2); }
-.wl-yesno label { position: relative; cursor: pointer; }
-.wl-yesno input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
-.wl-yesno span { display: grid; place-items: center; min-height: 52px; border: 2px solid var(--line-strong); border-radius: var(--radius); background: var(--surface); font-weight: 700; font-size: var(--text-lg); }
-.wl-yesno label:hover span { border-color: var(--primary); }
-.wl-yesno input:checked + span { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; }
-.wl-yesno input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 2px; }
-
 /* Contact details */
-.wl-contact { margin: var(--space-5) 0 var(--space-4); padding-top: var(--space-5); border-top: 1px dashed var(--line-strong); }
-.wl-optional-title { margin-bottom: var(--space-3); font-size: var(--text-lg); }
-.wl-email-hint { margin: calc(-1 * var(--space-2)) 0 0; font-size: var(--text-sm); color: var(--ink-3); }
+.wl-contact { margin: 0 0 var(--space-4); }
 
 .wl-trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 .wl-submit { min-height: 56px; margin-top: var(--space-2); font-size: var(--text-lg); }
@@ -103,18 +58,35 @@
 #form-error { margin-bottom: var(--space-3); }
 .field input[aria-invalid="true"], .field textarea[aria-invalid="true"] { border-color: var(--high); }
 
-/* Culture column */
-.wl-points { list-style: none; margin: 0 0 var(--space-5); padding: 0; display: grid; gap: var(--space-4); }
-.wl-points li { display: flex; gap: var(--space-4); align-items: flex-start; }
-.wl-points h3 { margin-bottom: var(--space-1); font-size: var(--text-lg); }
-.wl-points p { margin: 0; color: var(--ink-2); }
-.icon-badge { display: grid; place-items: center; flex: none; width: 48px; height: 48px; border-radius: 50%; background: var(--primary-soft); color: var(--primary-strong); }
-.wl-points li:nth-child(2) .icon-badge { background: var(--accent-soft); color: var(--accent); }
-.wl-photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); }
-.wl-photos figure { margin: 0; }
-.wl-photos img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius); }
-.wl-photos figcaption { margin-top: var(--space-1); font-size: var(--text-sm); color: var(--ink-2); line-height: 1.3; }
-.wl-cuisines { margin: var(--space-4) 0 var(--space-2); padding: var(--space-3) var(--space-4); border-radius: var(--radius); background: var(--surface-tint); color: var(--primary-strong); font-weight: 700; font-size: var(--text-sm); max-width: none; }
+/* Swap guide */
+.wl-guide { grid-area: guide; min-width: 0; }
+.wl-guide h2 { margin-bottom: var(--space-1); }
+.wl-guide-sub { margin-bottom: var(--space-4); color: var(--ink-2); }
+.wl-guide-filters { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-3); }
+.wl-filter { min-height: var(--target); padding: 8px 18px; border: 1px solid var(--line-strong); border-radius: var(--radius-pill); background: var(--surface); color: var(--ink); font-weight: 700; font-size: var(--text-sm); cursor: pointer; }
+.wl-filter:hover { background: var(--primary-soft); }
+.wl-filter[aria-pressed="true"] { background: var(--primary); border-color: var(--primary); color: var(--white); }
+.wl-guide-count { margin: 0 0 var(--space-3); font-size: var(--text-sm); color: var(--ink-3); }
+.wl-swaps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-4); }
+@media (min-width: 600px) { .wl-swaps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.wl-swaps > li { display: flex; }
+.wl-swap { display: flex; flex-direction: column; width: 100%; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow-1, none); }
+.wl-swap-photo { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; background: var(--ground-alt); }
+.wl-swap-body { display: flex; flex-direction: column; flex: 1; padding: var(--space-4); }
+.wl-swap-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px var(--space-2); margin: 0 0 var(--space-3); font-size: var(--text-sm); color: var(--ink-3); }
+.wl-swap-tag { padding: 2px 10px; border-radius: var(--radius-pill); background: var(--primary-soft); color: var(--primary-strong); font-weight: 700; }
+.wl-swap-tag--sugar { background: var(--mid-soft); color: var(--mid); }
+.wl-swap-label { margin: 0; font-size: var(--text-sm); font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: .04em; }
+:lang(zh) .wl-swap-label { text-transform: none; letter-spacing: 0; }
+.wl-swap h3 { margin: 2px 0 var(--space-3); font-size: var(--text-lg); text-wrap: balance; }
+.wl-swap-label--try { color: var(--primary); }
+.wl-swap-try { margin: 2px 0 var(--space-2); padding: var(--space-3); border-radius: var(--radius); background: var(--surface-tint); color: var(--ink); }
+.wl-swap-why { margin: 0 0 var(--space-3); font-size: var(--text-sm); color: var(--ink-2); }
+.wl-swap-credit { margin: auto 0 0; font-size: var(--text-sm); color: var(--ink-3); }
+.wl-swap-credit a { color: inherit; }
+.wl-guide-note { margin: var(--space-4) 0 0; padding: var(--space-3) var(--space-4); border-radius: var(--radius); background: var(--ground-alt); font-size: var(--text-sm); color: var(--ink-2); max-width: none; }
+.wl-jump { margin-top: var(--space-2); }
+
 .photo-credit-line { margin: 0; font-size: var(--text-sm); color: var(--on-dark-2); }
 .photo-credit-line a { color: inherit; }
 
@@ -139,7 +111,6 @@
 @media (max-width: 480px) {
   .wl-header .brand { font-size: 1.2rem; }
   .lang-option { padding-inline: 10px; }
-  .wl-photos { gap: var(--space-2); }
 }
 /* On phones the two-row header would cover too much of the form; let it scroll away. */
 @media (max-width: 640px) { .wl-header { position: static; } }
