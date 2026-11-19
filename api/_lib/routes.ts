@@ -121,7 +121,7 @@ export async function listCatalog(): Promise<RouteResult> {
   if (!supabaseUrl() || !supabaseServiceKey()) return fail(503, 'FuelWell is not set up on this server yet.', 'not_configured');
   const { data, error } = await supabase()
     .from('swap_catalog')
-    .select('id, meal, eater_type, cuisine, watch, swap, why')
+    .select('id, meal, eater_type, cuisine, watch, swap, why, portion')
     .order('meal');
   if (error) {
     console.error(JSON.stringify({ route: 'catalog', msg: 'failed', error: error.message.slice(0, 300) }));

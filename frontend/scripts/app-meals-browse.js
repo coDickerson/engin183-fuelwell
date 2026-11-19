@@ -36,6 +36,7 @@ function card(r, index) {
       <p class="instead-label">${icon('arrow')}${esc(t('br_try'))}</p>
       <p class="swap-card-swap">${esc(r.swap)}</p>
       <p class="muted"><strong>${esc(t('br_why'))}:</strong> ${esc(r.why)}</p>
+      ${r.portion ? `<p class="muted"><strong>${esc(t('sw_portion'))}:</strong> ${esc(r.portion)}</p>` : ''}
     </div>
     <div class="swap-card-actions">
       <button class="button button--secondary" type="button" data-save-swap="${index}" aria-pressed="${saved}">${icon('heart')}<span>${esc(t(saved ? 'br_saved' : 'br_save'))}</span></button>

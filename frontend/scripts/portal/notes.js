@@ -1,12 +1,10 @@
-// Notes: every weekly guide and meal plan, doctor and dietitian notes, meal plans saved
-// from AI Chat and swaps saved from Meals > Browse swaps, grouped by week.
+// Notes: every weekly guide and meal plan, doctor and dietitian notes, and swaps saved from Meals > Browse swaps, grouped by week.
 // Each note shows who wrote it and when.
 import { initShell } from '../app-shell.js';
 import { dateFromOffset, esc, fmt, icon } from '../app-ui.js';
 import { tr } from '../i18n.js';
 import { mealSlots, week } from '../../data/fung.js';
 import { careNotes, noteAuthors } from '../../data/portal.js';
-import { savedNotes } from './chat-store.js';
 import { removeSwap, savedSwaps } from '../swap-store.js';
 import { photoUrl, swapPhotos } from '../../data/swap-photos.js';
 import { fillPortalText, pt } from './strings.js';
@@ -42,9 +40,8 @@ function carePlanDays(note) {
 
 function allNotes() {
   const team = careNotes.map((n) => ({ ...n, at: dateFromOffset(-n.daysAgo, n.h, n.m) }));
-  const fromAi = savedNotes().map((n) => ({ id: n.id, type: 'ai', at: new Date(n.savedAt), title: n.plan.title, aiPlan: n.plan }));
   const swaps = savedSwaps().map((w) => ({ id: `swap-${w.id}`, type: 'swap', at: new Date(w.savedAt), title: w.meal, swap: w }));
-  return [...team, ...fromAi, ...swaps].sort((a, b) => b.at - a.at);
+  return [...team, ...swaps].sort((a, b) => b.at - a.at);
 }
 
 function planList(days) {

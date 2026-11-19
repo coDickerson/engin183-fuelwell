@@ -152,7 +152,8 @@ function profileForm(ctx, d) {
         ${check('kidneyDisease', t('cond_kidney'), d.kidneyDisease)}
         <p class="hint">${esc(t('profile_conditions_hint'))}</p></fieldset>
       <div class="field" data-stage-field${d.kidneyDisease ? '' : ' hidden'}><label for="pf-stage">${esc(t('profile_stage'))}</label>
-        <select id="pf-stage" name="stage"><option value="">${esc(t('profile_not_set'))}</option>${CKD_STAGES.map((s) => `<option value="${s}"${d.stage === s ? ' selected' : ''}>${esc(stageLabel(s))}</option>`).join('')}</select></div>
+        <select id="pf-stage" name="stage" aria-describedby="pf-stage-hint"><option value="">${esc(t('profile_not_set'))}</option>${CKD_STAGES.map((s) => `<option value="${s}"${d.stage === s ? ' selected' : ''}>${esc(stageLabel(s))}</option>`).join('')}</select>
+        <p class="hint" id="pf-stage-hint">${esc(t('profile_stage_hint'))}</p></div>
       <div class="profile-actions">
         <button class="button" type="submit">${esc(t('profile_save'))}</button>
         ${ctx.profile ? `<button class="button button--ghost" type="button" data-profile-cancel>${esc(t('profile_cancel'))}</button>` : ''}
