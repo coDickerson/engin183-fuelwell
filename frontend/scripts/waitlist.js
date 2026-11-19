@@ -1,6 +1,8 @@
 import { authConfigError, supabase } from '../auth/supabase.js';
 import { track } from './track.js';
 import { locales, strings } from './waitlist-i18n.js';
+import { joinSwaps } from '../data/join-swaps.js';
+import { photoPage, photoUrl, swapPhotos } from '../data/swap-photos.js';
 
 const LANG_KEY = 'fuelwell.waitlist.lang.v1';
 const byId = (id) => document.getElementById(id);
@@ -63,6 +65,7 @@ function applyLocale(next, { save = true } = {}) {
   document.querySelectorAll('.script-option').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.script === next)));
   if (!byId('thanks-view').hidden) renderThanks();
   if (!errorBox.hidden && errorBox.dataset.key) errorBox.textContent = t(errorBox.dataset.key);
+  renderGuide();
 }
 
 document.querySelectorAll('.lang-option').forEach((button) => button.addEventListener('click', () => {
@@ -72,29 +75,38 @@ document.querySelectorAll('.lang-option').forEach((button) => button.addEventLis
 }));
 document.querySelectorAll('.script-option').forEach((button) => button.addEventListener('click', () => applyLocale(button.dataset.script)));
 
-// Picking "Other" for who you are opens a box to say more.
-function syncRoleOther() {
-  const isOther = form.elements.role.value === 'other';
-  byId('role-other-field').hidden = !isOther;
-  if (!isOther) byId('role-other').value = '';
-}
-form.querySelectorAll('input[name="role"]').forEach((input) => input.addEventListener('change', () => {
-  syncRoleOther();
-  if (form.elements.role.value === 'other') byId('role-other').focus();
-}));
-syncRoleOther();
+/* ---------- Swap guide ---------- */
 
-// Ticking "Other" under conditions opens a box to name it.
-const conditionOtherBox = form.querySelector('input[name="conditions"][value="other"]');
-function syncConditionOther() {
-  byId('condition-other-field').hidden = !conditionOtherBox.checked;
-  if (!conditionOtherBox.checked) byId('condition-other').value = '';
+const esc = (value) => String(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+let guideKind = 'all';
+
+function renderGuide() {
+  const shown = joinSwaps.filter((item) => guideKind === 'all' || item.kind === guideKind);
+  byId('guide-count').textContent = t('guide_count').replace('{n}', shown.length);
+  byId('swap-list').innerHTML = shown.map((item, index) => {
+    const text = item[locale] || item.en;
+    const photo = swapPhotos[item.photo];
+    const cuisine = text.cuisine && item.en.cuisine !== 'Any' ? ` · ${esc(text.cuisine)}` : '';
+    return `<li><article class="wl-swap" aria-labelledby="swap-${index}">
+      ${photo ? `<img class="wl-swap-photo" src="${esc(photoUrl(photo))}" alt="" loading="lazy" width="640" height="420">` : ''}
+      <div class="wl-swap-body">
+        <p class="wl-swap-meta"><span class="wl-swap-tag wl-swap-tag--${item.tag}">${esc(t(`tag_${item.tag}`))}</span><span>${esc(t(`kind_${item.kind}`))}${cuisine}</span></p>
+        <p class="wl-swap-label">${esc(t('instead'))}</p>
+        <h3 id="swap-${index}">${esc(text.meal)}</h3>
+        <p class="wl-swap-label wl-swap-label--try">${esc(t('try'))}</p>
+        <p class="wl-swap-try">${esc(text.swap)}</p>
+        <p class="wl-swap-why"><strong>${esc(t('why'))}:</strong> ${esc(text.why)}</p>
+        ${photo ? `<p class="wl-swap-credit">${esc(t('photo_by'))} <a href="${esc(photoPage(photo))}" target="_blank" rel="noopener noreferrer">${esc(photo.by)}</a> / Unsplash</p>` : ''}
+      </div>
+    </article></li>`;
+  }).join('');
 }
-conditionOtherBox.addEventListener('change', () => {
-  syncConditionOther();
-  if (conditionOtherBox.checked) byId('condition-other').focus();
-});
-syncConditionOther();
+
+document.querySelectorAll('.wl-guide-filters [data-kind]').forEach((button) => button.addEventListener('click', () => {
+  guideKind = button.dataset.kind;
+  document.querySelectorAll('.wl-guide-filters [data-kind]').forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+  renderGuide();
+}));
 
 applyLocale(locale, { save: false });
 
@@ -118,25 +130,16 @@ function phoneOk(value) {
   const digits = (value.match(/\d/g) || []).length;
   return PHONE.test(value) && digits >= 7 && digits <= 15;
 }
-let submitted = { name: '', guide: false };
+let submitted = { name: '', story: false };
 
 function readForm() {
   const data = new FormData(form);
   const text = (name) => (data.get(name) || '').toString().trim();
-  const updates = text('wants_updates');
   return {
     first_name: text('first_name'),
     email: text('email').toLowerCase() || null,
     phone: text('phone') || null,
-    role: text('role') || null,
-    role_other: text('role') === 'other' ? text('role_other') || null : null,
-    conditions: data.getAll('conditions'),
-    condition_other: data.getAll('conditions').includes('other') ? text('condition_other') || null : null,
-    usual_food: text('usual_food') || null,
-    hardest_part: text('hardest_part') || null,
-    interests: data.getAll('interests'),
-    wants_updates: updates ? updates === 'yes' : null,
-    heard_from: text('heard_from') || null,
+    story: text('story') || null,
     language: locale,
   };
 }
@@ -148,11 +151,10 @@ form.addEventListener('submit', async (event) => {
   if (!row.first_name) return showError('err_name', byId('first-name'));
   if (!row.email) return showError('err_email_missing', byId('email'));
   if (!EMAIL.test(row.email)) return showError('err_email', byId('email'));
-  if (!row.phone) return showError('err_phone_missing', byId('phone'));
-  if (!phoneOk(row.phone)) return showError('err_phone', byId('phone'));
+  if (row.phone && !phoneOk(row.phone)) return showError('err_phone', byId('phone'));
   showError(null);
 
-  submitted = { name: row.first_name, guide: Boolean(row.wants_updates) };
+  submitted = { name: row.first_name, story: Boolean(row.story) };
 
   // Bots that fill the hidden field get the thank-you page without a saved row.
   if (byId('company').value) return showThanks();
@@ -165,7 +167,7 @@ form.addEventListener('submit', async (event) => {
     const { error } = await supabase.from('waitlist_signups').insert(row);
     // 23505 = this email already joined; treat a repeat signup as success.
     if (error && error.code !== '23505') throw error;
-    window.va?.('event', { name: 'waitlist_signup', data: { role: row.role || 'none', language: row.language } });
+    window.va?.('event', { name: 'waitlist_signup', data: { story: Boolean(row.story), language: row.language } });
     track('signup', `waitlist${new URLSearchParams(location.search).get('from') === 'demo' ? ':from_demo' : ''}`);
     showThanks();
   } catch (error) {
@@ -182,7 +184,7 @@ form.addEventListener('submit', async (event) => {
 
 function renderThanks() {
   byId('thanks-title').textContent = t('thanks_title').replace('{name}', submitted.name);
-  byId('thanks-body').textContent = t(submitted.guide ? 'thanks_body_guide' : 'thanks_body');
+  byId('thanks-body').textContent = t(submitted.story ? 'thanks_body_story' : 'thanks_body');
 }
 
 function showThanks() {
