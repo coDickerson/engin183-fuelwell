@@ -10,6 +10,7 @@ const JOIN_URL = '/join?from=demo';
 const SHOWN = 'fuelwell.nudge.shown.v1'; // sessionStorage: already shown this visit
 const DONE = 'fuelwell.nudge.done.v1'; // localStorage: clicked join or closed it twice
 const CLOSES = 'fuelwell.nudge.closes.v1';
+const JOINED = 'fuelwell.join.done.v1'; // set by /join after someone signs up there
 
 function get(store, key) { try { return window[store].getItem(key); } catch { return null; } }
 function set(store, key, value) { try { window[store].setItem(key, value); } catch { /* storage unavailable */ } }
@@ -18,6 +19,7 @@ export const joinHref = JOIN_URL;
 
 /** Rail card markup for demo visitors (desktop). */
 export function railJoinHtml() {
+  if (get('localStorage', JOINED)) return '';
   return `<div class="demo-join">
     <p class="demo-join-kicker">${esc(t('join_kicker'))}</p>
     <p class="demo-join-text">${esc(t('join_rail_text'))}</p>
@@ -27,7 +29,7 @@ export function railJoinHtml() {
 
 /** One line under an AI answer in the demo. */
 export function inlineJoinHtml() {
-  if (!isDemoSession()) return '';
+  if (!isDemoSession() || get('localStorage', JOINED)) return '';
   return `<p class="demo-join-inline">${icon('heart')}<span>${esc(t('join_inline'))} <a href="${JOIN_URL}" data-join-link="answer">${esc(t('join_cta_short'))}</a></span></p>`;
 }
 
@@ -45,7 +47,7 @@ document.addEventListener('click', (e) => {
 /** Phones only: offer the slim card after a useful moment. */
 export function offerJoin(reason) {
   if (!isDemoSession() || !matchMedia('(max-width: 899px)').matches) return;
-  if (get('sessionStorage', SHOWN) || get('localStorage', DONE)) return;
+  if (get('sessionStorage', SHOWN) || get('localStorage', DONE) || get('localStorage', JOINED)) return;
   set('sessionStorage', SHOWN, '1');
   // Let them read the answer first.
   setTimeout(() => show(reason), 5000);
