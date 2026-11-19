@@ -2,7 +2,7 @@
 // Vite (port 5173) forwards /api/* here (see vite.config.js). Run: npm run dev:api
 import { createServer } from 'node:http';
 import { listCatalog, runRoute } from '../api/_lib/routes.js';
-import { join } from '../api/_lib/join.js';
+import { welcome } from '../api/_lib/welcome.js';
 import type { Mode } from '../api/_lib/schemas.js';
 
 const PORT = Number(process.env.API_PORT ?? 8787);
@@ -21,7 +21,7 @@ createServer(async (req, res) => {
     return send(r.status, r.body);
   }
   const mode = ROUTES[path];
-  if (!mode && path !== '/api/join') return send(404, { error: 'Not found' });
+  if (!mode && path !== '/api/welcome') return send(404, { error: 'Not found' });
   if (req.method !== 'POST') return send(405, { error: 'Use POST.' });
   const chunks: Buffer[] = [];
   let size = 0;
@@ -32,6 +32,9 @@ createServer(async (req, res) => {
   }
   let body: unknown = null;
   try { body = JSON.parse(Buffer.concat(chunks).toString('utf8') || 'null'); } catch { return send(400, { error: 'Bad JSON.' }); }
-  const result = path === '/api/join' ? await join(body) : await runRoute(mode as Mode, body);
+  const auth = String(req.headers.authorization || '');
+  const result = path === '/api/welcome'
+    ? await welcome(auth.startsWith('Bearer ') ? auth.slice(7).trim() : null, body)
+    : await runRoute(mode as Mode, body);
   send(result.status, result.body);
-}).listen(PORT, () => console.log(`FuelWell API on http://localhost:${PORT}  (/api/swap, /api/eatout, /api/recipe, /api/catalog, /api/join)`));
+}).listen(PORT, () => console.log(`FuelWell API on http://localhost:${PORT}  (/api/swap, /api/eatout, /api/recipe, /api/catalog, /api/welcome)`));

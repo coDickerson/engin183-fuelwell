@@ -1,9 +1,11 @@
 import { track } from './track.js';
+import { getAuthenticatedUser, supabase } from '../auth/supabase.js';
+import { isDemoUser } from '../auth/demo.js';
 import { locales, strings } from './waitlist-i18n.js';
 import { joinSwaps } from '../data/join-swaps.js';
 import { photoPage, photoUrl, swapPhotos } from '../data/swap-photos.js';
 
-const LANG_KEY = 'fuelwell.waitlist.lang.v1';
+const LANG_KEY = 'fuelwell.waitlist.lang.v1'; // kept so returning visitors keep their language
 const byId = (id) => document.getElementById(id);
 const form = byId('waitlist-form');
 const errorBox = byId('form-error');
@@ -107,7 +109,92 @@ function renderGuide() {
 
 applyLocale(locale, { save: false });
 
-/* ---------- Submit ---------- */
+/* ---------- Account sign-up ---------- */
+// Both forms on this page (the main card and the sign-up box) create a real FuelWell
+// account with Supabase Auth. "Confirm email" is off, so the account signs in right away.
+// Optional phone and story go on the person's own profile (owner-only RLS).
+
+const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+const MIN_PASSWORD = 8;
+// 7 to 15 digits, allowing spaces, dashes, dots, brackets and a leading +.
+const PHONE = /^\+?[\d\s().-]+$/;
+function phoneOk(value) {
+  const digits = (value.match(/\d/g) || []).length;
+  return PHONE.test(value) && digits >= 7 && digits <= 15;
+}
+
+const JOINED = 'fuelwell.join.done.v1';
+const NUDGE_DONE = 'fuelwell.nudge.done.v1'; // the demo's own join prompts (signup-nudge.js)
+function local(action, key, value) {
+  try {
+    return action === 'get' ? localStorage.getItem(key) : localStorage.setItem(key, value);
+  } catch {
+    return null;
+  }
+}
+function markJoined() {
+  local('set', JOINED, '1');
+  local('set', NUDGE_DONE, '1');
+}
+
+// Someone already signed in (not the shared demo account) skips the sign-up box.
+let signedIn = false;
+if (supabase) {
+  getAuthenticatedUser().then((user) => { signedIn = Boolean(user && !isDemoUser(user)); }).catch(() => {});
+}
+
+function authErrorKey(error) {
+  const text = `${error?.code || ''} ${error?.message || ''}`;
+  if (/failed to fetch|network|load failed/i.test(error?.message || '')) return 'err_network';
+  if (/already.*(registered|exists)|user_already_exists|email_exists/i.test(text)) return 'err_exists';
+  if (/weak_password|password/i.test(text)) return 'err_password';
+  if (error?.status === 429 || /rate.?limit|over_email_send_rate/i.test(text)) return 'err_rate';
+  if (/email_address_invalid|invalid.*email|email.*invalid/i.test(text)) return 'err_email';
+  return 'err_generic';
+}
+
+/** Asks the server to send the welcome email with the swap-guide link. Never blocks sign-up. */
+async function sendWelcome(session) {
+  try {
+    const response = await fetch('/api/welcome', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+      body: JSON.stringify({ language: locale }),
+    });
+    const data = await response.json().catch(() => ({}));
+    return response.ok && data.emailed === true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Creates the account, saves the profile and sends the welcome email.
+ * Resolves to { emailed } or throws an Error whose `key` is a strings key.
+ */
+async function createAccount({ name, email, password, phone = null, story = null, via }) {
+  if (!supabase) throw Object.assign(new Error('config'), { key: 'err_config' });
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { emailRedirectTo: new URL('/dashboard.html', location.origin).href, data: { full_name: name } },
+  });
+  if (error) throw Object.assign(error, { key: authErrorKey(error) });
+  // With "Confirm email" on, an existing address comes back with no identities.
+  if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+    throw Object.assign(new Error('exists'), { key: 'err_exists' });
+  }
+  track('signup', `account:join_${via}`);
+  window.va?.('event', { name: 'account_signup', data: { via, language: locale } });
+  markJoined();
+  if (!data.session) return { emailed: false, confirm: true };
+  signedIn = true;
+  const { error: profileError } = await supabase.from('profiles').upsert({
+    user_id: data.user.id, full_name: name, phone, story, updated_at: new Date().toISOString(),
+  }, { onConflict: 'user_id' });
+  if (profileError) console.warn('Profile not saved yet; the dashboard will ask again.', profileError.message);
+  return { emailed: await sendWelcome(data.session), confirm: false };
+}
 
 function showError(key, field) {
   errorBox.dataset.key = key || '';
@@ -120,74 +207,39 @@ function showError(key, field) {
   }
 }
 
-const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-// 7 to 15 digits, allowing spaces, dashes, dots, brackets and a leading +.
-const PHONE = /^\+?[\d\s().-]+$/;
-function phoneOk(value) {
-  const digits = (value.match(/\d/g) || []).length;
-  return PHONE.test(value) && digits >= 7 && digits <= 15;
-}
-let submitted = { name: '', story: false, emailed: false };
-/** Saves a signup through /api/join, which also sends the swap-guide email. */
-async function saveSignup(row) {
-  const response = await fetch('/api/join', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(row),
-  });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const error = new Error(data.error || `HTTP ${response.status}`);
-    error.code = data.code;
-    throw error;
-  }
-  return data;
-}
-const errorKey = (error) => {
-  if (/failed to fetch|network|load failed/i.test(error?.message || '')) return 'err_network';
-  return { email: 'err_email', phone: 'err_phone', name: 'err_name', config: 'err_config' }[error?.code] || 'err_generic';
-};
-
-
-function readForm() {
-  const data = new FormData(form);
-  const text = (name) => (data.get(name) || '').toString().trim();
-  return {
-    first_name: text('first_name'),
-    email: text('email').toLowerCase() || null,
-    phone: text('phone') || null,
-    story: text('story') || null,
-    language: locale,
-  };
-}
+let submitted = { name: '', story: false, emailed: false, confirm: false };
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
-  const row = readForm();
+  const value = (id) => byId(id).value.trim();
+  const name = value('first-name');
+  const email = value('email').toLowerCase();
+  const password = byId('password').value;
+  const phone = value('phone');
+  const story = value('story');
 
-  if (!row.first_name) return showError('err_name', byId('first-name'));
-  if (!row.email) return showError('err_email_missing', byId('email'));
-  if (!EMAIL.test(row.email)) return showError('err_email', byId('email'));
-  if (row.phone && !phoneOk(row.phone)) return showError('err_phone', byId('phone'));
+  if (!name) return showError('err_name', byId('first-name'));
+  if (!email) return showError('err_email_missing', byId('email'));
+  if (!EMAIL.test(email)) return showError('err_email', byId('email'));
+  if (password.length < MIN_PASSWORD) return showError('err_password', byId('password'));
+  if (phone && !phoneOk(phone)) return showError('err_phone', byId('phone'));
   showError(null);
 
-  submitted = { name: row.first_name, story: Boolean(row.story) };
-
-  // Bots that fill the hidden field get the thank-you page without a saved row.
-  if (byId('company').value) return showThanks();
+  // Bots that fill the hidden field get the thank-you page without an account.
+  if (byId('company').value) {
+    submitted = { name, story: false, emailed: false, confirm: false };
+    return showThanks();
+  }
 
   submitButton.setAttribute('aria-busy', 'true');
   submitButton.disabled = true;
   submitButton.textContent = t('sending');
   try {
-    const result = await saveSignup({ ...row, via: 'form' });
-    submitted.emailed = result.emailed === true;
-    window.va?.('event', { name: 'waitlist_signup', data: { story: Boolean(row.story), language: row.language } });
-    track('signup', `waitlist${new URLSearchParams(location.search).get('from') === 'demo' ? ':from_demo' : ''}`);
-    markJoined();
+    const result = await createAccount({ name, email, password, phone: phone || null, story: story || null, via: 'form' });
+    submitted = { name, story: Boolean(story), emailed: result.emailed, confirm: result.confirm };
     showThanks();
   } catch (error) {
-    showError(errorKey(error));
+    showError(error.key || 'err_generic', error.key === 'err_password' ? byId('password') : error.key === 'err_exists' || error.key === 'err_email' ? byId('email') : null);
   } finally {
     submitButton.removeAttribute('aria-busy');
     submitButton.disabled = false;
@@ -195,30 +247,14 @@ form.addEventListener('submit', async (event) => {
   }
 });
 
-/* ---------- Sign-up popup and swap-guide gate ---------- */
-// "Browse the swap guide" (hero and guide section) asks for name and email, saves them to
-// the waitlist, then opens the full guide in the demo (Meals > Browse swaps). The same box
-// pops up once after 5 seconds. Anyone who already signed up goes straight to the guide.
+/* ---------- Sign-up box: "Browse the swap guide" and the 5-second popup ---------- */
+// "Browse the swap guide" asks for name, email and password, creates the account, then
+// opens the full guide in the person's own account (Meals > Browse swaps). The same box
+// pops up once after 5 seconds. Anyone already signed in goes straight to the guide.
 
-const GUIDE_URL = '/demo?to=browse';
-const JOINED = 'fuelwell.join.done.v1';
-const NUDGE_DONE = 'fuelwell.nudge.done.v1'; // the demo's own join prompts (signup-nudge.js)
 const POPUP_AT = 'fuelwell.join.popup.v1';
 const POPUP_DELAY_MS = 5000;
 const POPUP_AGAIN_MS = 3 * 24 * 60 * 60 * 1000;
-
-function local(action, key, value) {
-  try {
-    return action === 'get' ? localStorage.getItem(key) : localStorage.setItem(key, value);
-  } catch {
-    return null;
-  }
-}
-const hasJoined = () => local('get', JOINED) === '1';
-function markJoined() {
-  local('set', JOINED, '1');
-  local('set', NUDGE_DONE, '1');
-}
 
 const gate = byId('gate');
 const gateForm = byId('gate-form');
@@ -257,7 +293,7 @@ function closeGate() {
 }
 
 document.querySelectorAll('[data-gate]').forEach((link) => link.addEventListener('click', (event) => {
-  if (hasJoined()) return; // already on the list: the link opens the guide
+  if (signedIn) return; // already has an account: the link opens the guide
   event.preventDefault();
   openGate(link.dataset.gate);
 }));
@@ -267,25 +303,24 @@ gate.addEventListener('click', (event) => { if (event.target === gate) closeGate
 
 gateForm.addEventListener('submit', async (event) => {
   event.preventDefault();
-  const firstName = byId('gate-name').value.trim();
+  const name = byId('gate-name').value.trim();
   const email = byId('gate-email').value.trim().toLowerCase();
-  if (!firstName) return showGateError('err_name', byId('gate-name'));
+  const password = byId('gate-password').value;
+  if (!name) return showGateError('err_name', byId('gate-name'));
   if (!email) return showGateError('err_email_missing', byId('gate-email'));
   if (!EMAIL.test(email)) return showGateError('err_email', byId('gate-email'));
+  if (password.length < MIN_PASSWORD) return showGateError('err_password', byId('gate-password'));
   showGateError(null);
-  if (byId('gate-company').value) return showGateDone(firstName, email, false);
+  if (byId('gate-company').value) return showGateDone(name, email, false, false);
 
   gateSubmit.setAttribute('aria-busy', 'true');
   gateSubmit.disabled = true;
   gateSubmit.textContent = t('sending');
   try {
-    const result = await saveSignup({ first_name: firstName, email, language: locale, via: gateSource });
-    window.va?.('event', { name: 'waitlist_signup', data: { via: gateSource, language: locale } });
-    track('signup', `join_${gateSource}`);
-    markJoined();
-    showGateDone(firstName, email, result.emailed === true);
+    const result = await createAccount({ name, email, password, via: gateSource });
+    showGateDone(name, email, result.emailed, result.confirm);
   } catch (error) {
-    showGateError(errorKey(error));
+    showGateError(error.key || 'err_generic', error.key === 'err_password' ? byId('gate-password') : error.key === 'err_exists' || error.key === 'err_email' ? byId('gate-email') : null);
   } finally {
     gateSubmit.removeAttribute('aria-busy');
     gateSubmit.disabled = false;
@@ -293,30 +328,30 @@ gateForm.addEventListener('submit', async (event) => {
   }
 });
 
-// After signing up in the box: a thank-you, with the guide one click away.
+// After signing up in the box: a welcome, with the guide one click away.
 // var, not let: applyLocale() runs before this line and calls renderGateDone().
 var gateDone = null; // eslint-disable-line no-var
 function renderGateDone() {
   if (!gateDone) return;
-  byId('gate-done-title').textContent = t('thanks_title').replace('{name}', gateDone.name);
-  byId('gate-done-body').textContent = t(gateDone.emailed ? 'gate_done_emailed' : 'gate_done_soon').replace('{email}', gateDone.email);
+  byId('gate-done-title').textContent = t('welcome_title').replace('{name}', gateDone.name);
+  const key = gateDone.confirm ? 'done_confirm' : gateDone.emailed ? 'done_emailed' : 'done_ready';
+  byId('gate-done-body').textContent = t(key).replace('{email}', gateDone.email);
 }
-function showGateDone(name, email, emailed) {
-  gateDone = { name, email, emailed };
+function showGateDone(name, email, emailed, confirm) {
+  gateDone = { name, email, emailed, confirm };
   renderGateDone();
   gateForm.hidden = true;
   byId('gate-done').hidden = false;
   byId('gate-done-title').focus();
 }
-byId('gate-later').addEventListener('click', () => gate.close());
 
-// The 5-second popup: once every few days, never after signing up, and never while
-// someone is already filling in the form or reading the thank-you page.
+// The 5-second popup: once every few days, never for someone signed in or already
+// signed up here, and never while someone is filling in the form or reading the welcome.
 function maybePopup() {
-  if (hasJoined() || gate.open || !byId('thanks-view').hidden) return;
+  if (signedIn || local('get', JOINED) === '1' || gate.open || !byId('thanks-view').hidden) return;
   const last = Number(local('get', POPUP_AT) || 0);
   if (last && Date.now() - last < POPUP_AGAIN_MS) return;
-  const busy = form.contains(document.activeElement) || ['first-name', 'email', 'phone', 'story'].some((id) => byId(id).value.trim());
+  const busy = form.contains(document.activeElement) || ['first-name', 'email', 'password', 'phone', 'story'].some((id) => byId(id).value.trim());
   if (busy) return;
   local('set', POPUP_AT, String(Date.now()));
   openGate('popup');
@@ -326,8 +361,9 @@ setTimeout(maybePopup, POPUP_DELAY_MS);
 /* ---------- Thank-you view ---------- */
 
 function renderThanks() {
-  byId('thanks-title').textContent = t('thanks_title').replace('{name}', submitted.name);
-  byId('thanks-body').textContent = [t(submitted.emailed ? 'thanks_body_emailed' : 'thanks_body'), submitted.story ? t('thanks_story') : ''].filter(Boolean).join(' ');
+  byId('thanks-title').textContent = t('welcome_title').replace('{name}', submitted.name);
+  const key = submitted.confirm ? 'done_confirm' : submitted.emailed ? 'thanks_emailed' : 'thanks_ready';
+  byId('thanks-body').textContent = [t(key).replace('{email}', ''), submitted.story ? t('thanks_story') : ''].filter(Boolean).join(' ');
 }
 
 function showThanks() {

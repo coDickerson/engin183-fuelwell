@@ -5,11 +5,11 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#ffffff" />
-  <meta name="description" content="Browse FuelWell’s free swap guide: small changes that cut salt and sugar in dishes families already love, from stir-fry and adobo to pho and boba. Join the waitlist. English, 中文, Español." />
-  <meta property="og:title" content="FuelWell waitlist: healthy meals that still taste like home" />
-  <meta property="og:description" content="A free swap guide for the food your family already eats: less salt and sugar, same flavor. Join the waitlist in about 30 seconds. English · 中文 · Español." />
+  <meta name="description" content="Browse FuelWell’s free swap guide: small changes that cut salt and sugar in dishes families already love, from stir-fry and adobo to pho and boba. Create a free account. English, 中文, Español." />
+  <meta property="og:title" content="FuelWell: healthy meals that still taste like home" />
+  <meta property="og:description" content="A free swap guide for the food your family already eats: less salt and sugar, same flavor. Create a free account in about 30 seconds. English · 中文 · Español." />
   <meta property="og:image" content="/images/steamed-fish.jpg" />
-  <title>Join the FuelWell waitlist | Healthy meals that taste like home</title>
+  <title>FuelWell | Healthy meals that taste like home</title>
   <link rel="stylesheet" href="/styles/styles.css" />
   <link rel="stylesheet" href="/styles/waitlist.css" />
   <script type="module" src="/scripts/waitlist.js"></script>
@@ -47,7 +47,7 @@
         <h1 id="wl-heading" data-i18n-html="hero_html">Healthy meals that <em>still taste like home.</em></h1>
         <p class="wl-lead" data-i18n="lead"></p>
         <div class="wl-ctas">
-          <a class="button button--accent wl-cta" href="/demo?to=browse" data-gate="hero">
+          <a class="button button--accent wl-cta" href="/meals.html#browse" data-gate="hero">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2Z"/><path d="M4 19V5"/><path d="M9 8h6M9 12h4"/></svg>
             <span data-i18n="cta_guide">Browse the swap guide</span>
           </a>
@@ -65,7 +65,7 @@
       </section>
 
       <section class="wl-form-card card" aria-labelledby="form-title">
-        <h2 id="form-title" data-i18n="form_title">Join the waitlist</h2>
+        <h2 id="form-title" data-i18n="form_title">Create your free account</h2>
         <p class="muted wl-form-sub" data-i18n="form_sub"></p>
         <div class="wl-note">
           <span class="wl-note-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5Z"/><path d="M6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg></span>
@@ -78,10 +78,15 @@
               <label for="first-name"><span data-i18n="first_name">Name</span></label>
               <input id="first-name" name="first_name" type="text" autocomplete="name" maxlength="80" required />
             </div>
+            <div class="field">
+              <label for="email"><span data-i18n="email">Email</span></label>
+              <input id="email" name="email" type="email" inputmode="email" autocomplete="email" maxlength="254" required />
+            </div>
             <div class="wl-row">
               <div class="field">
-                <label for="email"><span data-i18n="email">Email</span></label>
-                <input id="email" name="email" type="email" inputmode="email" autocomplete="email" maxlength="254" required />
+                <label for="password"><span data-i18n="password">Password</span></label>
+                <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="72" required aria-describedby="password-hint" />
+                <p class="hint" id="password-hint" data-i18n="password_hint"></p>
               </div>
               <div class="field">
                 <label for="phone"><span data-i18n="phone">Phone</span></label>
@@ -102,7 +107,8 @@
           </div>
 
           <p class="form-error" id="form-error" role="alert" hidden></p>
-          <button class="button button--accent button--block wl-submit" type="submit" data-i18n="submit">Join the waitlist</button>
+          <button class="button button--accent button--block wl-submit" type="submit" data-i18n="submit">Create my free account</button>
+          <p class="wl-signin"><span data-i18n="have_account">Already have an account?</span> <a href="/start.html" data-i18n="sign_in">Sign in</a></p>
           <p class="wl-privacy" data-i18n="privacy"></p>
         </form>
       </section>
@@ -117,7 +123,7 @@
             <p class="wl-unlock-title" data-i18n="unlock_title">See all 70 swaps</p>
             <p class="wl-unlock-text" data-i18n="unlock_text"></p>
           </div>
-          <a class="button button--accent" href="/demo?to=browse" data-gate="guide" data-i18n="unlock_cta">Open the full guide</a>
+          <a class="button button--accent" href="/meals.html#browse" data-gate="guide" data-i18n="unlock_cta">Open the full guide</a>
         </div>
         <p class="wl-guide-note" data-i18n="guide_note"></p>
       </section>
@@ -126,7 +132,7 @@
     <section class="wrap wl-thanks" id="thanks-view" hidden aria-labelledby="thanks-title">
       <div class="card wl-thanks-card">
         <span class="wl-thanks-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
-        <p class="eyebrow" data-i18n="thanks_eyebrow">You’re on the list</p>
+        <p class="eyebrow" data-i18n="thanks_eyebrow">Your account is ready</p>
         <h1 id="thanks-title" tabindex="-1"></h1>
         <p class="wl-lead" id="thanks-body"></p>
         <div class="wl-share">
@@ -136,8 +142,8 @@
           <p class="wl-copied" id="share-status" role="status" aria-live="polite"></p>
         </div>
         <div class="wl-thanks-links">
-          <a class="button button--accent" href="/demo?to=browse" data-i18n="open_guide">Open the full swap guide</a>
-          <a class="button button--secondary" href="/demo" data-i18n="demo">Try the demo</a>
+          <a class="button button--accent" href="/meals.html#browse" data-i18n="open_guide">Open the swap guide</a>
+          <a class="button button--secondary" href="/dashboard.html" data-i18n="open_dashboard">Go to my dashboard</a>
           <a class="text-link" href="/" data-i18n="home">Back to FuelWell</a>
         </div>
       </div>
@@ -159,17 +165,23 @@
           <label for="gate-email" data-i18n="email">Email</label>
           <input id="gate-email" name="email" type="email" inputmode="email" autocomplete="email" maxlength="254" />
         </div>
+        <div class="field">
+          <label for="gate-password" data-i18n="password">Password</label>
+          <input id="gate-password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="72" aria-describedby="gate-password-hint" />
+          <p class="hint" id="gate-password-hint" data-i18n="password_hint"></p>
+        </div>
         <div class="wl-trap" aria-hidden="true"><label for="gate-company">Company</label><input id="gate-company" name="company" type="text" tabindex="-1" autocomplete="off" /></div>
         <p class="form-error" id="gate-error" role="alert" hidden></p>
         <button class="button button--accent button--block wl-gate-submit" type="submit" data-i18n="gate_submit">Open the swap guide</button>
+        <p class="wl-signin"><span data-i18n="have_account">Already have an account?</span> <a href="/start.html" data-i18n="sign_in">Sign in</a></p>
         <p class="wl-gate-fine" data-i18n="gate_fine"></p>
       </form>
       <div class="wl-gate-done" id="gate-done" hidden>
         <span class="wl-thanks-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
         <h2 id="gate-done-title" tabindex="-1"></h2>
         <p class="wl-gate-text" id="gate-done-body"></p>
-        <a class="button button--accent button--block wl-gate-submit" href="/demo?to=browse" data-i18n="gate_open_now">Open the swap guide now</a>
-        <button class="button button--secondary button--block wl-gate-later" type="button" id="gate-later" data-i18n="gate_later">Back to the page</button>
+        <a class="button button--accent button--block wl-gate-submit" href="/meals.html#browse" data-i18n="open_guide">Open the swap guide</a>
+        <a class="button button--secondary button--block wl-gate-later" href="/dashboard.html" data-i18n="open_dashboard">Go to my dashboard</a>
       </div>
     </dialog>
   </main>

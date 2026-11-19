@@ -153,3 +153,6 @@
 .wl-gate-done h2:focus { outline: none; }
 .wl-gate-done .wl-gate-text { margin-inline: auto; }
 .wl-gate-later { margin-top: var(--space-3); }
+.wl-signin { margin: var(--space-3) 0 0; text-align: center; font-size: var(--text-sm); color: var(--ink-2); }
+.wl-signin a { color: var(--primary); font-weight: 700; }
+.wl-gate .wl-signin { text-align: left; }

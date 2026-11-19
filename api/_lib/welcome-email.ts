@@ -1,4 +1,5 @@
-// The automatic "here is your swap guide" email sent after someone joins on /join.
+// The automatic welcome email sent after someone creates an account on /join, with the
+// link to the full swap guide in their account.
 // Plain HTML that works in Gmail, Outlook and phone mail apps, in the person's language.
 
 export type JoinLocale = 'en' | 'zh-Hans' | 'zh-Hant' | 'es';
@@ -18,10 +19,10 @@ interface Copy {
 
 const COPY: Record<JoinLocale, Copy> = {
   en: {
-    subject: 'Your free FuelWell swap guide',
+    subject: 'Welcome to FuelWell: your free swap guide',
     preview: '70 everyday swaps for the dishes your family already loves.',
     hello: 'Hi {name},',
-    intro: 'Thank you for joining the FuelWell waitlist. Here is your free swap guide: 70 everyday swaps that cut salt and sugar in the dishes your family already loves, with photos and portion tips.',
+    intro: 'Welcome to FuelWell. Your free account is ready, and so is your swap guide: 70 everyday swaps that cut salt and sugar in the dishes your family already loves, with photos and portion tips.',
     button: 'Open the swap guide',
     examplesTitle: 'Three to try this week',
     examples: [
@@ -29,15 +30,15 @@ const COPY: Record<JoinLocale, Copy> = {
       ['Pho', 'Enjoy the noodles, meat and herbs, and leave about half the broth. Most of the salt is in the broth.'],
       ['Boba milk tea', 'Order a smaller size at 25 to 50 percent sugar, with fewer pearls.'],
     ],
-    demo: 'The guide opens in our demo, where you can also look around the rest of FuelWell.',
+    demo: 'Sign in with this email address to save the swaps you like and ask about your own meals.',
     note: 'These are general examples, not medical advice. If you manage kidney disease, diabetes or high blood pressure, check changes with your care team.',
-    footer: 'You’re getting this email because you joined the FuelWell waitlist. FuelWell is a UC Berkeley student project. Reply to this email if you’d like to be removed.',
+    footer: 'You’re getting this email because you created a FuelWell account. FuelWell is a UC Berkeley student project. Reply to this email if you didn’t sign up or don’t want more emails.',
   },
   'zh-Hans': {
-    subject: '您的 FuelWell 免费替换指南',
+    subject: '欢迎加入 FuelWell：您的免费替换指南',
     preview: '70 个日常替换，适用于全家爱吃的菜。',
     hello: '{name}，您好：',
-    intro: '谢谢您加入 FuelWell 候补名单。这是您的免费替换指南：70 个日常替换，在全家爱吃的菜里少盐少糖，附照片和份量建议。',
+    intro: '欢迎加入 FuelWell！您的免费账号已经开好，替换指南也准备好了：70 个日常替换，在全家爱吃的菜里少盐少糖，附照片和份量建议。',
     button: '打开替换指南',
     examplesTitle: '这周可以试试这三个',
     examples: [
@@ -45,15 +46,15 @@ const COPY: Record<JoinLocale, Copy> = {
       ['越南河粉', '吃河粉、肉和香草，汤留下一半左右。大部分的盐都在汤里。'],
       ['珍珠奶茶', '点小杯，三分糖或五分糖，珍珠少一点。'],
     ],
-    demo: '指南会在我们的示范版中打开，您也可以顺便看看 FuelWell 的其他功能。',
+    demo: '用这个邮箱登录，就能收藏喜欢的替换，也能问问您自己家的菜。',
     note: '这些只是一般例子，不是医疗建议。如果您有肾病、糖尿病或高血压，请先和医疗团队确认。',
-    footer: '您收到这封邮件，是因为您加入了 FuelWell 候补名单。FuelWell 是加州大学伯克利分校的学生项目。如不想再收到邮件，请直接回复告诉我们。',
+    footer: '您收到这封邮件，是因为您注册了 FuelWell 账号。FuelWell 是加州大学伯克利分校的学生项目。如果不是您本人注册，或不想再收到邮件，请直接回复告诉我们。',
   },
   'zh-Hant': {
-    subject: '您的 FuelWell 免費替換指南',
+    subject: '歡迎加入 FuelWell：您的免費替換指南',
     preview: '70 個日常替換，適用於全家愛吃的菜。',
     hello: '{name}，您好：',
-    intro: '謝謝您加入 FuelWell 候補名單。這是您的免費替換指南：70 個日常替換，在全家愛吃的菜裡少鹽少糖，附照片和份量建議。',
+    intro: '歡迎加入 FuelWell！您的免費帳號已經開好，替換指南也準備好了：70 個日常替換，在全家愛吃的菜裡少鹽少糖，附照片和份量建議。',
     button: '打開替換指南',
     examplesTitle: '這週可以試試這三個',
     examples: [
@@ -61,15 +62,15 @@ const COPY: Record<JoinLocale, Copy> = {
       ['越南河粉', '吃河粉、肉和香草，湯留下一半左右。大部分的鹽都在湯裡。'],
       ['珍珠奶茶', '點小杯，三分糖或半糖，珍珠少一點。'],
     ],
-    demo: '指南會在我們的示範版中打開，您也可以順便看看 FuelWell 的其他功能。',
+    demo: '用這個電子郵件登入，就能收藏喜歡的替換，也能問問您自己家的菜。',
     note: '這些只是一般例子，不是醫療建議。如果您有腎病、糖尿病或高血壓，請先和醫療團隊確認。',
-    footer: '您收到這封信，是因為您加入了 FuelWell 候補名單。FuelWell 是加州大學柏克萊分校的學生專題。如不想再收到信件，請直接回信告訴我們。',
+    footer: '您收到這封信，是因為您註冊了 FuelWell 帳號。FuelWell 是加州大學柏克萊分校的學生專題。如果不是您本人註冊，或不想再收到信件，請直接回信告訴我們。',
   },
   es: {
-    subject: 'Tu guía gratis de cambios de FuelWell',
+    subject: 'Bienvenido a FuelWell: tu guía gratis de cambios',
     preview: '70 cambios cotidianos para los platos que tu familia ya ama.',
     hello: 'Hola, {name}:',
-    intro: 'Gracias por unirte a la lista de espera de FuelWell. Aquí está tu guía gratis: 70 cambios cotidianos que reducen la sal y el azúcar en los platos que tu familia ya ama, con fotos y consejos de porciones.',
+    intro: 'Bienvenido a FuelWell. Tu cuenta gratis está lista, y también tu guía: 70 cambios cotidianos que reducen la sal y el azúcar en los platos que tu familia ya ama, con fotos y consejos de porciones.',
     button: 'Abrir la guía de cambios',
     examplesTitle: 'Tres para probar esta semana',
     examples: [
@@ -77,15 +78,15 @@ const COPY: Record<JoinLocale, Copy> = {
       ['Pho', 'Disfruta los fideos, la carne y las hierbas, y deja más o menos la mitad del caldo. Casi toda la sal está en el caldo.'],
       ['Té de leche con boba', 'Pide un tamaño más chico, con 25 a 50 por ciento de azúcar y menos perlas.'],
     ],
-    demo: 'La guía se abre en nuestra demo, donde también puedes ver el resto de FuelWell.',
+    demo: 'Inicia sesión con este correo para guardar los cambios que te gusten y preguntar por tus propias comidas.',
     note: 'Son ejemplos generales, no consejos médicos. Si tienes enfermedad renal, diabetes o presión alta, consulta los cambios con tu equipo médico.',
-    footer: 'Recibes este correo porque te uniste a la lista de espera de FuelWell. FuelWell es un proyecto estudiantil de UC Berkeley. Responde a este correo si quieres que te quitemos de la lista.',
+    footer: 'Recibes este correo porque creaste una cuenta de FuelWell. FuelWell es un proyecto estudiantil de UC Berkeley. Responde a este correo si no te registraste o no quieres más correos.',
   },
 };
 
 const esc = (value: string) => value.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string);
 
-export function joinEmail(locale: JoinLocale, name: string, guideUrl: string) {
+export function welcomeEmail(locale: JoinLocale, name: string, guideUrl: string) {
   const c = COPY[locale] ?? COPY.en;
   const hello = c.hello.replace('{name}', name);
   const examplesHtml = c.examples.map(([dish, swap]) => `
