@@ -6,6 +6,7 @@ import { grocery, mealSlots, persona, week } from '../data/fung.js';
 import { initStoreFinder } from './store-finder.js';
 import { initAsk, renderAsk, setAskAccount } from './app-meals-ask.js';
 import { initBrowse, renderBrowse } from './app-meals-browse.js';
+import { initRecipes, renderRecipes } from './app-meals-recipes.js';
 import { lang, tr } from './i18n.js';
 import { t } from './app-strings.js';
 
@@ -84,6 +85,7 @@ function wireOnce() {
   initStoreFinder();
   initAsk();
   initBrowse();
+  initRecipes();
   initTabs($('[role="tablist"]'));
 }
 
@@ -96,6 +98,7 @@ initShell({
     renderGrocery();
     renderAsk();
     renderBrowse();
+    renderRecipes();
     wireOnce();
   },
 });
