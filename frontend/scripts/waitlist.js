@@ -55,6 +55,7 @@ function applyLocale(next, { save = true } = {}) {
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-html]').forEach((el) => { el.innerHTML = t(el.dataset.i18nHtml); });
   document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+  document.querySelectorAll('[data-i18n-alt]').forEach((el) => { el.alt = t(el.dataset.i18nAlt); });
   document.querySelectorAll('[data-i18n-aria]').forEach((el) => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
 
   const isChinese = next.startsWith('zh');
@@ -176,7 +177,8 @@ document.addEventListener('click', (e) => {
   const target = document.querySelector(link.getAttribute('href'));
   if (!target) return;
   e.preventDefault();
-  (target.closest('article') || target).scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: target.id === 'swap-guide' ? 'start' : 'center' });
+  (target.closest('article') || target).scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: target.tagName === 'SECTION' ? 'start' : 'center' });
+  if (target.id === 'signup') byId('first-name').focus({ preventScroll: true });
 });
 
 /* "Sign up free" buttons: bring the form into view and put the cursor in Name. */
@@ -355,6 +357,13 @@ function showGateError(key, field) {
 function openGate(source) {
   if (gate.open) return;
   gateSource = source;
+  // Same short form, two jobs: "Sign up free" (create an account) or "Open the guide".
+  const signup = source.startsWith('signup');
+  const setKey = (el, key) => { el.dataset.i18n = key; el.textContent = t(key); };
+  setKey(gate.querySelector('#gate-title'), signup ? 'form_title' : 'gate_title');
+  setKey(gate.querySelector('.wl-gate-text'), signup ? 'signup_text' : 'gate_text');
+  setKey(gateSubmit, signup ? 'submit' : 'gate_submit');
+  gate.querySelector('.wl-eyebrow').hidden = signup;
   gateForm.hidden = false;
   byId('gate-done').hidden = true;
   showGateError(null);
@@ -403,7 +412,7 @@ gateForm.addEventListener('submit', async (event) => {
   } finally {
     gateSubmit.removeAttribute('aria-busy');
     gateSubmit.disabled = false;
-    gateSubmit.textContent = t('gate_submit');
+    gateSubmit.textContent = t(gateSubmit.dataset.i18n || 'gate_submit');
   }
 });
 

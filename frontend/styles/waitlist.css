@@ -15,18 +15,15 @@
 .script-option { min-height: 36px; padding-inline: 12px; }
 
 /* Layout */
-.wl-main { padding: var(--space-6) 0 var(--space-8); }
+.wl-main { padding: var(--space-6) 0 var(--space-8); overflow-x: clip; }
 :root { --na: #1f5f8b; --k: #8a5a12; --p: #6a3d9a; --fluid: #1b7a8c; }
-.wl-grid { display: grid; gap: var(--space-6); grid-template-columns: minmax(0, 1fr); grid-template-areas: "intro" "form" "guide"; }
+.wl-grid { display: grid; gap: var(--space-6); grid-template-columns: minmax(0, 1fr); grid-template-areas: "intro" "shot" "signup" "guide"; }
 .wl-intro { grid-area: intro; }
-.wl-form-card { grid-area: form; }
+.wl-form-card { min-width: 0; }
 @media (min-width: 960px) {
-  .wl-grid { grid-template-columns: 1.05fr 1fr; grid-template-areas: "intro form" "guide guide"; column-gap: clamp(32px, 5vw, 72px); align-items: start; }
+  .wl-grid { grid-template-columns: 1.05fr 1fr; grid-template-areas: "intro shot" "signup signup" "guide guide"; column-gap: clamp(32px, 5vw, 72px); align-items: start; }
 }
-/* Keep the form in view only when the whole card fits on screen, so Submit is never cut off. */
-@media (min-width: 960px) and (min-height: 1080px) {
-  .wl-form-card { position: sticky; top: 96px; }
-}
+
 
 .pill { display: inline-flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-4); padding: 6px 14px; border: 1px solid var(--line); border-radius: var(--radius-pill); background: var(--surface); color: var(--ink-2); font-size: var(--text-sm); font-weight: 700; }
 .pill-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
@@ -230,5 +227,36 @@ div.wl-swap-photo { background: linear-gradient(135deg, var(--green-100), var(--
 .wl-peek-more:hover { text-decoration: underline; text-underline-offset: 3px; }
 @media (max-width: 520px) { .wl-peek { padding: var(--space-3); } .wl-peek-list { gap: var(--space-2); } .wl-peek-text { padding: 8px; } .wl-peek-swap { display: none; } }
 @media (prefers-reduced-motion: reduce) { .wl-peek-item { transition: none; } }
-/* Keep the form beside the guide preview while scrolling, on screens tall enough to show it whole. */
-@media (min-width: 960px) and (min-height: 900px) { .wl-form-card { position: sticky; top: 88px; } }
+
+/* Product screenshot beside the headline (a real capture of the demo's answer card). */
+.wl-shot { grid-area: shot; position: relative; margin: 0; padding: 44px 0 22px; min-width: 0; }
+@media (min-width: 960px) { .wl-shot { margin-top: var(--space-4); } }
+.wl-shot::before { content: ""; position: absolute; inset: 0 -6% -6% 10%; z-index: -1; border-radius: 40px; background: radial-gradient(120% 90% at 70% 30%, var(--green-50), transparent 70%); }
+.wl-shot-window { overflow: hidden; border-radius: 16px; background: var(--surface); box-shadow: 0 0 0 1px var(--line), 0 30px 60px -30px rgb(7 61 48 / .45), 0 12px 24px -16px rgb(0 0 0 / .18); }
+.wl-shot-bar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; background: var(--gray-100); border-bottom: 1px solid var(--line); }
+.wl-shot-bar > span { width: 10px; height: 10px; border-radius: 50%; background: #e0605a; }
+.wl-shot-bar > span:nth-child(2) { background: #e6b13c; }
+.wl-shot-bar > span:nth-child(3) { background: #5ab55e; }
+.wl-shot-bar p { margin: 0 0 0 10px; font-size: .75rem; font-weight: 700; color: var(--ink-3); }
+.wl-shot-window img { display: block; width: 100%; height: auto; }
+.wl-shot-q { position: absolute; top: 0; right: 18px; z-index: 1; display: flex; align-items: center; gap: 10px; max-width: min(88%, 420px); padding: 10px 16px 10px 10px; border-radius: 18px 18px 4px 18px; background: var(--primary); color: var(--white); box-shadow: 0 12px 24px -12px rgb(7 61 48 / .6); }
+.wl-shot-q p { margin: 0; font-weight: 700; font-size: var(--text-sm); line-height: 1.35; }
+.wl-shot-avatar { display: grid; place-items: center; flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--white); color: var(--primary-strong); font-weight: 800; font-size: .875rem; }
+.wl-shot-tag { position: absolute; left: -14px; bottom: 0; display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 8px 14px; border-radius: var(--radius-pill); background: var(--surface); color: var(--ink); font-size: .8125rem; font-weight: 700; box-shadow: 0 0 0 1px var(--line), 0 10px 20px -12px rgb(0 0 0 / .3); }
+.wl-shot-dot { width: 8px; height: 8px; border-radius: 50%; background: #2f8f5b; box-shadow: 0 0 0 4px rgb(47 143 91 / .18); }
+@media (max-width: 959px) { .wl-shot-tag { left: 10px; } .wl-shot { max-width: 600px; } }
+.wl-cta-note a { color: var(--primary-strong); font-weight: 800; text-underline-offset: 3px; }
+
+/* Sign-up section: what you get on the left, the form on the right. */
+.wl-signup { grid-area: signup; scroll-margin-top: 88px; display: grid; gap: var(--space-5); align-items: start; padding: clamp(20px, 4vw, 44px); border-radius: 28px; background: linear-gradient(150deg, var(--green-50), var(--surface) 75%); border: 1px solid color-mix(in srgb, var(--primary) 14%, transparent); }
+@media (min-width: 900px) { .wl-signup { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); column-gap: clamp(28px, 4vw, 56px); align-items: start; } .wl-signup-pitch { padding-top: var(--space-4); } }
+.wl-signup-pitch h2 { margin: 0 0 var(--space-1); font-size: clamp(1.75rem, 1.4vw + 1.2rem, 2.375rem); text-wrap: balance; }
+.wl-signup-pitch .wl-eyebrow { margin: 0 0 var(--space-2); }
+.wl-signup-list { list-style: none; margin: var(--space-5) 0 0; padding: 0; display: grid; gap: var(--space-3); }
+.wl-signup-list li { display: flex; gap: var(--space-3); align-items: flex-start; font-weight: 600; color: var(--ink); }
+.wl-signup-list svg { flex: none; width: 26px; height: 26px; padding: 4px; border-radius: 50%; background: var(--primary); color: var(--white); }
+@media (max-width: 600px) {
+  .wl-shot { padding: 0; display: grid; gap: 10px; }
+  .wl-shot-q { position: static; justify-self: end; max-width: 92%; }
+  .wl-shot-tag { position: static; justify-self: start; }
+}
