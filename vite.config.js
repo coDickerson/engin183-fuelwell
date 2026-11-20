@@ -20,6 +20,7 @@ export default defineConfig({
         demo: resolve(import.meta.dirname, 'frontend/demo.html'),
         dashboard: resolve(import.meta.dirname, 'frontend/dashboard.html'),
         meals: resolve(import.meta.dirname, 'frontend/meals.html'),
+        personalize: resolve(import.meta.dirname, 'frontend/personalize.html'),
         careTeam: resolve(import.meta.dirname, 'frontend/care-team.html'),
         notes: resolve(import.meta.dirname, 'frontend/notes.html'),
         health: resolve(import.meta.dirname, 'frontend/health.html'),

@@ -12,6 +12,17 @@ export const ProfileSchema = z
     cuisines: z.array(z.string().trim().min(1).max(40)).max(8).optional(),
     usually: z.enum(['home', 'frozen', 'takeout']).optional(),
     notes: z.string().trim().max(300).optional(),
+    egfr: z.number().int().min(0).max(200).optional(),
+    // What the care team said to limit (from /personalize). 'unsure' = they haven't said or the person doesn't know.
+    limits: z
+      .object({
+        potassium: z.enum(['limit', 'no_limit', 'unsure']),
+        phosphorus: z.enum(['limit', 'no_limit', 'unsure']),
+        sodium: z.enum(['limit', 'no_limit', 'unsure']),
+        fluid: z.enum(['limit', 'no_limit', 'unsure']),
+      })
+      .partial()
+      .optional(),
   })
   .partial();
 export type Profile = z.infer<typeof ProfileSchema>;

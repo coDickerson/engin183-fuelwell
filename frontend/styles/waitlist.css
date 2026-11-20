@@ -20,7 +20,7 @@
 .wl-intro { grid-area: intro; }
 .wl-form-card { grid-area: form; }
 @media (min-width: 960px) {
-  .wl-grid { grid-template-columns: 1.05fr 1fr; grid-template-rows: auto 1fr; grid-template-areas: "intro form" "guide form"; column-gap: clamp(32px, 5vw, 72px); align-items: start; }
+  .wl-grid { grid-template-columns: 1.05fr 1fr; grid-template-areas: "intro form" "guide guide"; column-gap: clamp(32px, 5vw, 72px); align-items: start; }
 }
 /* Keep the form in view only when the whole card fits on screen, so Submit is never cut off. */
 @media (min-width: 960px) and (min-height: 1080px) {
@@ -65,21 +65,43 @@
 .wl-stats strong { font-family: var(--font-display); font-size: var(--text-xl); line-height: 1.1; color: var(--primary-strong); }
 
 /* Swap guide preview */
-.wl-guide { grid-area: guide; min-width: 0; padding-top: var(--space-4); }
+.wl-guide { grid-area: guide; min-width: 0; padding-top: var(--space-6); border-top: 1px solid var(--line); }
 .wl-eyebrow { margin: 0 0 var(--space-2); font-size: var(--text-sm); font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--primary); }
 :lang(zh) .wl-eyebrow { letter-spacing: 0; }
 .wl-guide h2 { margin-bottom: var(--space-2); font-size: clamp(1.625rem, 1.2vw + 1.2rem, 2.125rem); text-wrap: balance; }
 .wl-guide-sub { margin-bottom: var(--space-5); color: var(--ink-2); }
+/* Nutrient colors: one hue per mineral, used on the explainer tiles and the card badges. */
+.wl-guide { --na: #1f5f8b; --na-soft: #e3eef6; --k: #8a5a12; --k-soft: #f8ecd3; --p: #6a3d9a; --p-soft: #eee6f6; }
+.wl-nutrients { margin: 0 0 var(--space-6); padding: var(--space-5); border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--ground-alt); }
+.wl-nutrients-title { margin: 0 0 var(--space-4); font-size: var(--text-lg); }
+.wl-nutrient-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-4); }
+@media (min-width: 760px) { .wl-nutrient-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.wl-nutrient { display: flex; gap: var(--space-3); align-items: flex-start; }
+.wl-nutrient-sym { display: grid; place-items: center; flex: none; width: 52px; height: 52px; border-radius: 12px; font-family: var(--font-display); font-size: 1.375rem; font-weight: 800; color: var(--white); background: var(--na); }
+.wl-nutrient--K .wl-nutrient-sym { background: var(--k); }
+.wl-nutrient--P .wl-nutrient-sym { background: var(--p); }
+.wl-nutrient-name { margin: 0 0 2px; font-weight: 800; color: var(--ink); }
+.wl-nutrient-body { margin: 0 0 var(--space-1); font-size: var(--text-sm); color: var(--ink-2); }
+.wl-nutrient-where { margin: 0; font-size: var(--text-sm); color: var(--ink-3); }
+.wl-nutrient-where strong { color: var(--ink-2); }
+.wl-swap-els { position: absolute; left: var(--space-3); bottom: var(--space-3); right: var(--space-3); display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
+.wl-el { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 3px; border-radius: var(--radius-pill); background: var(--surface); color: var(--ink); font-size: var(--text-sm); font-weight: 700; box-shadow: 0 1px 3px rgb(0 0 0 / .18); }
+.wl-el-sym { display: grid; place-items: center; min-width: 26px; height: 26px; padding: 0 4px; border-radius: 7px; background: var(--na); color: var(--white); font-family: var(--font-display); font-size: .8125rem; font-weight: 800; }
+.wl-el--K .wl-el-sym { background: var(--k); }
+.wl-el--P .wl-el-sym { background: var(--p); }
+.wl-swap-facts { display: grid; gap: var(--space-2); margin: 0 0 var(--space-3); }
+.wl-swap-facts dt { display: flex; align-items: center; gap: 6px; font-size: var(--text-sm); font-weight: 800; color: var(--ink); }
+.wl-swap-facts dd { margin: 0; font-size: var(--text-sm); color: var(--ink-2); }
+div.wl-swap-photo { background: linear-gradient(135deg, var(--green-100), var(--green-50)); }
 .wl-swaps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-4); }
 @media (min-width: 600px) { .wl-swaps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1000px) { .wl-swaps { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .wl-swaps > li { display: flex; }
 .wl-swap { display: flex; flex-direction: column; width: 100%; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow-1); transition: box-shadow .2s ease, transform .2s ease; }
 .wl-swap:hover { box-shadow: var(--shadow-2); transform: translateY(-2px); }
 @media (prefers-reduced-motion: reduce) { .wl-swap, .wl-swap:hover { transition: none; transform: none; } }
 .wl-swap-media { position: relative; }
 .wl-swap-photo { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; background: var(--ground-alt); }
-.wl-swap-tag { position: absolute; top: var(--space-3); left: var(--space-3); padding: 4px 12px; border-radius: var(--radius-pill); background: var(--surface); color: var(--primary-strong); font-size: var(--text-sm); font-weight: 800; box-shadow: var(--shadow-1); }
-.wl-swap-tag--sugar { color: var(--mid); }
 .wl-swap-body { display: flex; flex-direction: column; flex: 1; padding: var(--space-4) var(--space-4) var(--space-3); }
 .wl-swap-meta { margin: 0 0 var(--space-1); font-size: var(--text-sm); font-weight: 700; color: var(--ink-3); }
 .wl-swap h3 { display: grid; gap: 2px; margin: 0 0 var(--space-3); font-size: var(--text-lg); line-height: 1.25; text-wrap: balance; }
@@ -87,7 +109,6 @@
 .wl-swap-try { margin: 0 0 var(--space-3); padding: var(--space-3); border-left: 4px solid var(--primary); border-radius: 0 var(--radius) var(--radius) 0; background: var(--surface-tint); }
 .wl-swap-try p { margin: 0; color: var(--ink); }
 .wl-swap-label--try { margin-bottom: 2px; color: var(--primary); }
-.wl-swap-why { margin: 0 0 var(--space-3); font-size: var(--text-sm); color: var(--ink-2); }
 .wl-swap-credit { margin: auto 0 0; font-size: var(--text-sm); color: var(--ink-3); }
 .wl-swap-credit a { color: inherit; }
 .wl-unlock { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3) var(--space-5); margin-top: var(--space-5); padding: var(--space-5); border-radius: var(--radius-lg); background: var(--primary-strong); color: var(--white); }

@@ -219,7 +219,8 @@ function renderProfile(ctx) {
     form.querySelector('[type="submit"]').setAttribute('aria-busy', 'true');
     showError('');
     try {
-      ctx.profile = await saveProfile(ctx.user, values);
+      // Keep the /personalize answers (eGFR, care-team limits) this short form doesn't show.
+      ctx.profile = await saveProfile(ctx.user, { ...ctx.profile, ...values });
       editingProfile = false;
       profileDraft = null;
       ctx.repaint();

@@ -1,12 +1,13 @@
-// /demo: signs in to the shared demo account and opens the dashboard as Heidi.
+// /demo: signs in to the shared demo account and opens Meals as Heidi.
 // Kept apart from /start.html so a demo session never stands in for someone's own sign-in.
 import { authConfigError, friendlyAuthError, supabase } from './supabase.js';
 import { DEMO_EMAIL, DEMO_PASSWORD } from './demo.js';
 import { setDemoSession, track } from '../scripts/track.js';
 
-// /demo?to=meals opens a page other than Today (only these, never an outside URL).
+// /demo?to=browse opens another page (only these, never an outside URL).
 const PAGES = { today: '/dashboard.html', meals: '/meals.html#ask', browse: '/meals.html#browse', notes: '/notes.html' };
-const next = PAGES[new URLSearchParams(location.search).get('to')] || PAGES.today;
+// Everyone starts in Meals (the swap helper), not Today.
+const next = PAGES[new URLSearchParams(location.search).get('to')] || PAGES.meals;
 
 const byId = (id) => document.getElementById(id);
 const opening = byId('demo-opening');

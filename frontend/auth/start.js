@@ -9,7 +9,9 @@ const errorBox = byId('form-error');
 const statusBox = byId('status');
 const matchKey = 'fuelwell.match.v1';
 const MIN_PASSWORD = 8;
-const DASHBOARD = '/dashboard.html';
+// After signing in or up, people start in Meals (the swap helper), not Today.
+const DASHBOARD = '/meals.html';
+const NEW_ACCOUNT = '/personalize.html?welcome';
 
 const views = [...document.querySelectorAll('.auth-view')];
 const steps = [byId('quiz-step-1'), byId('quiz-step-2'), byId('account-step')];
@@ -151,13 +153,13 @@ async function saveMatch(user) {
   if (error) throw new Error('Your account is ready, but your answers could not be saved. Please try again.');
 }
 
-async function finishAuthentication(user) {
+async function finishAuthentication(user, next = DASHBOARD) {
   await saveMatch(user);
   if (!isDemoUser(user)) {
     // The dashboard asks for anything missing, so a failed profile save shouldn't block sign-in.
     try { await savePendingProfile(user); } catch { /* finished from the dashboard */ }
   }
-  location.assign(DASHBOARD);
+  location.assign(next);
 }
 
 const nextSteps = {
@@ -371,7 +373,8 @@ forms.signUp.addEventListener('submit', (event) => {
     }
     const user = await getAuthenticatedUser();
     if (!user) throw new Error('Your account was created. Please sign in to open the dashboard.');
-    await finishAuthentication(user);
+    // New accounts set up their kidney plan first.
+    await finishAuthentication(user, NEW_ACCOUNT);
   });
 });
 

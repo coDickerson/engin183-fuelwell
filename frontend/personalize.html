@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="description" content="Your kidney plan: your eGFR stage, what your care team limits, and swaps picked for you." />
+    <title>My kidney plan | FuelWell</title>
+    <link rel="stylesheet" href="/styles/styles.css" />
+    <link rel="stylesheet" href="/styles/dashboard.css" />
+    <script type="module" src="/scripts/app-personalize.js"></script>
+    <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+    <script defer src="/_vercel/insights/script.js"></script>
+  <script type="module" src="/scripts/track-page.js"></script>
+  </head>
+  <body class="app-page is-loading">
+    <a class="skip-link" href="#main-content" data-i18n="skip">Skip to content</a>
+    <div class="app-loader" data-app-loader role="status" aria-live="polite">
+      <span class="sr-only" data-i18n="loading">Loading…</span>
+      <div class="sk-rail" aria-hidden="true"><div class="sk sk-logo"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div><div class="sk sk-nav"></div></div>
+      <div class="sk-body" aria-hidden="true">
+        <div class="sk sk-top"></div>
+        <div class="sk sk-title"></div>
+        <div class="sk sk-line"></div>
+        <div class="sk-grid"><div class="sk sk-tile"></div><div class="sk sk-tile"></div><div class="sk sk-tile"></div><div class="sk sk-tile"></div></div>
+        <div class="sk-grid sk-grid--2"><div class="sk sk-card"></div><div class="sk sk-card"></div></div>
+      </div>
+    </div>
+    <div class="app-frame" data-app-frame hidden>
+      <main class="app-main" id="main-content" tabindex="-1">
+        <div class="page-head">
+          <div>
+            <h1 data-i18n="pz_h1">Your kidney plan</h1>
+            <p class="page-sub" data-i18n="pz_sub"></p>
+          </div>
+        </div>
+        <p class="notice pz-welcome" data-pz-welcome hidden><span data-icon="sparkle"></span><span data-i18n="pz_welcome"></span></p>
+        <p class="notice pz-welcome" data-pz-demo hidden><span data-icon="info"></span><span data-i18n="pz_demo_note"></span></p>
+        <div class="pz-grid">
+          <form class="pz-form" data-pz-form novalidate>
+            <section class="card pz-section" aria-labelledby="pz-score-h">
+              <h2 id="pz-score-h" class="pz-h"><span class="pz-step">1</span><span data-i18n="pz_score_h">Kidney score</span></h2>
+              <div class="field pz-egfr">
+                <label for="pz-egfr" data-i18n="pz_egfr_label"></label>
+                <p class="hint" id="pz-egfr-hint" data-i18n="pz_egfr_hint"></p>
+                <div class="pz-egfr-row">
+                  <input id="pz-egfr" name="egfr" type="number" inputmode="numeric" min="0" max="200" step="1" data-i18n-placeholder="pz_egfr_ph" aria-describedby="pz-egfr-hint pz-egfr-err" />
+                  <span class="pz-egfr-unit">mL/min</span>
+                </div>
+                <p class="field-error" id="pz-egfr-err" hidden data-i18n="pz_egfr_err"></p>
+              </div>
+              <div class="pz-meter" data-pz-meter role="img"></div>
+              <label class="choice pz-check"><input type="checkbox" name="dialysis" /><span data-i18n="pz_dialysis"></span></label>
+              <div class="field">
+                <label for="pz-stage" data-i18n="pz_stage_label"></label>
+                <select id="pz-stage" name="stage">
+                  <option value="" data-i18n="pz_stage_none"></option>
+                  <option value="g1">G1</option><option value="g2">G2</option><option value="g3a">G3a</option><option value="g3b">G3b</option><option value="g4">G4</option><option value="g5">G5</option>
+                </select>
+              </div>
+              <fieldset class="pz-also">
+                <legend data-i18n="pz_also"></legend>
+                <label class="choice pz-check"><input type="checkbox" name="diabetes" /><span data-i18n="pz_diabetes"></span></label>
+                <label class="choice pz-check"><input type="checkbox" name="bp" /><span data-i18n="pz_bp"></span></label>
+              </fieldset>
+            </section>
+
+            <section class="card pz-section" aria-labelledby="pz-limits-h">
+              <h2 id="pz-limits-h" class="pz-h"><span class="pz-step">2</span><span data-i18n="pz_limits_h">What your care team said to limit</span></h2>
+              <p class="hint" data-i18n="pz_limits_hint"></p>
+              <div class="pz-limits">
+                <div class="pz-limit-row">
+                  <span class="pz-limit-name" id="limit_sodium-label" data-limit-badge="Na"></span>
+                  <div class="pz-seg" role="radiogroup" aria-labelledby="limit_sodium-label"><label class="pz-seg-opt"><input type="radio" name="limit_sodium" value="limit" /><span data-i18n="pz_limit"></span></label><label class="pz-seg-opt"><input type="radio" name="limit_sodium" value="no_limit" /><span data-i18n="pz_no_limit"></span></label><label class="pz-seg-opt"><input type="radio" name="limit_sodium" value="unsure" /><span data-i18n="pz_unsure"></span></label></div>
+                </div>
+                <div class="pz-limit-row">
+                  <span class="pz-limit-name" id="limit_potassium-label" data-limit-badge="K"></span>
+                  <div class="pz-seg" role="radiogroup" aria-labelledby="limit_potassium-label"><label class="pz-seg-opt"><input type="radio" name="limit_potassium" value="limit" /><span data-i18n="pz_limit"></span></label><label class="pz-seg-opt"><input type="radio" name="limit_potassium" value="no_limit" /><span data-i18n="pz_no_limit"></span></label><label class="pz-seg-opt"><input type="radio" name="limit_potassium" value="unsure" /><span data-i18n="pz_unsure"></span></label></div>
+                </div>
+                <div class="pz-limit-row">
+                  <span class="pz-limit-name" id="limit_phosphorus-label" data-limit-badge="P"></span>
+                  <div class="pz-seg" role="radiogroup" aria-labelledby="limit_phosphorus-label"><label class="pz-seg-opt"><input type="radio" name="limit_phosphorus" value="limit" /><span data-i18n="pz_limit"></span></label><label class="pz-seg-opt"><input type="radio" name="limit_phosphorus" value="no_limit" /><span data-i18n="pz_no_limit"></span></label><label class="pz-seg-opt"><input type="radio" name="limit_phosphorus" value="unsure" /><span data-i18n="pz_unsure"></span></label></div>
+                </div>
+                <div class="pz-limit-row">
+                  <span class="pz-limit-name" id="limit_fluid-label" data-limit-badge="Fluid"></span>
+                  <div class="pz-seg" role="radiogroup" aria-labelledby="limit_fluid-label"><label class="pz-seg-opt"><input type="radio" name="limit_fluid" value="limit" /><span data-i18n="pz_limit"></span></label><label class="pz-seg-opt"><input type="radio" name="limit_fluid" value="no_limit" /><span data-i18n="pz_no_limit"></span></label><label class="pz-seg-opt"><input type="radio" name="limit_fluid" value="unsure" /><span data-i18n="pz_unsure"></span></label></div>
+                </div>
+              </div>
+            </section>
+
+            <section class="card pz-section" aria-labelledby="pz-food-h">
+              <h2 id="pz-food-h" class="pz-h"><span class="pz-step">3</span><span data-i18n="pz_food_h">Your food</span></h2>
+              <div class="field">
+                <p class="pz-label" id="for_whom-label" data-i18n="pz_for"></p>
+                <div class="pz-seg" role="radiogroup" aria-labelledby="for_whom-label"><label class="pz-seg-opt"><input type="radio" name="for_whom" value="me" /><span data-i18n="pz_for_me"></span></label><label class="pz-seg-opt"><input type="radio" name="for_whom" value="family" /><span data-i18n="pz_for_family"></span></label></div>
+              </div>
+              <div class="field">
+                <label for="pz-cuisine" data-i18n="pz_cuisine"></label>
+                <input id="pz-cuisine" name="cuisine" maxlength="80" list="pz-cuisines" data-i18n-placeholder="pz_cuisine_ph" />
+                <datalist id="pz-cuisines" data-pz-cuisines></datalist>
+              </div>
+              <div class="field">
+                <p class="pz-label" id="usually-label" data-i18n="pz_usually"></p>
+                <div class="pz-seg" role="radiogroup" aria-labelledby="usually-label"><label class="pz-seg-opt"><input type="radio" name="usually" value="home" /><span data-i18n="pz_home"></span></label><label class="pz-seg-opt"><input type="radio" name="usually" value="takeout" /><span data-i18n="pz_takeout"></span></label><label class="pz-seg-opt"><input type="radio" name="usually" value="frozen" /><span data-i18n="pz_frozen"></span></label></div>
+              </div>
+            </section>
+
+            <p class="field-error" data-pz-error hidden></p>
+            <div class="pz-actions">
+              <button class="button" type="submit" data-pz-save><span data-i18n="pz_save"></span><span data-icon="arrow"></span></button>
+              <a class="button button--secondary" href="/meals.html" data-i18n="pz_skip">Skip for now</a>
+            </div>
+            <p class="muted pz-privacy" data-i18n="pz_privacy"></p>
+          </form>
+
+          <aside class="card pz-plan" aria-live="polite" aria-labelledby="pz-plan-kicker" data-pz-plan></aside>
+        </div>
+      </main>
+    </div>
+    <div class="toast" role="status" aria-live="polite" aria-atomic="true" data-toast></div>
+  </body>
+</html>
