@@ -17,11 +17,11 @@
 /* Layout */
 .wl-main { padding: var(--space-6) 0 var(--space-8); overflow-x: clip; }
 :root { --na: #1f5f8b; --k: #8a5a12; --p: #6a3d9a; --fluid: #1b7a8c; }
-.wl-grid { display: grid; gap: var(--space-6); grid-template-columns: minmax(0, 1fr); grid-template-areas: "intro" "shot" "signup" "guide"; }
+.wl-grid { display: grid; gap: var(--space-6); grid-template-columns: minmax(0, 1fr); grid-template-areas: "intro" "form" "band" "guide"; }
 .wl-intro { grid-area: intro; }
-.wl-form-card { min-width: 0; }
+.wl-form-card { grid-area: form; min-width: 0; scroll-margin-top: 88px; }
 @media (min-width: 960px) {
-  .wl-grid { grid-template-columns: 1.05fr 1fr; grid-template-areas: "intro shot" "signup signup" "guide guide"; column-gap: clamp(32px, 5vw, 72px); align-items: start; }
+  .wl-grid { grid-template-columns: 1.05fr 1fr; grid-template-areas: "intro form" "band band" "guide guide"; column-gap: clamp(32px, 5vw, 72px); align-items: start; }
 }
 
 
@@ -229,8 +229,7 @@ div.wl-swap-photo { background: linear-gradient(135deg, var(--green-100), var(--
 @media (prefers-reduced-motion: reduce) { .wl-peek-item { transition: none; } }
 
 /* Product screenshot beside the headline (a real capture of the demo's answer card). */
-.wl-shot { grid-area: shot; position: relative; margin: 0; padding: 44px 0 22px; min-width: 0; }
-@media (min-width: 960px) { .wl-shot { margin-top: var(--space-4); } }
+.wl-shot { position: relative; margin: 0; padding: 44px 0 22px; min-width: 0; }
 .wl-shot::before { content: ""; position: absolute; inset: 0 -6% -6% 10%; z-index: -1; border-radius: 40px; background: radial-gradient(120% 90% at 70% 30%, var(--green-50), transparent 70%); }
 .wl-shot-window { overflow: hidden; border-radius: 16px; background: var(--surface); box-shadow: 0 0 0 1px var(--line), 0 30px 60px -30px rgb(7 61 48 / .45), 0 12px 24px -16px rgb(0 0 0 / .18); }
 .wl-shot-bar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; background: var(--gray-100); border-bottom: 1px solid var(--line); }
@@ -247,14 +246,16 @@ div.wl-swap-photo { background: linear-gradient(135deg, var(--green-100), var(--
 @media (max-width: 959px) { .wl-shot-tag { left: 10px; } .wl-shot { max-width: 600px; } }
 .wl-cta-note a { color: var(--primary-strong); font-weight: 800; text-underline-offset: 3px; }
 
-/* Sign-up section: what you get on the left, the form on the right. */
-.wl-signup { grid-area: signup; scroll-margin-top: 88px; display: grid; gap: var(--space-5); align-items: start; padding: clamp(20px, 4vw, 44px); border-radius: 28px; background: linear-gradient(150deg, var(--green-50), var(--surface) 75%); border: 1px solid color-mix(in srgb, var(--primary) 14%, transparent); }
-@media (min-width: 900px) { .wl-signup { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); column-gap: clamp(28px, 4vw, 56px); align-items: start; } .wl-signup-pitch { padding-top: var(--space-4); } }
-.wl-signup-pitch h2 { margin: 0 0 var(--space-1); font-size: clamp(1.75rem, 1.4vw + 1.2rem, 2.375rem); text-wrap: balance; }
-.wl-signup-pitch .wl-eyebrow { margin: 0 0 var(--space-2); }
-.wl-signup-list { list-style: none; margin: var(--space-5) 0 0; padding: 0; display: grid; gap: var(--space-3); }
-.wl-signup-list li { display: flex; gap: var(--space-3); align-items: flex-start; font-weight: 600; color: var(--ink); }
-.wl-signup-list svg { flex: none; width: 26px; height: 26px; padding: 4px; border-radius: 50%; background: var(--primary); color: var(--white); }
+/* "See it in action" band: copy on the left, the real demo screenshot on the right. */
+.wl-band { grid-area: band; min-width: 0; display: grid; gap: var(--space-6); align-items: center; padding: clamp(24px, 4vw, 48px); border-radius: 28px; background: linear-gradient(150deg, var(--green-50), var(--surface) 75%); border: 1px solid color-mix(in srgb, var(--primary) 14%, transparent); }
+@media (min-width: 900px) { .wl-band { grid-template-columns: minmax(0, 4fr) minmax(0, 6fr); column-gap: clamp(28px, 4vw, 56px); } }
+.wl-band-copy h2 { margin: 0 0 var(--space-2); font-size: clamp(1.625rem, 1.3vw + 1.2rem, 2.25rem); text-wrap: balance; }
+.wl-band-copy .wl-eyebrow { margin: 0 0 var(--space-2); }
+.wl-band-copy p:not(.wl-eyebrow) { margin: 0 0 var(--space-5); color: var(--ink-2); }
+.wl-band-copy .button { min-height: 52px; }
+.wl-signup-list { list-style: none; margin: var(--space-3) 0 var(--space-5); padding: 0; display: grid; gap: var(--space-2); }
+.wl-signup-list li { display: flex; gap: var(--space-2); align-items: flex-start; font-weight: 600; font-size: var(--text-sm); color: var(--ink); line-height: 1.4; }
+.wl-signup-list svg { flex: none; width: 20px; height: 20px; padding: 3px; border-radius: 50%; background: var(--primary); color: var(--white); }
 @media (max-width: 600px) {
   .wl-shot { padding: 0; display: grid; gap: 10px; }
   .wl-shot-q { position: static; justify-self: end; max-width: 92%; }
