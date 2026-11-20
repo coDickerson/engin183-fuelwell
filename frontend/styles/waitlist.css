@@ -58,7 +58,8 @@
 .field input[aria-invalid="true"], .field textarea[aria-invalid="true"] { border-color: var(--high); }
 
 /* Hero calls to action: two matching buttons, both lead into the demo */
-.wl-ctas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr)); gap: var(--space-3); max-width: 520px; margin-top: var(--space-5); }
+.wl-ctas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr)); gap: var(--space-3); max-width: 520px; margin-top: var(--space-4); }
+.wl-cta--demo { box-shadow: 0 0 0 4px var(--primary-soft), var(--shadow-1); }
 .wl-cta { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); min-height: 56px; font-size: var(--text-base); }
 .wl-cta-note { margin: var(--space-2) 0 0; font-size: var(--text-sm); color: var(--ink-3); }
 .wl-stats { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-6); margin: var(--space-5) 0 0; padding: var(--space-4) 0 0; list-style: none; border-top: 1px solid var(--line); }
