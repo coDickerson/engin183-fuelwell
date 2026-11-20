@@ -25,7 +25,7 @@
       <a class="brand" href="/" aria-label="FuelWell home"><span class="brand-mark" aria-hidden="true"></span>FuelWell</a>
       <div class="wl-header-actions">
       <a class="wl-header-demo wl-header-demo--ghost" href="/demo" data-i18n="nav_demo">Try the demo</a>
-      <a class="wl-header-demo" href="#waitlist-form" data-signup-jump data-i18n="nav_signup">Sign up free</a>
+      <a class="wl-header-demo" href="#signup" data-peek-more data-i18n="nav_signup">Sign up free</a>
       <div class="lang-switch">
         <div class="lang-group" role="group" aria-label="Language" data-i18n-aria="lang_label">
           <button type="button" class="lang-option" data-lang="en" lang="en">English</button>
@@ -44,14 +44,13 @@
   <main id="main" class="wl-main">
     <div class="wrap wl-grid" id="signup-view">
       <section class="wl-intro" aria-labelledby="wl-heading">
-        <p class="pill"><span class="pill-dot" aria-hidden="true"></span><span data-i18n="eyebrow">Early access · Free to join</span></p>
         <h1 id="wl-heading" data-i18n-html="hero_html">Healthy meals that <em>still taste like home.</em></h1>
         <div class="wl-ctas">
-          <a class="button button--accent wl-cta wl-cta--demo" href="/demo">
+          <a class="button button--accent wl-cta" href="/demo">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M10 9l5 2.5-5 2.5Z"/><path d="M8 21h8"/></svg>
             <span data-i18n="cta_demo">Try the demo</span>
           </a>
-          <a class="button button--accent wl-cta" href="/meals.html#browse" data-gate="hero">
+          <a class="button button--secondary wl-cta wl-cta--guide" href="/meals.html#browse" data-gate="hero">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2Z"/><path d="M4 19V5"/><path d="M9 8h6M9 12h4"/></svg>
             <span data-i18n="cta_guide">Browse the swap guide</span>
           </a>
@@ -59,29 +58,31 @@
         <p class="wl-cta-note" data-i18n="cta_note"></p>
         <div class="wl-peek" aria-labelledby="peek-title">
           <div class="wl-peek-head">
-            <p class="wl-eyebrow" id="peek-title" data-i18n="guide_eyebrow">Free kidney swap guide</p>
-            <p class="wl-peek-title" data-i18n="guide_title">Keep the dish. Watch three nutrients.</p>
+            <div>
+              <p class="wl-eyebrow" id="peek-title" data-i18n="guide_eyebrow">Free kidney swap guide</p>
+              <p class="wl-peek-title" data-i18n="guide_title">Keep the dish. Watch three nutrients.</p>
+            </div>
+            <a class="wl-peek-more" href="#swap-guide" data-peek-more><span data-i18n="peek_all">See all 6</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
           </div>
           <ul class="wl-peek-list" id="peek-list"></ul>
-          <a class="wl-peek-more" href="#swap-guide" data-peek-more><span data-i18n="peek_more">See all 6 swaps, with the medical reason for each</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
         </div>
-        <ul class="wl-stats">
-          <li><strong>70</strong> <span data-i18n="stat_swaps">everyday swaps</span></li>
-          <li><strong>16</strong> <span data-i18n="stat_cuisines">cuisines</span></li>
-          <li><strong>54</strong> <span data-i18n="stat_recipes">recipes</span></li>
-          <li><strong>3</strong> <span data-i18n="stat_languages">languages</span></li>
-        </ul>
+        <section class="wl-feature" aria-labelledby="feature-title">
+          <p class="wl-eyebrow" id="feature-title" data-i18n="feature_eyebrow">A swap from the guide</p>
+          <div id="feature-swap"></div>
+        </section>
         <p class="wl-trust"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6Z"/><path d="m9 12 2 2 4-4"/></svg><span data-i18n="trust_line"></span></p>
       </section>
 
-      <section class="wl-form-card card" aria-labelledby="form-title">
+      <section class="wl-form-card card" id="signup" aria-labelledby="form-title">
         <h2 id="form-title" data-i18n="form_title">Create your free account</h2>
         <p class="muted wl-form-sub" data-i18n="form_sub"></p>
-        <div class="wl-note">
-          <span class="wl-note-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5Z"/><path d="M6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg></span>
-          <div><p class="wl-note-title" data-i18n="note_title">A UC Berkeley student project</p><p data-i18n="note_body"></p></div>
-        </div>
 
+        <ul class="wl-signup-list">
+          <li><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg><span data-i18n="su_b1">Ask about any meal, restaurant or family recipe</span></li>
+          <li><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg><span data-i18n="su_b2">A kidney plan from your eGFR and your care team’s limits</span></li>
+          <li><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg><span data-i18n="su_b3">Save swaps and recipes your family likes</span></li>
+          <li><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg><span data-i18n="su_b4">English, 中文 and Español</span></li>
+        </ul>
         <form id="waitlist-form" novalidate>
           <div class="wl-contact">
             <div class="field">
@@ -126,6 +127,31 @@
         </form>
       </section>
 
+      <section class="wl-band" aria-labelledby="band-title">
+        <div class="wl-band-copy">
+          <p class="wl-eyebrow" data-i18n="band_eyebrow">See it in action</p>
+          <h2 id="band-title" data-i18n="band_title">Ask about any meal. Get a clear answer.</h2>
+          <p data-i18n="band_text"></p>
+          <a class="button button--accent" href="/demo"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M10 9l5 2.5-5 2.5Z"/><path d="M8 21h8"/></svg><span data-i18n="cta_demo">Try the live demo</span></a>
+        </div>
+        <figure class="wl-shot" aria-labelledby="shot-cap" data-demo>
+            <div class="wl-shot-q"><span class="wl-shot-avatar" aria-hidden="true">F</span><p data-i18n="shot_q">Can Mom have congee with salted egg?</p></div>
+            <div class="wl-shot-window">
+              <div class="wl-shot-bar" aria-hidden="true"><span></span><span></span><span></span><p>FuelWell · <span data-i18n="shot_tab">Meals</span></p></div>
+              <div class="wl-shot-media" data-demo-video>
+                <video class="wl-shot-video" muted playsinline preload="metadata" width="960" height="720" poster="/images/join-demo-poster.jpg" aria-hidden="true" tabindex="-1">
+                  <source src="/images/join-demo.mp4" type="video/mp4" />
+                </video>
+                <img class="wl-shot-still" src="/images/demo-congee.jpg" width="1281" height="952" alt="" loading="lazy" />
+                <p class="wl-shot-cap" data-demo-cap aria-hidden="true"></p>
+                <button class="wl-shot-toggle" type="button" data-demo-toggle hidden></button>
+              </div>
+            </div>
+            <p class="wl-shot-tag"><span class="wl-shot-dot" aria-hidden="true"></span><span data-i18n="shot_tag">Personalized for Mom · CKD stage 3b</span></p>
+            <figcaption class="sr-only" id="shot-cap" data-i18n="vid_alt"></figcaption>
+        </figure>
+      </section>
+
       <section class="wl-guide" id="swap-guide" aria-labelledby="guide-title">
         <p class="wl-eyebrow" data-i18n="guide_eyebrow">Free swap guide</p>
         <h2 id="guide-title" data-i18n="guide_title">Keep the dish. Change one or two things.</h2>
@@ -145,6 +171,7 @@
         </div>
         <p class="wl-guide-note" data-i18n="guide_note"></p>
       </section>
+
     </div>
 
     <section class="wrap wl-thanks" id="thanks-view" hidden aria-labelledby="thanks-title">

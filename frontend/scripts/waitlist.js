@@ -3,6 +3,7 @@ import { getAuthenticatedUser, supabase } from '../auth/supabase.js';
 import { isDemoUser } from '../auth/demo.js';
 import { locales, strings } from './waitlist-i18n.js';
 import { NUTRIENTS, joinSwaps } from '../data/join-swaps.js';
+import { initDemoVideo, relocaleDemoVideo } from './join-demo-video.js';
 import { photoPage, photoSource, photoUrl, swapPhotos } from '../data/swap-photos.js';
 
 const LANG_KEY = 'fuelwell.waitlist.lang.v1'; // kept so returning visitors keep their language
@@ -55,6 +56,7 @@ function applyLocale(next, { save = true } = {}) {
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-html]').forEach((el) => { el.innerHTML = t(el.dataset.i18nHtml); });
   document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+  document.querySelectorAll('[data-i18n-alt]').forEach((el) => { el.alt = t(el.dataset.i18nAlt); });
   document.querySelectorAll('[data-i18n-aria]').forEach((el) => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
 
   const isChinese = next.startsWith('zh');
@@ -70,6 +72,7 @@ function applyLocale(next, { save = true } = {}) {
   if (!gateError.hidden && gateError.dataset.key) gateError.textContent = t(gateError.dataset.key);
   renderGateDone();
   renderGuide();
+  relocaleDemoVideo(t);
 }
 
 document.querySelectorAll('.lang-option').forEach((button) => button.addEventListener('click', () => {
@@ -94,6 +97,13 @@ function nutrientChip(code, { name = true } = {}) {
   return `<span class="wl-el wl-el--${code}"><span class="wl-el-sym" aria-hidden="true">${esc(n.symbol)}</span>${name ? `<span class="wl-el-name">${esc(text.name)}</span>` : `<span class="sr-only">${esc(text.name)}</span>`}</span>`;
 }
 
+// Short swaps for the hero preview (index into joinSwaps).
+const PEEK = [
+  { i: 0, short: { en: 'Cauliflower or green beans for the potato', 'zh-Hans': '用花椰菜或四季豆代替土豆', 'zh-Hant': '用花椰菜或四季豆代替馬鈴薯', es: 'Coliflor o ejotes en vez de papa' } },
+  { i: 2, short: { en: 'Sparkling water with lime', 'zh-Hans': '加青柠的气泡水', 'zh-Hant': '加萊姆的氣泡水', es: 'Agua mineral con limón' } },
+  { i: 4, short: { en: 'Roast your own with lemon and garlic', 'zh-Hans': '自己用柠檬和蒜烤', 'zh-Hant': '自己用檸檬和蒜烤', es: 'Ásalo en casa con limón y ajo' } },
+];
+
 function renderGuide() {
   byId('nutrient-list').innerHTML = Object.entries(NUTRIENTS).map(([code, n]) => {
     const text = n[locale] || n.en;
@@ -107,48 +117,58 @@ function renderGuide() {
     </li>`;
   }).join('');
 
-  // Hero preview beside the form: three dishes that together cover sodium, potassium and phosphorus.
-  byId('peek-list').innerHTML = [0, 2, 4].map((i) => {
+  // Hero preview: three dishes that together cover sodium, potassium and phosphorus, each with a
+  // one-line version of its swap (the full swap, why and portion are in the guide below).
+  byId('peek-list').innerHTML = PEEK.map(({ i, short }) => {
     const item = joinSwaps[i];
     const text = item[locale] || item.en;
     const photo = swapPhotos[item.photo];
     return `<li><a class="wl-peek-item" href="#swap-${i}" data-peek-more>
-      ${photo ? `<img src="${esc(photoUrl(photo, 400, 260))}" alt="" width="400" height="260">` : '<span class="wl-peek-ph" aria-hidden="true"></span>'}
+      <span class="wl-peek-media">
+        ${photo ? `<img src="${esc(photoUrl(photo, 400, 260))}" alt="" width="400" height="260">` : '<span class="wl-peek-ph" aria-hidden="true"></span>'}
+        <span class="wl-peek-els"><span class="sr-only">${esc(t('watch'))}:</span>${item.watch.map((code) => nutrientChip(code, { name: false })).join('')}</span>
+      </span>
       <span class="wl-peek-text">
-        <span class="wl-peek-els">${item.watch.map((code) => nutrientChip(code)).join('')}</span>
         <span class="wl-peek-meal"><span class="sr-only">${esc(t('instead'))} </span>${esc(text.meal)}</span>
-        <span class="wl-peek-swap">${ARROW}<span><span class="sr-only">${esc(t('try'))}: </span>${esc(text.swap)}</span></span>
+        <span class="wl-peek-swap">${ARROW}<span><span class="sr-only">${esc(t('try'))}: </span>${esc(short[locale] || short.en)}</span></span>
       </span>
     </a></li>`;
   }).join('');
 
-  byId('swap-list').innerHTML = joinSwaps.map((item, index) => {
-    const text = item[locale] || item.en;
-    const photo = swapPhotos[item.photo];
-    const cuisine = text.cuisine && item.en.cuisine !== 'Any' ? `${esc(text.cuisine)} · ` : '';
-    return `<li><article class="wl-swap" aria-labelledby="swap-${index}">
-      <div class="wl-swap-media">
-        ${photo ? `<img class="wl-swap-photo" src="${esc(photoUrl(photo))}" alt="" loading="lazy" width="640" height="420">` : '<div class="wl-swap-photo" aria-hidden="true"></div>'}
-        <p class="wl-swap-els"><span class="sr-only">${esc(t('watch'))}:</span>${item.watch.map((code) => nutrientChip(code)).join('')}</p>
+  // One big, full example in the hero, built exactly like a guide card: enchiladas, an everyday
+  // family dinner where one card teaches all three nutrients (sodium, phosphorus, potassium).
+  byId('feature-swap').innerHTML = swapCard(joinSwaps[3], 'feature-swap-title');
+
+  byId('swap-list').innerHTML = joinSwaps.map((item, index) => `<li>${swapCard(item, `swap-${index}`)}</li>`).join('');
+}
+
+function swapCard(item, titleId) {
+  const text = item[locale] || item.en;
+  const photo = swapPhotos[item.photo];
+  const cuisine = text.cuisine && item.en.cuisine !== 'Any' ? `${esc(text.cuisine)} · ` : '';
+  return `<article class="wl-swap" aria-labelledby="${titleId}">
+    <div class="wl-swap-media">
+      ${photo ? `<img class="wl-swap-photo" src="${esc(photoUrl(photo))}" alt="" loading="lazy" width="640" height="420">` : '<div class="wl-swap-photo" aria-hidden="true"></div>'}
+      <p class="wl-swap-els"><span class="sr-only">${esc(t('watch'))}:</span>${item.watch.map((code) => nutrientChip(code)).join('')}</p>
+    </div>
+    <div class="wl-swap-body">
+      <p class="wl-swap-meta">${cuisine}${esc(t(`kind_${item.kind}`))}</p>
+      <h3 id="${titleId}"><span class="wl-swap-label">${esc(t('instead'))}</span>${esc(text.meal)}</h3>
+      <div class="wl-swap-try">
+        <p class="wl-swap-label wl-swap-label--try">${ARROW}${esc(t('try'))}</p>
+        <p>${esc(text.swap)}</p>
       </div>
-      <div class="wl-swap-body">
-        <p class="wl-swap-meta">${cuisine}${esc(t(`kind_${item.kind}`))}</p>
-        <h3 id="swap-${index}"><span class="wl-swap-label">${esc(t('instead'))}</span>${esc(text.meal)}</h3>
-        <div class="wl-swap-try">
-          <p class="wl-swap-label wl-swap-label--try">${ARROW}${esc(t('try'))}</p>
-          <p>${esc(text.swap)}</p>
-        </div>
-        <dl class="wl-swap-facts">
-          <div><dt>${esc(t('why_matters'))}</dt><dd>${esc(text.why)}</dd></div>
-          <div><dt>${PLATE}${esc(t('portion'))}</dt><dd>${esc(text.portion)}</dd></div>
-        </dl>
-        ${photo ? `<p class="wl-swap-credit">${esc(t('photo_by'))} <a href="${esc(photoPage(photo))}" target="_blank" rel="noopener noreferrer">${esc(photo.by)}</a> / ${esc(photoSource(photo))}</p>` : ''}
-      </div>
-    </article></li>`;
-  }).join('');
+      <dl class="wl-swap-facts">
+        <div><dt>${esc(t('why_matters'))}</dt><dd>${esc(text.why)}</dd></div>
+        <div><dt>${PLATE}${esc(t('portion'))}</dt><dd>${esc(text.portion)}</dd></div>
+      </dl>
+      ${photo ? `<p class="wl-swap-credit">${esc(t('photo_by'))} <a href="${esc(photoPage(photo))}" target="_blank" rel="noopener noreferrer">${esc(photo.by)}</a> / ${esc(photoSource(photo))}</p>` : ''}
+    </div>
+  </article>`;
 }
 
 applyLocale(locale, { save: false });
+initDemoVideo(t);
 
 /* Photo strip in the "See all 70 swaps" banner: two copies so the loop is seamless. */
 (function renderMarquee() {
@@ -166,7 +186,8 @@ document.addEventListener('click', (e) => {
   const target = document.querySelector(link.getAttribute('href'));
   if (!target) return;
   e.preventDefault();
-  (target.closest('article') || target).scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: target.id === 'swap-guide' ? 'start' : 'center' });
+  (target.closest('article') || target).scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: target.tagName === 'SECTION' ? 'start' : 'center' });
+  if (target.id === 'signup') byId('first-name').focus({ preventScroll: true });
 });
 
 /* "Sign up free" buttons: bring the form into view and put the cursor in Name. */
@@ -345,6 +366,13 @@ function showGateError(key, field) {
 function openGate(source) {
   if (gate.open) return;
   gateSource = source;
+  // Same short form, two jobs: "Sign up free" (create an account) or "Open the guide".
+  const signup = source.startsWith('signup');
+  const setKey = (el, key) => { el.dataset.i18n = key; el.textContent = t(key); };
+  setKey(gate.querySelector('#gate-title'), signup ? 'form_title' : 'gate_title');
+  setKey(gate.querySelector('.wl-gate-text'), signup ? 'signup_text' : 'gate_text');
+  setKey(gateSubmit, signup ? 'submit' : 'gate_submit');
+  gate.querySelector('.wl-eyebrow').hidden = signup;
   gateForm.hidden = false;
   byId('gate-done').hidden = true;
   showGateError(null);
@@ -393,7 +421,7 @@ gateForm.addEventListener('submit', async (event) => {
   } finally {
     gateSubmit.removeAttribute('aria-busy');
     gateSubmit.disabled = false;
-    gateSubmit.textContent = t('gate_submit');
+    gateSubmit.textContent = t(gateSubmit.dataset.i18n || 'gate_submit');
   }
 });
 
