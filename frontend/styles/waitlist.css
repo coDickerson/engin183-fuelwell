@@ -16,6 +16,7 @@
 
 /* Layout */
 .wl-main { padding: var(--space-6) 0 var(--space-8); }
+:root { --na: #1f5f8b; --k: #8a5a12; --p: #6a3d9a; --fluid: #1b7a8c; }
 .wl-grid { display: grid; gap: var(--space-6); grid-template-columns: minmax(0, 1fr); grid-template-areas: "intro" "form" "guide"; }
 .wl-intro { grid-area: intro; }
 .wl-form-card { grid-area: form; }
@@ -39,7 +40,7 @@
 .wl-form-card h2 { margin-bottom: var(--space-1); }
 .wl-form-sub { font-size: var(--text-sm); }
 .wl-row { display: grid; gap: 0 var(--space-4); }
-@media (min-width: 560px) { .wl-row { grid-template-columns: 1fr 1fr; align-items: end; } }
+@media (min-width: 560px) { .wl-row { grid-template-columns: 1fr 1fr; align-items: start; } }
 
 /* UC Berkeley thank-you note */
 .wl-note { display: flex; gap: var(--space-3); align-items: flex-start; margin: var(--space-4) 0 var(--space-5); padding: var(--space-3) var(--space-4); border-radius: var(--radius); background: var(--accent-soft); }
@@ -122,6 +123,9 @@ div.wl-swap-photo { background: linear-gradient(135deg, var(--green-100), var(--
 .wl-header-actions { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; justify-content: flex-end; }
 .wl-header-demo { display: inline-flex; align-items: center; min-height: 44px; padding: 4px 16px; border-radius: var(--radius-pill); background: var(--accent); color: var(--white); font-weight: 700; font-size: var(--text-sm); text-decoration: none; }
 .wl-header-demo:hover { background: var(--accent-strong); }
+.wl-header-demo--ghost { background: transparent; color: var(--primary-strong); box-shadow: inset 0 0 0 2px var(--line-strong); }
+.wl-header-demo--ghost:hover { background: var(--primary-soft); }
+.wl-header-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); justify-content: flex-end; }
 
 /* Sign-up popup and swap-guide gate */
 .wl-gate { width: min(460px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 0; border-radius: var(--radius-xl); background: var(--surface); color: var(--ink); box-shadow: var(--shadow-float); }
@@ -177,3 +181,52 @@ div.wl-swap-photo { background: linear-gradient(135deg, var(--green-100), var(--
 .wl-signin { margin: var(--space-3) 0 0; text-align: center; font-size: var(--text-sm); color: var(--ink-2); }
 .wl-signin a { color: var(--primary); font-weight: 700; }
 .wl-gate .wl-signin { text-align: left; }
+
+/* ---------- Hero extras ---------- */
+.wl-trust { display: flex; gap: var(--space-2); align-items: flex-start; margin: var(--space-4) 0 0; font-size: var(--text-sm); color: var(--ink-2); max-width: 52ch; }
+.wl-trust svg { flex: none; margin-top: 1px; color: var(--primary); }
+.wl-el--Fluid .wl-el-sym { background: var(--fluid); }
+.wl-story { margin: 0 0 var(--space-4); border: 1px solid var(--line); border-radius: var(--radius); background: var(--ground-alt); }
+.wl-story summary { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); min-height: 48px; padding: 8px var(--space-4); font-weight: 700; cursor: pointer; list-style: none; }
+.wl-story summary::-webkit-details-marker { display: none; }
+.wl-story summary::after { content: "+"; font-size: 1.25rem; color: var(--primary); }
+.wl-story[open] summary::after { content: "–"; }
+.wl-story .field { margin: 0; padding: 0 var(--space-4) var(--space-4); }
+
+/* Photo strip in the "See all 70 swaps" banner. */
+.wl-unlock { position: relative; overflow: hidden; }
+.wl-marquee { flex-basis: 100%; overflow: hidden; margin: calc(var(--space-5) * -1) calc(var(--space-5) * -1) var(--space-2); padding: var(--space-4) 0 0; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.wl-marquee-track { display: flex; gap: 10px; width: max-content; animation: wl-marquee 60s linear infinite; }
+.wl-marquee-track img { width: 96px; height: 96px; border-radius: 14px; object-fit: cover; }
+@keyframes wl-marquee { to { transform: translateX(-50%); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .wl-marquee-track { animation: none; }
+}
+
+.wl-stats { flex-wrap: wrap; }
+
+/* Hero preview of the swap guide, beside the form (tempts people to scroll). */
+.wl-peek { margin-top: var(--space-6); padding: var(--space-4); border: 1px solid var(--line); border-radius: 20px; background: linear-gradient(170deg, var(--green-50), var(--surface) 70%); box-shadow: var(--shadow-1); }
+.wl-peek-head { margin-bottom: var(--space-3); }
+.wl-peek-head .wl-eyebrow { margin: 0 0 2px; }
+.wl-peek-title { margin: 0; font-family: var(--font-display); font-size: var(--text-lg); font-weight: 800; color: var(--ink); line-height: 1.25; }
+.wl-peek-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+.wl-peek-item { display: flex; gap: var(--space-3); align-items: center; padding: 8px; border-radius: 14px; background: var(--surface); color: inherit; text-decoration: none; border: 1px solid var(--line); transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease; }
+.wl-peek-item:hover { border-color: var(--primary); box-shadow: var(--shadow-1); transform: translateY(-1px); }
+.wl-peek-item img, .wl-peek-ph { flex: none; width: 80px; height: 80px; border-radius: 10px; object-fit: cover; background: var(--gray-100); }
+.wl-peek-text { display: grid; gap: 4px; min-width: 0; }
+.wl-peek-els { display: flex; flex-wrap: wrap; gap: 4px; }
+.wl-peek-els .wl-el { padding: 2px 8px 2px 2px; font-size: .75rem; box-shadow: none; border: 1px solid var(--line); }
+.wl-peek-els .wl-el-sym { min-width: 20px; height: 20px; font-size: .6875rem; border-radius: 5px; }
+.wl-peek-meal { font-weight: 800; color: var(--ink); line-height: 1.25; }
+.wl-peek-swap { display: flex; gap: 6px; align-items: flex-start; font-size: var(--text-sm); color: var(--ink-2); line-height: 1.35; }
+.wl-peek-swap > span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.wl-peek-swap svg { flex: none; width: 16px; height: 16px; margin-top: 2px; color: var(--primary); }
+.wl-peek-more { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; margin-top: var(--space-3); border-radius: var(--radius-pill); background: var(--primary-soft); color: var(--primary-strong); font-weight: 800; text-decoration: none; text-align: center; padding: 6px 16px; }
+.wl-peek-more:hover { background: var(--primary); color: var(--white); }
+.wl-peek-more svg { flex: none; animation: wl-nudge 1.8s ease-in-out infinite; }
+@keyframes wl-nudge { 50% { transform: translateY(3px); } }
+@media (prefers-reduced-motion: reduce) { .wl-peek-more svg { animation: none; } .wl-peek-item { transition: none; } }
+/* Keep the form beside the guide preview while scrolling, on screens tall enough to show it whole. */
+@media (min-width: 960px) and (min-height: 900px) { .wl-form-card { position: sticky; top: 88px; } }
