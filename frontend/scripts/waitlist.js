@@ -2,8 +2,8 @@ import { track } from './track.js';
 import { getAuthenticatedUser, supabase } from '../auth/supabase.js';
 import { isDemoUser } from '../auth/demo.js';
 import { locales, strings } from './waitlist-i18n.js';
-import { joinSwaps } from '../data/join-swaps.js';
-import { photoPage, photoUrl, swapPhotos } from '../data/swap-photos.js';
+import { NUTRIENTS, joinSwaps } from '../data/join-swaps.js';
+import { photoPage, photoSource, photoUrl, swapPhotos } from '../data/swap-photos.js';
 
 const LANG_KEY = 'fuelwell.waitlist.lang.v1'; // kept so returning visitors keep their language
 const byId = (id) => document.getElementById(id);
@@ -83,25 +83,51 @@ document.querySelectorAll('.script-option').forEach((button) => button.addEventL
 
 const esc = (value) => String(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
+const ARROW = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+const PLATE = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/></svg>';
+
+/** A periodic-table style badge for one nutrient: symbol plus name. */
+function nutrientChip(code, { name = true } = {}) {
+  const n = NUTRIENTS[code];
+  if (!n) return '';
+  const text = n[locale] || n.en;
+  return `<span class="wl-el wl-el--${code}"><span class="wl-el-sym" aria-hidden="true">${esc(n.symbol)}</span>${name ? `<span class="wl-el-name">${esc(text.name)}</span>` : `<span class="sr-only">${esc(text.name)}</span>`}</span>`;
+}
+
 function renderGuide() {
+  byId('nutrient-list').innerHTML = Object.entries(NUTRIENTS).map(([code, n]) => {
+    const text = n[locale] || n.en;
+    return `<li class="wl-nutrient wl-nutrient--${code}">
+      <span class="wl-nutrient-sym" aria-hidden="true">${esc(n.symbol)}</span>
+      <div>
+        <p class="wl-nutrient-name">${esc(text.name)}</p>
+        <p class="wl-nutrient-body">${esc(text.body)}</p>
+        <p class="wl-nutrient-where"><strong>${esc(t('found_in'))}:</strong> ${esc(text.where)}</p>
+      </div>
+    </li>`;
+  }).join('');
+
   byId('swap-list').innerHTML = joinSwaps.map((item, index) => {
     const text = item[locale] || item.en;
     const photo = swapPhotos[item.photo];
     const cuisine = text.cuisine && item.en.cuisine !== 'Any' ? `${esc(text.cuisine)} · ` : '';
     return `<li><article class="wl-swap" aria-labelledby="swap-${index}">
       <div class="wl-swap-media">
-        ${photo ? `<img class="wl-swap-photo" src="${esc(photoUrl(photo))}" alt="" loading="lazy" width="640" height="420">` : ''}
-        <span class="wl-swap-tag wl-swap-tag--${item.tag}">${esc(t(`tag_${item.tag}`))}</span>
+        ${photo ? `<img class="wl-swap-photo" src="${esc(photoUrl(photo))}" alt="" loading="lazy" width="640" height="420">` : '<div class="wl-swap-photo" aria-hidden="true"></div>'}
+        <p class="wl-swap-els"><span class="sr-only">${esc(t('watch'))}:</span>${item.watch.map((code) => nutrientChip(code)).join('')}</p>
       </div>
       <div class="wl-swap-body">
         <p class="wl-swap-meta">${cuisine}${esc(t(`kind_${item.kind}`))}</p>
         <h3 id="swap-${index}"><span class="wl-swap-label">${esc(t('instead'))}</span>${esc(text.meal)}</h3>
         <div class="wl-swap-try">
-          <p class="wl-swap-label wl-swap-label--try"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>${esc(t('try'))}</p>
+          <p class="wl-swap-label wl-swap-label--try">${ARROW}${esc(t('try'))}</p>
           <p>${esc(text.swap)}</p>
         </div>
-        <p class="wl-swap-why"><strong>${esc(t('why'))}:</strong> ${esc(text.why)}</p>
-        ${photo ? `<p class="wl-swap-credit">${esc(t('photo_by'))} <a href="${esc(photoPage(photo))}" target="_blank" rel="noopener noreferrer">${esc(photo.by)}</a> / Unsplash</p>` : ''}
+        <dl class="wl-swap-facts">
+          <div><dt>${esc(t('why_matters'))}</dt><dd>${esc(text.why)}</dd></div>
+          <div><dt>${PLATE}${esc(t('portion'))}</dt><dd>${esc(text.portion)}</dd></div>
+        </dl>
+        ${photo ? `<p class="wl-swap-credit">${esc(t('photo_by'))} <a href="${esc(photoPage(photo))}" target="_blank" rel="noopener noreferrer">${esc(photo.by)}</a> / ${esc(photoSource(photo))}</p>` : ''}
       </div>
     </article></li>`;
   }).join('');
@@ -177,7 +203,7 @@ async function createAccount({ name, email, password, phone = null, story = null
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { emailRedirectTo: new URL('/dashboard.html', location.origin).href, data: { full_name: name } },
+    options: { emailRedirectTo: new URL('/personalize.html?welcome', location.origin).href, data: { full_name: name } },
   });
   if (error) throw Object.assign(error, { key: authErrorKey(error) });
   // With "Confirm email" on, an existing address comes back with no identities.

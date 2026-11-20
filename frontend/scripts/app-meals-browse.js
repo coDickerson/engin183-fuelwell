@@ -3,16 +3,14 @@
 // and "Personalize for me" (runs the AI swap in the "Swap & eat out" sub-tab).
 import { esc, icon, toast } from './app-ui.js';
 import { t } from './app-strings.js';
-import { photoPage, photoUrl, swapPhotos } from '../data/swap-photos.js';
+import { photoPage, photoSource, photoUrl, swapPhotos } from '../data/swap-photos.js';
 import { isSwapSaved, savedSwaps, toggleSwap } from './swap-store.js';
-import { personalize } from './app-meals-ask.js';
+import { elementBadge, personalize } from './app-meals-ask.js';
 import { track } from './track.js';
 import { offerJoin } from './signup-nudge.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const KINDS = { takeout: 'br_takeout', frozen: 'br_frozen', home: 'br_home' };
-const NUTRIENT_KEY = { Na: 'sodium', K: 'potassium', P: 'phosphorus' };
-const nutrient = (n) => (NUTRIENT_KEY[n] ? `${n} · ${t(NUTRIENT_KEY[n])}` : n);
 const cuisineGroup = (c) => String(c || '').split(/\s*[/-]\s*/)[0].replace(/\s+fast food$/i, '').trim();
 
 const state = { rows: null, failed: false, kind: 'all', cuisine: 'all' };
@@ -30,18 +28,19 @@ function card(r, index) {
     <div class="swap-card-body">
       <p class="instead-label">${esc(t('br_instead'))}</p>
       <h3 id="swap-${index}">${esc(r.meal)}</h3>
-      ${r.watch?.length ? `<p class="ask-badges">${r.watch.map((n) => `<span class="chip chip--plain">${esc(nutrient(n))}</span>`).join('')}</p>` : ''}
+      ${r.watch?.length ? `<p class="ask-badges">${r.watch.map(elementBadge).join('')}</p>` : ''}
     </div>
     <div class="swap-card-try">
       <p class="instead-label">${icon('arrow')}${esc(t('br_try'))}</p>
       <p class="swap-card-swap">${esc(r.swap)}</p>
       <p class="muted"><strong>${esc(t('br_why'))}:</strong> ${esc(r.why)}</p>
+      ${r.portion ? `<p class="muted"><strong>${esc(t('sw_portion'))}:</strong> ${esc(r.portion)}</p>` : ''}
     </div>
     <div class="swap-card-actions">
       <button class="button button--secondary" type="button" data-save-swap="${index}" aria-pressed="${saved}">${icon('heart')}<span>${esc(t(saved ? 'br_saved' : 'br_save'))}</span></button>
       <button class="button" type="button" data-personalize="${index}">${icon('sparkle')}<span>${esc(t('br_personalize'))}</span></button>
     </div>
-    ${photo ? `<p class="swap-card-credit">${esc(t('br_photo_by'))} <a href="${esc(photoPage(photo))}" target="_blank" rel="noopener noreferrer">${esc(photo.by)}</a> / Unsplash</p>` : ''}
+    ${photo ? `<p class="swap-card-credit">${esc(t('br_photo_by'))} <a href="${esc(photoPage(photo))}" target="_blank" rel="noopener noreferrer">${esc(photo.by)}</a> / ${esc(photoSource(photo))}</p>` : ''}
   </article></li>`;
 }
 

@@ -73,10 +73,10 @@
           <div class="helper-grid">
             <form class="card helper-form" data-ask-form novalidate>
               <div class="panel-title"><h2 data-i18n="sw_h2">Ask FuelWell</h2><span class="chip chip--clay"><span data-icon="sparkle"></span>AI</span></div>
-              <div class="filter-group ask-modes" role="group" data-i18n-aria="sw_modes" data-ask-modes>
-                <button class="filter" type="button" data-ask-mode="swap" aria-pressed="true" data-i18n="sw_mode_swap">Swap a meal</button>
-                <button class="filter" type="button" data-ask-mode="eatout" aria-pressed="false" data-i18n="sw_mode_eatout">Eating out</button>
-                <button class="filter" type="button" data-ask-mode="recipe" aria-pressed="false" data-i18n="sw_mode_recipe">Family recipe</button>
+              <div class="ask-modes" role="group" data-i18n-aria="sw_modes" data-ask-modes>
+                <button class="filter" type="button" data-ask-mode="swap" aria-pressed="true"><span data-icon="swap"></span><span data-i18n="sw_mode_swap">Swap a meal</span></button>
+                <button class="filter" type="button" data-ask-mode="eatout" aria-pressed="false"><span data-icon="meals"></span><span data-i18n="sw_mode_eatout">Eating out</span></button>
+                <button class="filter" type="button" data-ask-mode="recipe" aria-pressed="false"><span data-icon="list"></span><span data-i18n="sw_mode_recipe">Family recipe</span></button>
               </div>
               <div data-ask-fields="swap">
                 <div class="field">
@@ -108,7 +108,7 @@
                   <textarea id="ask-recipe" rows="6" maxlength="6000" data-i18n-placeholder="sw_recipe_ph" aria-describedby="ask-error"></textarea>
                 </div>
               </div>
-              <div class="example-chips" data-i18n-aria="examples"><span class="muted" data-i18n="tryline">Try:</span><span data-ask-examples></span></div>
+              <div class="ask-examples" data-i18n-aria="examples"><p class="ask-examples-label" data-i18n="tryline">Try:</p><div class="ex-tiles" data-ask-examples></div></div>
               <p class="field-error" id="ask-error" data-ask-error hidden></p>
               <p class="hint ask-for" data-ask-for></p>
               <div class="helper-actions">

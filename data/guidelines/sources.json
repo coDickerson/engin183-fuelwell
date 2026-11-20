@@ -117,6 +117,20 @@
       "url": "https://www.kidney.org/kidney-topics/dining-out-confidence-dialysis",
       "file": "nkf-dining-out-dialysis.txt",
       "kind": "web"
+    },
+    {
+      "id": "selfprinciple-kidney-guide",
+      "title": "SELF Principle: The Kidney Guide v2 (Dr. Sean Hashmi, MD, nephrologist): supplements and eating pattern",
+      "url": "https://selfprinciple.org",
+      "file": "selfprinciple-kidney-guide-v2.pdf",
+      "kind": "pdf",
+      "pages": [
+        [
+          9,
+          10
+        ]
+      ],
+      "pages_note": "Page 9 supplements (high-dose vitamin C, aristolochic acid in some herbal blends, potassium salt substitutes in CKD 3+). Page 10 the Mediterranean-style eating pattern (berries, whole grains, legumes and plant protein, olive oil, fish, nuts in small handfuls; limit ultra-processed food, processed meat, sugary drinks, added salt). Written for general kidney health: it says to ask the doctor first about potassium if you have CKD. Page 11 (habits) is left out on purpose: 'drink to thirst' does not apply to people with a dialysis fluid limit. Free download from Dr. Hashmi's newsletter; the PDF is not committed."
     }
   ]
 }

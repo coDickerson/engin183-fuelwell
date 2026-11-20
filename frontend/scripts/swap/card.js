@@ -38,6 +38,7 @@ function catalogBody(result) {
       <div class="try-box"><span class="lbl">Try</span><p>${esc(r.swap)}</p></div>
     </div>
     <p class="headline"><strong>Why:</strong> ${esc(r.why)}</p>
+    ${r.portion ? `<p class="headline"><strong>Portion:</strong> ${esc(r.portion)}</p>` : ''}
     ${watch ? `<div><h3 class="section-title">What to watch</h3><div class="badges">${watch}</div></div>` : ''}`;
 }
 
@@ -59,6 +60,8 @@ function headsUp(card) {
   return card.heads_up ? `<div class="headsup"><strong>Heads up</strong>${esc(card.heads_up)}</div>` : '';
 }
 
+const portionBox = (c) => (c.portion ? `<div class="tonight"><strong>Portion:</strong> ${esc(c.portion)}</div>` : '');
+
 function swapBody(result) {
   const c = result.card;
   const tiles = (c.watch || []).map((w) => `
@@ -73,12 +76,14 @@ function swapBody(result) {
       <span class="pill ${esc(c.verdict)}">${esc(VERDICT[c.verdict] || '')}</span>
       <h2>${esc(c.dish)}</h2>
       ${result.photo_dish ? `<p class="note">From your photo: ${esc(result.photo_dish)}</p>` : ''}
+      ${c.answer ? `<p class="headline"><strong>${esc(c.answer)}</strong></p>` : ''}
       <p class="headline">${esc(c.headline)}</p>
       ${coverageNote(result)}
     </div>
     ${tiles ? `<div><h3 class="section-title">What to watch</h3><div class="tiles">${tiles}</div></div>` : ''}
     ${swaps ? `<div><h3 class="section-title">Swaps and add-ons</h3><ul class="items">${swaps}</ul></div>` : ''}
     <div class="tonight"><strong>Tonight:</strong> ${esc(c.tonight)}</div>
+    ${portionBox(c)}
     ${headsUp(c)}`;
 }
 
@@ -94,6 +99,7 @@ function eatoutBody(result) {
     <div><h3 class="section-title">Your 3 picks</h3><ul class="items">${picks}</ul></div>
     ${c.skip ? `<div><h3 class="section-title">Skip this one</h3><ul class="items"><li><strong>${esc(c.skip.item)}</strong><p class="why">${esc(c.skip.why)}</p></li></ul></div>` : ''}
     <div class="tonight"><strong>Tip:</strong> ${esc(c.tip)}</div>
+    ${portionBox(c)}
     ${headsUp(c)}`;
 }
 
@@ -111,6 +117,7 @@ function recipeBody(result) {
     ${c.ingredients?.length ? `<div><h3 class="section-title">Ingredients</h3>${list(c.ingredients)}</div>` : ''}
     ${c.steps?.length ? `<div><h3 class="section-title">Steps</h3>${list(c.steps, true)}</div>` : ''}
     ${c.keep_flavor?.length ? `<div class="tonight"><strong>Keep the flavor</strong>${list(c.keep_flavor)}</div>` : ''}
+    ${portionBox(c)}
     ${headsUp(c)}`;
 }
 
@@ -155,18 +162,20 @@ export function cardText(result) {
   const c = result.card || {};
   const lines = [];
   if (result.mode === 'catalog') {
-    lines.push(c.meal, '', `Instead of: ${c.meal}`, `Try: ${c.swap}`, `Why: ${c.why}`);
+    lines.push(c.meal, '', `Instead of: ${c.meal}`, `Try: ${c.swap}`, `Why: ${c.why}`, ...(c.portion ? [`Portion: ${c.portion}`] : []));
     if (c.watch?.length) lines.push('', `What to watch: ${c.watch.map((n) => NUTRIENT[n] || n).join(', ')}`);
   } else if (result.mode === 'swap') {
-    lines.push(`${c.dish} (${VERDICT[c.verdict] || ''})`, c.headline, '');
+    lines.push(`${c.dish} (${VERDICT[c.verdict] || ''})`, ...(c.answer ? [c.answer] : []), c.headline, '');
     if (c.watch?.length) lines.push('What to watch:', ...c.watch.map((w) => `- ${NUTRIENT[w.nutrient] || w.nutrient}: ${w.note}`), '');
     if (c.swaps?.length) lines.push('Swaps:', ...c.swaps.map((s) => `- ${s.title}: ${s.how} (${s.why})`), '');
     lines.push(`Tonight: ${c.tonight}`);
+    if (c.portion) lines.push(`Portion: ${c.portion}`);
   } else if (result.mode === 'eatout') {
     lines.push(`Eating out: ${c.restaurant}`, '', 'Picks:');
     for (const p of c.picks || []) lines.push(`- ${p.item}. Say: "${p.say}" (${p.why})`);
     if (c.skip) lines.push('', `Skip: ${c.skip.item} (${c.skip.why})`);
     lines.push('', `Tip: ${c.tip}`);
+    if (c.portion) lines.push(`Portion: ${c.portion}`);
   } else {
     lines.push(c.title, c.intro, '');
     if (c.changes?.length) lines.push('What changed:', ...c.changes.map((x) => `- ${x.from} -> ${x.to} (${x.why})`), '');
