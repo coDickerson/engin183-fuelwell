@@ -94,6 +94,13 @@ function nutrientChip(code, { name = true } = {}) {
   return `<span class="wl-el wl-el--${code}"><span class="wl-el-sym" aria-hidden="true">${esc(n.symbol)}</span>${name ? `<span class="wl-el-name">${esc(text.name)}</span>` : `<span class="sr-only">${esc(text.name)}</span>`}</span>`;
 }
 
+// Short swaps for the hero preview (index into joinSwaps).
+const PEEK = [
+  { i: 0, short: { en: 'Cauliflower or green beans for the potato', 'zh-Hans': '用花椰菜或四季豆代替土豆', 'zh-Hant': '用花椰菜或四季豆代替馬鈴薯', es: 'Coliflor o ejotes en vez de papa' } },
+  { i: 2, short: { en: 'Sparkling water with lime', 'zh-Hans': '加青柠的气泡水', 'zh-Hant': '加萊姆的氣泡水', es: 'Agua mineral con limón' } },
+  { i: 4, short: { en: 'Roast your own with lemon and garlic', 'zh-Hans': '自己用柠檬和蒜烤', 'zh-Hant': '自己用檸檬和蒜烤', es: 'Ásalo en casa con limón y ajo' } },
+];
+
 function renderGuide() {
   byId('nutrient-list').innerHTML = Object.entries(NUTRIENTS).map(([code, n]) => {
     const text = n[locale] || n.en;
@@ -107,17 +114,20 @@ function renderGuide() {
     </li>`;
   }).join('');
 
-  // Hero preview beside the form: three dishes that together cover sodium, potassium and phosphorus.
-  byId('peek-list').innerHTML = [0, 2, 4].map((i) => {
+  // Hero preview: three dishes that together cover sodium, potassium and phosphorus, each with a
+  // one-line version of its swap (the full swap, why and portion are in the guide below).
+  byId('peek-list').innerHTML = PEEK.map(({ i, short }) => {
     const item = joinSwaps[i];
     const text = item[locale] || item.en;
     const photo = swapPhotos[item.photo];
     return `<li><a class="wl-peek-item" href="#swap-${i}" data-peek-more>
-      ${photo ? `<img src="${esc(photoUrl(photo, 400, 260))}" alt="" width="400" height="260">` : '<span class="wl-peek-ph" aria-hidden="true"></span>'}
+      <span class="wl-peek-media">
+        ${photo ? `<img src="${esc(photoUrl(photo, 400, 260))}" alt="" width="400" height="260">` : '<span class="wl-peek-ph" aria-hidden="true"></span>'}
+        <span class="wl-peek-els"><span class="sr-only">${esc(t('watch'))}:</span>${item.watch.map((code) => nutrientChip(code, { name: false })).join('')}</span>
+      </span>
       <span class="wl-peek-text">
-        <span class="wl-peek-els">${item.watch.map((code) => nutrientChip(code)).join('')}</span>
         <span class="wl-peek-meal"><span class="sr-only">${esc(t('instead'))} </span>${esc(text.meal)}</span>
-        <span class="wl-peek-swap">${ARROW}<span><span class="sr-only">${esc(t('try'))}: </span>${esc(text.swap)}</span></span>
+        <span class="wl-peek-swap">${ARROW}<span><span class="sr-only">${esc(t('try'))}: </span>${esc(short[locale] || short.en)}</span></span>
       </span>
     </a></li>`;
   }).join('');
