@@ -17,11 +17,11 @@
 /* Layout */
 .wl-main { padding: var(--space-6) 0 var(--space-8); }
 :root { --na: #1f5f8b; --k: #8a5a12; --p: #6a3d9a; --fluid: #1b7a8c; }
-.wl-grid { display: grid; gap: var(--space-6); grid-template-columns: minmax(0, 1fr); grid-template-areas: "intro" "form" "showcase" "guide"; }
+.wl-grid { display: grid; gap: var(--space-6); grid-template-columns: minmax(0, 1fr); grid-template-areas: "intro" "form" "guide"; }
 .wl-intro { grid-area: intro; }
 .wl-form-card { grid-area: form; }
 @media (min-width: 960px) {
-  .wl-grid { grid-template-columns: 1.05fr 1fr; grid-template-areas: "intro form" "showcase showcase" "guide guide"; column-gap: clamp(32px, 5vw, 72px); align-items: start; }
+  .wl-grid { grid-template-columns: 1.05fr 1fr; grid-template-areas: "intro form" "guide guide"; column-gap: clamp(32px, 5vw, 72px); align-items: start; }
 }
 /* Keep the form in view only when the whole card fits on screen, so Submit is never cut off. */
 @media (min-width: 960px) and (min-height: 1080px) {
@@ -193,107 +193,6 @@ div.wl-swap-photo { background: linear-gradient(135deg, var(--green-100), var(--
 .wl-story[open] summary::after { content: "–"; }
 .wl-story .field { margin: 0; padding: 0 var(--space-4) var(--space-4); }
 
-/* ---------- See it in action (join-showcase.js) ---------- */
-.wl-showcase { grid-area: showcase; min-width: 0; display: grid; gap: var(--space-6); align-items: center; padding: clamp(24px, 4vw, 48px); border-radius: 28px; background: linear-gradient(160deg, var(--green-50), var(--surface) 60%); border: 1px solid var(--line); }
-@media (min-width: 960px) { .wl-showcase { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); } }
-.wl-showcase h2 { margin-bottom: var(--space-2); font-size: clamp(1.625rem, 1.2vw + 1.2rem, 2.125rem); text-wrap: balance; }
-.wl-sc-sub { margin-bottom: var(--space-5); color: var(--ink-2); }
-.wl-sc-steps { display: grid; gap: var(--space-2); margin-bottom: var(--space-5); }
-.wl-sc-step { position: relative; display: flex; gap: var(--space-3); align-items: flex-start; width: 100%; padding: var(--space-3) var(--space-4) var(--space-4); overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--ink-2); text-align: left; font: inherit; cursor: pointer; transition: border-color .2s ease, box-shadow .2s ease; }
-.wl-sc-step:hover { border-color: var(--primary); }
-.wl-sc-step.is-active { border-color: var(--primary); box-shadow: var(--shadow-1); color: var(--ink); }
-.wl-sc-step > span:nth-child(2) { display: grid; gap: 2px; font-size: var(--text-sm); }
-.wl-sc-step strong { font-size: var(--text-base); color: var(--ink); }
-.wl-sc-n { display: grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--primary-soft); color: var(--primary-strong); font-weight: 800; font-size: var(--text-sm); }
-.wl-sc-step.is-active .wl-sc-n { background: var(--primary); color: var(--white); }
-.wl-sc-step:not(.is-active) > span:nth-child(2) > span { display: none; }
-.wl-sc-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: transparent; }
-.wl-sc-progress span { display: block; width: 0; height: 100%; background: var(--primary); }
-.wl-sc-ctas { display: flex; flex-wrap: wrap; gap: var(--space-3); }
-.wl-sc-ctas .button { min-height: 52px; }
-
-/* The app window. */
-.wl-sc-window { min-width: 0; border-radius: 18px; background: var(--surface); box-shadow: 0 30px 60px -28px rgb(7 61 48 / .45), 0 0 0 1px var(--line); overflow: hidden; }
-.wl-sc-chrome { display: flex; align-items: center; gap: 6px; padding: 10px 14px; background: var(--gray-100); border-bottom: 1px solid var(--line); }
-.wl-sc-chrome > span { width: 11px; height: 11px; border-radius: 50%; background: #e0605a; }
-.wl-sc-chrome > span:nth-child(2) { background: #e6b13c; }
-.wl-sc-chrome > span:nth-child(3) { background: #5ab55e; }
-.wl-sc-chrome p { flex: 1; margin: 0 0 0 10px; padding: 3px 12px; border-radius: 8px; background: var(--surface); color: var(--ink-3); font-size: .75rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.wl-sc-appbar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--line); font-size: var(--text-sm); }
-.wl-sc-appbar .brand-mark { width: 22px; height: 22px; }
-.wl-sc-tabs { display: flex; gap: 4px; margin-left: auto; }
-.wl-sc-tabs span { padding: 4px 10px; border-radius: var(--radius-pill); color: var(--ink-3); font-size: .75rem; font-weight: 700; white-space: nowrap; }
-.wl-sc-tabs span.is-on { background: var(--primary-soft); color: var(--primary-strong); }
-.wl-sc-stage { position: relative; height: 480px; padding: 18px; overflow: hidden; background: var(--ground-alt); font-size: var(--text-sm); }
-@media (max-width: 600px) { .wl-sc-stage { height: 540px; padding: 12px; } .wl-sc-tabs span:not(.is-on) { display: none; } }
-.sc-scene { animation: sc-fade .45s ease both; }
-@keyframes sc-fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-
-/* Reveal: hidden only while a scene animates. */
-.is-animating .sc-reveal { opacity: 0; transform: translateY(10px); transition: opacity .4s ease, transform .4s ease; }
-.is-animating .sc-reveal.is-in { opacity: 1; transform: none; }
-
-.sc-label { margin: 0 0 6px; font-weight: 800; color: var(--ink); }
-.sc-sub { margin: 12px 0 6px; font-weight: 800; color: var(--ink); }
-.sc-input { display: flex; align-items: center; min-height: 48px; padding: 10px 14px; border: 2px solid var(--line-strong); border-radius: 12px; background: var(--surface); color: var(--ink); font-size: var(--text-base); }
-.sc-input.is-typing { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-soft); }
-.sc-caret { display: none; width: 2px; height: 1.2em; margin-left: 2px; background: var(--primary); animation: sc-blink 1s steps(2) infinite; }
-.sc-input.is-typing .sc-caret { display: inline-block; }
-@keyframes sc-blink { 50% { opacity: 0; } }
-.sc-btn { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; margin: 10px 0 12px; border-radius: 12px; background: var(--primary); color: var(--white); font-weight: 800; transition: transform .15s ease, background .15s ease; }
-.is-animating .sc-btn.is-pressed { animation: sc-press .45s ease; }
-@keyframes sc-press { 40% { transform: scale(.96); background: var(--primary-strong); } }
-.sc-answer { padding: 14px; border-radius: 14px; background: var(--surface); box-shadow: 0 1px 0 var(--line), 0 10px 24px -18px rgb(0 0 0 / .4); }
-.sc-answer-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.sc-answer-head strong { font-size: var(--text-lg); }
-.sc-verdict { padding: 3px 10px; border-radius: var(--radius-pill); background: var(--ok-soft); color: var(--ok); font-weight: 800; font-size: .75rem; white-space: nowrap; }
-.sc-answer-text { margin: 6px 0 0; color: var(--ink); }
-.sc-list, .sc-swaps { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
-.sc-list li { display: flex; align-items: center; gap: 10px; color: var(--ink-2); }
-.sc-list .wl-el { flex: none; box-shadow: none; border: 1px solid var(--line); }
-.sc-swaps li { display: flex; gap: 8px; align-items: flex-start; color: var(--ink); }
-.sc-swaps svg { flex: none; margin-top: 2px; color: var(--primary); }
-.sc-portion { margin: 10px 0 0; padding: 8px 12px; border-radius: 10px; background: var(--accent-soft); font-weight: 700; color: var(--ink); }
-
-.sc-plan { display: grid; gap: 14px; }
-.sc-plan-score { padding: 14px; border-radius: 14px; background: var(--surface); }
-.sc-egfr { display: flex; align-items: baseline; gap: 6px; margin: 0 0 10px; font-family: var(--font-display); font-size: 2.25rem; font-weight: 800; line-height: 1; color: var(--ink); }
-.sc-egfr small { font-family: var(--font-body); font-size: .75rem; font-weight: 700; color: var(--ink-3); }
-.sc-meter { position: relative; display: flex; gap: 3px; height: 28px; }
-.sc-band { display: grid; place-items: center; flex-basis: 0; border-radius: 6px; font-size: .6875rem; font-weight: 800; background: color-mix(in srgb, var(--band) 22%, var(--surface)); color: color-mix(in srgb, var(--band) 70%, var(--ink)); transition: background .3s ease, color .3s ease; }
-.sc-band.is-on { background: var(--band); color: var(--white); }
-.sc-band--g1 { --band: #2f8f5b; } .sc-band--g2 { --band: #6aa84f; } .sc-band--g3a { --band: #c9a227; } .sc-band--g3b { --band: #d9822b; } .sc-band--g4 { --band: #c8553d; } .sc-band--g5 { --band: #9e2a2b; }
-.sc-marker { position: absolute; top: -6px; bottom: -6px; width: 3px; margin-left: -1.5px; border-radius: 2px; background: var(--ink); transition: left 1s cubic-bezier(.3,.7,.3,1); }
-.sc-plan-card { padding: 14px; border-radius: 14px; background: var(--surface); }
-.sc-kicker { margin: 0 0 8px; font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--primary); }
-.sc-stage { display: flex; gap: 12px; align-items: flex-start; }
-.sc-stage p { margin: 2px 0 0; color: var(--ink-2); }
-.sc-stage-tile { display: grid; place-items: center; flex: none; width: 52px; height: 52px; border-radius: 12px; background: #d9822b; color: var(--white); font-size: 1.125rem; font-weight: 800; }
-
-.sc-count { margin: 0 0 10px; font-weight: 800; color: var(--ink); }
-.sc-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-@media (max-width: 600px) { .sc-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sc-card:nth-child(3) { display: none; } }
-.sc-card { overflow: hidden; border-radius: 14px; background: var(--surface); box-shadow: 0 1px 0 var(--line), 0 10px 24px -18px rgb(0 0 0 / .4); }
-.is-animating .sc-card { opacity: 0; transform: translateY(18px) scale(.98); transition: opacity .45s ease, transform .45s ease; }
-.is-animating .sc-card.is-in { opacity: 1; transform: none; }
-.sc-card-photo { position: relative; aspect-ratio: 4 / 3; background: var(--gray-100); }
-.sc-card-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.sc-heart { position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--surface); color: var(--ink-2); box-shadow: 0 1px 3px rgb(0 0 0 / .2); }
-.sc-heart.is-saved { color: #c8364a; }
-.sc-heart.is-saved svg { fill: currentColor; }
-.is-animating .sc-heart.is-pop { animation: sc-pop .5s ease; }
-@keyframes sc-pop { 40% { transform: scale(1.3); } }
-.sc-card-body { padding: 10px; }
-.sc-card-body strong { display: block; margin-bottom: 4px; color: var(--ink); line-height: 1.25; }
-.sc-card-body p { margin: 0; color: var(--ink-2); font-size: .75rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-.sc-card-els { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px !important; }
-.sc-card-els .wl-el { padding: 2px 8px 2px 2px; font-size: .6875rem; box-shadow: none; border: 1px solid var(--line); }
-.sc-card-els .wl-el-sym { min-width: 20px; height: 20px; font-size: .6875rem; border-radius: 5px; }
-.sc-toast { position: absolute; left: 50%; bottom: 16px; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: var(--radius-pill); background: var(--ink); color: var(--white); font-weight: 700; transform: translateX(-50%); }
-.sc-toast svg { color: #ff8a9b; fill: currentColor; }
-.is-animating .sc-toast { opacity: 0; transform: translate(-50%, 12px); transition: opacity .35s ease, transform .35s ease; }
-.is-animating .sc-toast.is-in { opacity: 1; transform: translate(-50%, 0); }
-
 /* Photo strip in the "See all 70 swaps" banner. */
 .wl-unlock { position: relative; overflow: hidden; }
 .wl-marquee { flex-basis: 100%; overflow: hidden; margin: calc(var(--space-5) * -1) calc(var(--space-5) * -1) var(--space-2); padding: var(--space-4) 0 0; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
@@ -303,25 +202,8 @@ div.wl-swap-photo { background: linear-gradient(135deg, var(--green-100), var(--
 
 @media (prefers-reduced-motion: reduce) {
   .wl-marquee-track { animation: none; }
-  .sc-scene, .sc-marker, .sc-band, .wl-sc-step { animation: none; transition: none; }
 }
 
-/* Recipes scene. */
-.wl-el--Na-sym, .wl-el--K-sym { display: grid; place-items: center; flex: none; min-width: 26px; height: 26px; border-radius: 7px; color: var(--white); font-family: var(--font-display); font-size: .8125rem; font-weight: 800; }
-.wl-el--Na-sym { background: var(--na); }
-.wl-el--K-sym { background: var(--k); }
-.sc-recipe { padding: 14px; border-radius: 14px; background: var(--surface); box-shadow: 0 1px 0 var(--line); }
-.sc-recipe .sc-kicker { margin-bottom: 4px; }
-.sc-recipe-title { display: block; font-size: var(--text-lg); color: var(--ink); line-height: 1.25; }
-.sc-rstats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-.sc-rstat { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 10px; background: #fbefd9; }
-.sc-rstat > span:last-child { display: grid; line-height: 1.15; }
-.sc-rstat small { color: #8a5a12; font-weight: 700; font-size: .6875rem; }
-.sc-changes { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
-.sc-changes li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1.4fr); align-items: center; gap: 6px 8px; padding: 6px 8px; line-height: 1.3; border-radius: 10px; background: var(--ground-alt); }
-.sc-changes svg { color: var(--primary); }
-.sc-from { color: var(--ink-3); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--ink-3) 60%, transparent); }
-.sc-to { color: var(--ink); font-weight: 700; }
 .wl-stats { flex-wrap: wrap; }
 
 /* Hero preview of the swap guide, beside the form (tempts people to scroll). */
@@ -348,4 +230,3 @@ div.wl-swap-photo { background: linear-gradient(135deg, var(--green-100), var(--
 @media (prefers-reduced-motion: reduce) { .wl-peek-more svg { animation: none; } .wl-peek-item { transition: none; } }
 /* Keep the form beside the guide preview while scrolling, on screens tall enough to show it whole. */
 @media (min-width: 960px) and (min-height: 900px) { .wl-form-card { position: sticky; top: 88px; } }
-@media (prefers-reduced-motion: reduce) { .wl-sc-stage { overflow-y: auto; } }
