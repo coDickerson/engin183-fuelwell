@@ -14,7 +14,7 @@ const NAV = [
   { key: 'meals', href: '/meals.html', label: 'nav_meals', icon: 'meals' },
   { key: 'personalize', href: '/personalize.html', label: 'nav_personalize', icon: 'health' },
   { key: 'notes', href: '/notes.html', label: 'nav_notes', icon: 'list' },
-  { key: 'care', href: '/care-team.html', label: 'nav_care', icon: 'care' },
+  { key: 'care', href: '/care-team.html', label: 'nav_care', short: 'nav_care_short', icon: 'care' },
 ];
 const brand = () => `<a class="brand" href="/" aria-label="${esc(t('home_label'))}"><span class="brand-mark" aria-hidden="true"></span>FuelWell</a>`;
 
@@ -26,7 +26,12 @@ function displayNameFor(user, demo, profile) {
 }
 
 function navLinks(page, cls) {
-  return NAV.map((item) => `<a class="${cls}" href="${item.href}"${item.key === page ? ' aria-current="page"' : ''}>${icon(item.icon)}<span>${esc(t(item.label))}</span></a>`).join('');
+  const bottom = cls === 'bottom-link';
+  return NAV.map((item) => {
+    const label = bottom && item.short ? t(item.short) : t(item.label);
+    const full = bottom && item.short ? ` aria-label="${esc(t(item.label))}"` : '';
+    return `<a class="${cls}" href="${item.href}"${full}${item.key === page ? ' aria-current="page"' : ''}>${icon(item.icon)}<span>${esc(label)}</span></a>`;
+  }).join('');
 }
 
 /** Small "粵語 · English" badge used wherever the dietitian appears. */

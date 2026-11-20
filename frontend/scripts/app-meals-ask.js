@@ -386,6 +386,17 @@ export function personalize(row) {
   request('swap', { meal: row.meal, profile: PROFILE }, row.meal);
 }
 
+/** "Make it kidney-friendly" on a Recipes card: the AI Family recipe mode with the full recipe filled in. */
+export function askRecipe(title, recipeText) {
+  state.mode = 'recipe';
+  setPhoto(null);
+  $('#ask-recipe').value = recipeText.slice(0, 6000);
+  showError('');
+  paintForm();
+  if (!stacked()) reveal($('[data-ask-form]'));
+  request('recipe', { recipe: recipeText.slice(0, 6000), profile: PROFILE }, title);
+}
+
 /* ---------- Wire up ---------- */
 let wired = false;
 export function initAsk() {
