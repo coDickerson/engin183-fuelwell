@@ -135,8 +135,9 @@ function renderGuide() {
     </a></li>`;
   }).join('');
 
-  // One big, full example in the hero (the slow-cooked soup), built exactly like a guide card.
-  byId('feature-swap').innerHTML = swapCard(joinSwaps[1], 'feature-swap-title');
+  // One big, full example in the hero, built exactly like a guide card: enchiladas, an everyday
+  // family dinner where one card teaches all three nutrients (sodium, phosphorus, potassium).
+  byId('feature-swap').innerHTML = swapCard(joinSwaps[3], 'feature-swap-title');
 
   byId('swap-list').innerHTML = joinSwaps.map((item, index) => `<li>${swapCard(item, `swap-${index}`)}</li>`).join('');
 }
