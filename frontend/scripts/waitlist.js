@@ -3,6 +3,7 @@ import { getAuthenticatedUser, supabase } from '../auth/supabase.js';
 import { isDemoUser } from '../auth/demo.js';
 import { locales, strings } from './waitlist-i18n.js';
 import { NUTRIENTS, joinSwaps } from '../data/join-swaps.js';
+import { initShowcase, relocaleShowcase } from './join-showcase.js';
 import { photoPage, photoSource, photoUrl, swapPhotos } from '../data/swap-photos.js';
 
 const LANG_KEY = 'fuelwell.waitlist.lang.v1'; // kept so returning visitors keep their language
@@ -70,6 +71,7 @@ function applyLocale(next, { save = true } = {}) {
   if (!gateError.hidden && gateError.dataset.key) gateError.textContent = t(gateError.dataset.key);
   renderGateDone();
   renderGuide();
+  if (showcaseReady) relocaleShowcase(t, next);
 }
 
 document.querySelectorAll('.lang-option').forEach((button) => button.addEventListener('click', () => {
@@ -107,6 +109,21 @@ function renderGuide() {
     </li>`;
   }).join('');
 
+  // Hero preview beside the form: three dishes that together cover sodium, potassium and phosphorus.
+  byId('peek-list').innerHTML = [0, 2, 4].map((i) => {
+    const item = joinSwaps[i];
+    const text = item[locale] || item.en;
+    const photo = swapPhotos[item.photo];
+    return `<li><a class="wl-peek-item" href="#swap-${i}" data-peek-more>
+      ${photo ? `<img src="${esc(photoUrl(photo, 160, 160))}" alt="" loading="lazy" width="80" height="80">` : '<span class="wl-peek-ph" aria-hidden="true"></span>'}
+      <span class="wl-peek-text">
+        <span class="wl-peek-els">${item.watch.map((code) => nutrientChip(code)).join('')}</span>
+        <span class="wl-peek-meal"><span class="sr-only">${esc(t('instead'))} </span>${esc(text.meal)}</span>
+        <span class="wl-peek-swap">${ARROW}<span><span class="sr-only">${esc(t('try'))}: </span>${esc(text.swap)}</span></span>
+      </span>
+    </a></li>`;
+  }).join('');
+
   byId('swap-list').innerHTML = joinSwaps.map((item, index) => {
     const text = item[locale] || item.en;
     const photo = swapPhotos[item.photo];
@@ -133,7 +150,40 @@ function renderGuide() {
   }).join('');
 }
 
+// var, not let: applyLocale reads it before this line runs.
+var showcaseReady = false; // eslint-disable-line no-var
+
 applyLocale(locale, { save: false });
+initShowcase(t, locale);
+showcaseReady = true;
+
+/* Photo strip in the "See all 70 swaps" banner: two copies so the loop is seamless. */
+(function renderMarquee() {
+  const track = document.querySelector('[data-marquee]');
+  if (!track) return;
+  const photos = Object.values(swapPhotos).filter((p, i) => i % 2 === 0).slice(0, 18);
+  const strip = photos.map((p) => `<img src="${esc(photoUrl(p, 200, 200))}" alt="" loading="lazy" width="96" height="96">`).join('');
+  track.innerHTML = strip + strip;
+}());
+
+/* Hero preview links: smooth scroll to the guide (or one card in it). */
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('[data-peek-more]');
+  if (!link) return;
+  const target = document.querySelector(link.getAttribute('href'));
+  if (!target) return;
+  e.preventDefault();
+  (target.closest('article') || target).scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: target.id === 'swap-guide' ? 'start' : 'center' });
+});
+
+/* "Sign up free" buttons: bring the form into view and put the cursor in Name. */
+document.querySelectorAll('[data-signup-jump]').forEach((link) => link.addEventListener('click', (e) => {
+  const form = byId('waitlist-form');
+  if (!form || form.closest('[hidden]')) return;
+  e.preventDefault();
+  form.closest('.wl-form-card').scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  byId('first-name').focus({ preventScroll: true });
+}));
 
 /* ---------- Account sign-up ---------- */
 // Both forms on this page (the main card and the sign-up box) create a real FuelWell
