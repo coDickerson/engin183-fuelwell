@@ -1,6 +1,11 @@
 # Join page: short demo animation (plan)
 
-Status: plan only, nothing built. Written Nov 20, 2026.
+Status: built Nov 20, 2026 (draft PR #17).
+- Source project: `tools/join-demo-video/` (Remotion). The frames in `public/frames/` are real captures of the live demo.
+- Re-render: `cd tools/join-demo-video && npm install && npm run render`, then copy `out/join-demo.mp4` and `out/join-demo-poster.jpg` to `frontend/images/`.
+- Page code: `frontend/scripts/join-demo-video.js`. Its shot timings must match `src/JoinDemo.tsx`.
+- Decisions taken: captions in all 4 languages; plays twice, then stops on the congee answer.
+- What changed from the plan: MP4 only, with no WebM. MP4 plays in every current browser, and the WebM came out larger. Rendered at 960×720, 1.3 MB.
 
 ## Goal
 

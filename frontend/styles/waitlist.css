@@ -241,9 +241,9 @@ div.wl-swap-photo { background: linear-gradient(135deg, var(--green-100), var(--
 .wl-shot-q { position: absolute; top: 0; right: 18px; z-index: 1; display: flex; align-items: center; gap: 10px; max-width: min(88%, 420px); padding: 10px 16px 10px 10px; border-radius: 18px 18px 4px 18px; background: var(--primary); color: var(--white); box-shadow: 0 12px 24px -12px rgb(7 61 48 / .6); }
 .wl-shot-q p { margin: 0; font-weight: 700; font-size: var(--text-sm); line-height: 1.35; }
 .wl-shot-avatar { display: grid; place-items: center; flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--white); color: var(--primary-strong); font-weight: 800; font-size: .875rem; }
-.wl-shot-tag { position: absolute; left: -14px; bottom: 0; display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 8px 14px; border-radius: var(--radius-pill); background: var(--surface); color: var(--ink); font-size: .8125rem; font-weight: 700; box-shadow: 0 0 0 1px var(--line), 0 10px 20px -12px rgb(0 0 0 / .3); }
+.wl-shot-tag { position: absolute; right: -14px; bottom: 0; display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 8px 14px; border-radius: var(--radius-pill); background: var(--surface); color: var(--ink); font-size: .8125rem; font-weight: 700; box-shadow: 0 0 0 1px var(--line), 0 10px 20px -12px rgb(0 0 0 / .3); }
 .wl-shot-dot { width: 8px; height: 8px; border-radius: 50%; background: #2f8f5b; box-shadow: 0 0 0 4px rgb(47 143 91 / .18); }
-@media (max-width: 959px) { .wl-shot-tag { left: 10px; } .wl-shot { max-width: 600px; } }
+@media (max-width: 959px) { .wl-shot-tag { right: 10px; } .wl-shot { max-width: 600px; } }
 .wl-cta-note a { color: var(--primary-strong); font-weight: 800; text-underline-offset: 3px; }
 
 /* "See it in action" band: copy on the left, the real demo screenshot on the right. */
@@ -261,3 +261,22 @@ div.wl-swap-photo { background: linear-gradient(135deg, var(--green-100), var(--
   .wl-shot-q { position: static; justify-self: end; max-width: 92%; }
   .wl-shot-tag { position: static; justify-self: start; }
 }
+
+/* Demo video in the "See it in action" frame (join-demo-video.js). */
+.wl-shot-media { position: relative; aspect-ratio: 4 / 3; background: var(--ground-alt); }
+.wl-shot-window .wl-shot-video, .wl-shot-window .wl-shot-still { width: 100%; height: 100%; object-fit: cover; }
+.wl-shot-video { display: block; }
+.wl-shot-window .wl-shot-still { display: none; }
+.is-still .wl-shot-video { display: none; }
+.is-still .wl-shot-window .wl-shot-still { display: block; }
+.is-still .wl-shot-cap { display: none; }
+.wl-shot-cap { position: absolute; left: 14px; bottom: 14px; max-width: calc(100% - 80px); margin: 0; padding: 7px 14px; border-radius: var(--radius-pill); background: rgb(12 38 31 / .86); color: var(--white); font-size: .875rem; font-weight: 700; line-height: 1.3; backdrop-filter: blur(4px); }
+.wl-shot-cap:empty { display: none; }
+.wl-shot-cap.is-in { animation: wl-cap-in .35s ease both; }
+@keyframes wl-cap-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.wl-shot-toggle { position: absolute; right: 12px; bottom: 12px; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%; background: rgb(12 38 31 / .78); color: var(--white); cursor: pointer; }
+.wl-shot-toggle:hover { background: var(--primary-strong); }
+.wl-shot-toggle:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.wl-shot-q { transition: opacity .35s ease, transform .35s ease; }
+[data-demo]:not(.is-asking) .wl-shot-q { opacity: 0; transform: translateY(6px); }
+@media (prefers-reduced-motion: reduce) { .wl-shot-cap.is-in { animation: none; } .wl-shot-q { transition: none; } }

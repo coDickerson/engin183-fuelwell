@@ -136,14 +136,21 @@
           <p data-i18n="band_text"></p>
           <a class="button button--accent" href="/demo"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M10 9l5 2.5-5 2.5Z"/><path d="M8 21h8"/></svg><span data-i18n="cta_demo">Try the live demo</span></a>
         </div>
-        <figure class="wl-shot" aria-labelledby="shot-cap">
+        <figure class="wl-shot" aria-labelledby="shot-cap" data-demo>
             <div class="wl-shot-q"><span class="wl-shot-avatar" aria-hidden="true">F</span><p data-i18n="shot_q">Can Mom have congee with salted egg?</p></div>
             <div class="wl-shot-window">
               <div class="wl-shot-bar" aria-hidden="true"><span></span><span></span><span></span><p>FuelWell · <span data-i18n="shot_tab">Meals</span></p></div>
-              <img src="/images/demo-congee.jpg" width="1281" height="952" alt="" data-i18n-alt="shot_alt" />
+              <div class="wl-shot-media" data-demo-video>
+                <video class="wl-shot-video" muted playsinline preload="metadata" width="960" height="720" poster="/images/join-demo-poster.jpg" aria-hidden="true" tabindex="-1">
+                  <source src="/images/join-demo.mp4" type="video/mp4" />
+                </video>
+                <img class="wl-shot-still" src="/images/demo-congee.jpg" width="1281" height="952" alt="" loading="lazy" />
+                <p class="wl-shot-cap" data-demo-cap aria-hidden="true"></p>
+                <button class="wl-shot-toggle" type="button" data-demo-toggle hidden></button>
+              </div>
             </div>
             <p class="wl-shot-tag"><span class="wl-shot-dot" aria-hidden="true"></span><span data-i18n="shot_tag">Personalized for Mom · CKD stage 3b</span></p>
-            <figcaption class="sr-only" id="shot-cap" data-i18n="shot_alt"></figcaption>
+            <figcaption class="sr-only" id="shot-cap" data-i18n="vid_alt"></figcaption>
         </figure>
       </section>
 

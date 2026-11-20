@@ -3,6 +3,7 @@ import { getAuthenticatedUser, supabase } from '../auth/supabase.js';
 import { isDemoUser } from '../auth/demo.js';
 import { locales, strings } from './waitlist-i18n.js';
 import { NUTRIENTS, joinSwaps } from '../data/join-swaps.js';
+import { initDemoVideo, relocaleDemoVideo } from './join-demo-video.js';
 import { photoPage, photoSource, photoUrl, swapPhotos } from '../data/swap-photos.js';
 
 const LANG_KEY = 'fuelwell.waitlist.lang.v1'; // kept so returning visitors keep their language
@@ -71,6 +72,7 @@ function applyLocale(next, { save = true } = {}) {
   if (!gateError.hidden && gateError.dataset.key) gateError.textContent = t(gateError.dataset.key);
   renderGateDone();
   renderGuide();
+  relocaleDemoVideo(t);
 }
 
 document.querySelectorAll('.lang-option').forEach((button) => button.addEventListener('click', () => {
@@ -160,6 +162,7 @@ function renderGuide() {
 }
 
 applyLocale(locale, { save: false });
+initDemoVideo(t);
 
 /* Photo strip in the "See all 70 swaps" banner: two copies so the loop is seamless. */
 (function renderMarquee() {
