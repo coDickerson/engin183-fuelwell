@@ -113,7 +113,7 @@ function renderGuide() {
     const text = item[locale] || item.en;
     const photo = swapPhotos[item.photo];
     return `<li><a class="wl-peek-item" href="#swap-${i}" data-peek-more>
-      ${photo ? `<img src="${esc(photoUrl(photo, 160, 160))}" alt="" loading="lazy" width="80" height="80">` : '<span class="wl-peek-ph" aria-hidden="true"></span>'}
+      ${photo ? `<img src="${esc(photoUrl(photo, 400, 260))}" alt="" width="400" height="260">` : '<span class="wl-peek-ph" aria-hidden="true"></span>'}
       <span class="wl-peek-text">
         <span class="wl-peek-els">${item.watch.map((code) => nutrientChip(code)).join('')}</span>
         <span class="wl-peek-meal"><span class="sr-only">${esc(t('instead'))} </span>${esc(text.meal)}</span>
