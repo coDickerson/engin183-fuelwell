@@ -58,9 +58,6 @@
 .wl-ctas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr)); gap: var(--space-3); max-width: 520px; margin-top: var(--space-4); }
 .wl-cta { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); min-height: 56px; font-size: var(--text-base); }
 .wl-cta-note { margin: var(--space-2) 0 0; font-size: var(--text-sm); color: var(--ink-3); }
-.wl-stats { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-6); margin: var(--space-5) 0 0; padding: var(--space-4) 0 0; list-style: none; border-top: 1px solid var(--line); }
-.wl-stats li { display: grid; color: var(--ink-2); font-size: var(--text-sm); }
-.wl-stats strong { font-family: var(--font-display); font-size: var(--text-xl); line-height: 1.1; color: var(--primary-strong); }
 
 /* Swap guide preview */
 .wl-guide { grid-area: guide; min-width: 0; padding-top: var(--space-6); border-top: 1px solid var(--line); }
@@ -201,7 +198,6 @@ div.wl-swap-photo { background: linear-gradient(135deg, var(--green-100), var(--
   .wl-marquee-track { animation: none; }
 }
 
-.wl-stats { flex-wrap: wrap; }
 
 /* Hero preview of the swap guide: one tinted panel, three even cards, badges on the photos. */
 .wl-intro h1 { margin-bottom: 0; }
@@ -280,3 +276,8 @@ div.wl-swap-photo { background: linear-gradient(135deg, var(--green-100), var(--
 .wl-shot-q { transition: opacity .35s ease, transform .35s ease; }
 [data-demo]:not(.is-asking) .wl-shot-q { opacity: 0; transform: translateY(6px); }
 @media (prefers-reduced-motion: reduce) { .wl-shot-cap.is-in { animation: none; } .wl-shot-q { transition: none; } }
+
+/* Big example card in the hero (same card as the guide). */
+.wl-feature { margin-top: var(--space-5); }
+.wl-feature .wl-eyebrow { margin: 0 0 var(--space-2); }
+.wl-feature .wl-swap { box-shadow: 0 1px 2px rgb(0 0 0 / .06), 0 18px 36px -22px rgb(7 61 48 / .45); }

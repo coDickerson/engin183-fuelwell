@@ -135,30 +135,35 @@ function renderGuide() {
     </a></li>`;
   }).join('');
 
-  byId('swap-list').innerHTML = joinSwaps.map((item, index) => {
-    const text = item[locale] || item.en;
-    const photo = swapPhotos[item.photo];
-    const cuisine = text.cuisine && item.en.cuisine !== 'Any' ? `${esc(text.cuisine)} · ` : '';
-    return `<li><article class="wl-swap" aria-labelledby="swap-${index}">
-      <div class="wl-swap-media">
-        ${photo ? `<img class="wl-swap-photo" src="${esc(photoUrl(photo))}" alt="" loading="lazy" width="640" height="420">` : '<div class="wl-swap-photo" aria-hidden="true"></div>'}
-        <p class="wl-swap-els"><span class="sr-only">${esc(t('watch'))}:</span>${item.watch.map((code) => nutrientChip(code)).join('')}</p>
+  // One big, full example in the hero (the slow-cooked soup), built exactly like a guide card.
+  byId('feature-swap').innerHTML = swapCard(joinSwaps[1], 'feature-swap-title');
+
+  byId('swap-list').innerHTML = joinSwaps.map((item, index) => `<li>${swapCard(item, `swap-${index}`)}</li>`).join('');
+}
+
+function swapCard(item, titleId) {
+  const text = item[locale] || item.en;
+  const photo = swapPhotos[item.photo];
+  const cuisine = text.cuisine && item.en.cuisine !== 'Any' ? `${esc(text.cuisine)} · ` : '';
+  return `<article class="wl-swap" aria-labelledby="${titleId}">
+    <div class="wl-swap-media">
+      ${photo ? `<img class="wl-swap-photo" src="${esc(photoUrl(photo))}" alt="" loading="lazy" width="640" height="420">` : '<div class="wl-swap-photo" aria-hidden="true"></div>'}
+      <p class="wl-swap-els"><span class="sr-only">${esc(t('watch'))}:</span>${item.watch.map((code) => nutrientChip(code)).join('')}</p>
+    </div>
+    <div class="wl-swap-body">
+      <p class="wl-swap-meta">${cuisine}${esc(t(`kind_${item.kind}`))}</p>
+      <h3 id="${titleId}"><span class="wl-swap-label">${esc(t('instead'))}</span>${esc(text.meal)}</h3>
+      <div class="wl-swap-try">
+        <p class="wl-swap-label wl-swap-label--try">${ARROW}${esc(t('try'))}</p>
+        <p>${esc(text.swap)}</p>
       </div>
-      <div class="wl-swap-body">
-        <p class="wl-swap-meta">${cuisine}${esc(t(`kind_${item.kind}`))}</p>
-        <h3 id="swap-${index}"><span class="wl-swap-label">${esc(t('instead'))}</span>${esc(text.meal)}</h3>
-        <div class="wl-swap-try">
-          <p class="wl-swap-label wl-swap-label--try">${ARROW}${esc(t('try'))}</p>
-          <p>${esc(text.swap)}</p>
-        </div>
-        <dl class="wl-swap-facts">
-          <div><dt>${esc(t('why_matters'))}</dt><dd>${esc(text.why)}</dd></div>
-          <div><dt>${PLATE}${esc(t('portion'))}</dt><dd>${esc(text.portion)}</dd></div>
-        </dl>
-        ${photo ? `<p class="wl-swap-credit">${esc(t('photo_by'))} <a href="${esc(photoPage(photo))}" target="_blank" rel="noopener noreferrer">${esc(photo.by)}</a> / ${esc(photoSource(photo))}</p>` : ''}
-      </div>
-    </article></li>`;
-  }).join('');
+      <dl class="wl-swap-facts">
+        <div><dt>${esc(t('why_matters'))}</dt><dd>${esc(text.why)}</dd></div>
+        <div><dt>${PLATE}${esc(t('portion'))}</dt><dd>${esc(text.portion)}</dd></div>
+      </dl>
+      ${photo ? `<p class="wl-swap-credit">${esc(t('photo_by'))} <a href="${esc(photoPage(photo))}" target="_blank" rel="noopener noreferrer">${esc(photo.by)}</a> / ${esc(photoSource(photo))}</p>` : ''}
+    </div>
+  </article>`;
 }
 
 applyLocale(locale, { save: false });
