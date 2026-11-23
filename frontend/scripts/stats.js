@@ -19,7 +19,14 @@ async function load() {
   const status = byId('status');
   if (!supabase) { status.textContent = 'Supabase is not configured on this copy of the site.'; return; }
   const { data, error } = await supabase.rpc('fuelwell_stats');
-  if (error) { status.textContent = 'Could not load the numbers. Try Refresh.'; return; }
+  if (error) {
+    // 42501 = not signed in, or signed in but not on the viewers list. The numbers are private.
+    status.textContent = error.code === '42501' || error.code === 'PGRST301' || /not allowed|permission denied/i.test(error.message || '')
+      ? 'These numbers are private. Sign in with an approved account to see them.'
+      : 'Could not load the numbers. Try Refresh.';
+    byId('tiles').innerHTML = '';
+    return;
+  }
   byId('tiles').innerHTML = data.map((r) => {
     const [label, unit] = LABELS[r.metric] || [r.metric, ''];
     return `<li class="st-tile${KEY.has(r.metric) ? ' st-tile--key' : ''}"><p class="st-label">${label}</p><p class="st-num">${fmt(r.all_time)}</p><p class="st-sub">${fmt(r.today)} ${unit} today</p></li>`;
