@@ -268,7 +268,9 @@ let wired = false;
 initShell({
   page: 'care',
   title: 'title_care',
-  render() {
+  render(ctx) {
+    // Visits and messages here belong to the demo family; real accounts go back to Today.
+    if (!ctx.isDemo) { location.replace('/dashboard.html'); return; }
     renderThreadHead();
     renderThread();
     renderExamples();

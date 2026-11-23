@@ -8,7 +8,6 @@ import { t } from './app-strings.js';
 import { CKD_STAGES, saveProfile } from '../auth/profile.js';
 
 import { createCalendar, dateKey } from './calendar.js';
-import { renderTodayExtras } from './portal/today-extras.js';
 let calendar;
 const progressStore = storage('session');
 
@@ -22,6 +21,7 @@ function renderProgress() {
 }
 
 const $ = (sel) => document.querySelector(sel);
+const local = storage('local');
 const todayIndex = (new Date().getDay() + 6) % 7;
 const todayPlan = week[todayIndex];
 
@@ -93,6 +93,31 @@ function renderAppointment() {
   box.querySelector('[data-ics]').addEventListener('click', () => { downloadIcs(next); toast(t('calendar_done')); });
 }
 
+// Real accounts: three first steps instead of the demo family's sample day. Each is done from real
+// data (the profile) or a flag the Meals page sets the first time it's used (fuelwell.started.*).
+function renderGetStarted(ctx) {
+  const p = ctx.profile || {};
+  const hasPlan = Boolean(p.forWhom && (p.stage || p.egfr || Object.values(p.limits || {}).some(Boolean)));
+  const steps = [
+    { key: 'plan', done: hasPlan, href: '/personalize.html?welcome', icon: 'health' },
+    { key: 'ask', done: Boolean(local.get('fuelwell.started.ask')), href: '/meals.html#ask', icon: 'sparkle' },
+    { key: 'browse', done: Boolean(local.get('fuelwell.started.browse')), href: '/meals.html#browse', icon: 'heart' },
+  ];
+  const box = $('[data-get-started]');
+  const n = steps.filter((x) => x.done).length;
+  box.hidden = n === steps.length;
+  if (box.hidden) return;
+  box.innerHTML = `
+    <div class="panel-title"><div><p class="eyebrow">${esc(t('gs_eyebrow'))}</p><h2 id="gs-title">${esc(t('gs_title'))}</h2></div>
+      <p class="gs-count" role="status">${esc(t('gs_count', { n, total: steps.length }))}</p></div>
+    <ol class="gs-list">${steps.map((x, i) => `
+      <li class="gs-step${x.done ? ' is-done' : ''}">
+        <span class="gs-mark" aria-hidden="true">${x.done ? icon('check') : i + 1}</span>
+        <div class="gs-text"><strong>${esc(t(`gs_${x.key}`))}</strong><span>${esc(t(`gs_${x.key}_sub`))}</span></div>
+        ${x.done ? `<span class="gs-done">${esc(t('gs_done'))}</span>` : `<a class="button${i === steps.findIndex((y) => !y.done) ? '' : ' button--ghost'}" href="${x.href}">${esc(t(`gs_${x.key}_go`))}</a>`}
+      </li>`).join('')}</ol>`;
+}
+
 function renderNextStep() {
   const dish = { en: 'Mom’s lo mein with soy sauce, oyster sauce and char siu', zh: '媽媽的叉燒撈麵，用豉油和蠔油', es: 'El lo mein de mamá con salsa de soya, salsa de ostión y char siu' };
   $('[data-next-step]').innerHTML = `
@@ -158,7 +183,7 @@ function profileForm(ctx, d) {
         <button class="button" type="submit">${esc(t('profile_save'))}</button>
         ${ctx.profile ? `<button class="button button--ghost" type="button" data-profile-cancel>${esc(t('profile_cancel'))}</button>` : ''}
       </div>
-      <p class="hint profile-privacy">${esc(t('profile_privacy'))}</p>
+      <p class="hint profile-privacy">${esc(t('profile_privacy'))} <a href="/privacy.html">${esc(t('privacy_link'))}</a></p>
     </form>`;
 }
 
@@ -242,15 +267,22 @@ initShell({
   render(ctx) {
     $('[data-greeting]').textContent = greeting(ctx.displayName);
     $('[data-today-date]').textContent = t('today_eyebrow', { date: fmt.day(new Date()) });
-    renderKpis();
-    renderProgress();
-    if (!calendar) calendar = createCalendar($('[data-care-calendar]'), { visits: upcomingVisits, compact: true });
-    else calendar.render();
-    renderMeals();
-    renderAppointment();
+    // The nutrients, meals and visits on this page are the demo family's sample plan. Real accounts
+    // don't see them (they'd look like their own health data); they get their first steps instead.
+    document.querySelectorAll('[data-sample]').forEach((el) => { el.hidden = !ctx.isDemo; });
+    $('[data-today-sub]').textContent = t(ctx.isDemo ? 'today_sub' : 'today_sub_real');
+    if (ctx.isDemo) {
+      renderKpis();
+      renderProgress();
+      if (!calendar) calendar = createCalendar($('[data-care-calendar]'), { visits: upcomingVisits, compact: true });
+      else calendar.render();
+      renderMeals();
+      renderAppointment();
+    } else {
+      renderGetStarted(ctx);
+    }
     renderNextStep();
     renderProfile(ctx);
-    renderTodayExtras();
   },
 });
 

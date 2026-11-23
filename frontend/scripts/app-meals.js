@@ -21,9 +21,12 @@ function weekDates() {
   return week.map((_, i) => { const d = new Date(monday); d.setDate(monday.getDate() + i); return d; });
 }
 
-function renderWeek() {
+function renderWeek(isDemo) {
   const dates = weekDates();
-  $('[data-reviewed]').innerHTML = `<span class="reviewed">${icon('check')}${esc(t('reviewed_by', { name: persona.dietitian.name }))}</span>`;
+  // Only the demo's sample week was "reviewed" (by the demo dietitian). Real accounts see it labeled as a sample.
+  $('[data-reviewed]').innerHTML = isDemo
+    ? `<span class="reviewed">${icon('check')}${esc(t('reviewed_by', { name: persona.dietitian.name }))}</span>`
+    : `<span class="reviewed reviewed--sample">${icon('info')}${esc(t('sample_week'))}</span>`;
   $('[data-day-picker]').innerHTML = dates.map((d, i) => `
     <button class="day-btn" type="button" data-day="${i}" aria-pressed="${i === selectedDay}" aria-label="${esc(fmt.day(d))}${i === todayIndex ? esc(t('today_suffix')) : ''}">
       <span class="day-name">${esc(fmt.weekdayShort(d))}</span><span class="day-num">${d.getDate()}</span>${i === todayIndex ? '<span class="day-dot" aria-hidden="true"></span>' : ''}
@@ -86,7 +89,10 @@ function wireOnce() {
   initAsk();
   initBrowse();
   initRecipes();
-  initTabs($('[role="tablist"]'));
+  initTabs($('[role="tablist"]'), { onChange: (name) => {
+    // Today's "Get started" ticks "Browse the swap guide" once the tab has really been opened.
+    if (name === 'browse') { try { localStorage.setItem('fuelwell.started.browse', 'true'); } catch { /* storage unavailable */ } }
+  } });
 }
 
 initShell({
@@ -94,7 +100,7 @@ initShell({
   title: 'title_meals',
   render(ctx) {
     setAskAccount(ctx);
-    renderWeek();
+    renderWeek(ctx.isDemo);
     renderGrocery();
     renderAsk();
     renderBrowse();

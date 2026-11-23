@@ -31,6 +31,8 @@ export default defineConfig({
         dishes: resolve(import.meta.dirname, 'frontend/dishes.html'),
         swap: resolve(import.meta.dirname, 'frontend/swap.html'),
         stats: resolve(import.meta.dirname, 'frontend/stats.html'),
+        privacy: resolve(import.meta.dirname, 'frontend/privacy.html'),
+        terms: resolve(import.meta.dirname, 'frontend/terms.html'),
       },
     },
   },

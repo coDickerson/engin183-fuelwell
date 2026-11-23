@@ -377,3 +377,14 @@ body { overflow-x: hidden; }
   /* Sub-pages have no language toggle to push the menu button right */
   .nav:not(:has(.nav-lang)) .menu-toggle { margin-left: auto; }
 }
+
+/* Privacy Policy and Terms of Use (privacy.html, terms.html). */
+.legal { max-width: 46rem; }
+.legal h2 { margin: var(--space-7) 0 var(--space-3); font-size: var(--text-xl); }
+.legal p, .legal li { line-height: 1.65; }
+.legal ul { padding-left: 1.25rem; }
+.legal li + li { margin-top: var(--space-2); }
+.legal ul ul { margin-top: var(--space-2); }
+.legal-meta { color: var(--ink-2); font-size: var(--text-sm); }
+.legal-summary { padding: var(--space-4) var(--space-5); border-left: 4px solid var(--primary); border-radius: var(--radius-sm); background: var(--green-50); }
+.footer-legal a { color: inherit; }

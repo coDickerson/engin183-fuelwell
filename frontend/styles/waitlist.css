@@ -281,3 +281,7 @@ div.wl-swap-photo { background: linear-gradient(135deg, var(--green-100), var(--
 .wl-feature { margin-top: var(--space-5); }
 .wl-feature .wl-eyebrow { margin: 0 0 var(--space-2); }
 .wl-feature .wl-swap { box-shadow: 0 1px 2px rgb(0 0 0 / .06), 0 18px 36px -22px rgb(7 61 48 / .45); }
+
+/* Sign-up agreement line and footer legal links. */
+.wl-agree { margin: var(--space-3) 0 0; color: var(--ink-2); font-size: var(--text-sm); line-height: 1.5; }
+.wl-agree a, .wl-legal a { color: inherit; text-decoration: underline; }

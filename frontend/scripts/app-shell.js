@@ -14,7 +14,8 @@ const NAV = [
   { key: 'meals', href: '/meals.html', label: 'nav_meals', icon: 'meals' },
   { key: 'personalize', href: '/personalize.html', label: 'nav_personalize', icon: 'health' },
   { key: 'notes', href: '/notes.html', label: 'nav_notes', icon: 'list' },
-  { key: 'care', href: '/care-team.html', label: 'nav_care', short: 'nav_care_short', icon: 'care' },
+  // Appointments is the demo family's (visits and messages with Mei). Real accounts don't have it yet.
+  { key: 'care', href: '/care-team.html', label: 'nav_care', short: 'nav_care_short', icon: 'care', demoOnly: true },
 ];
 const brand = () => `<a class="brand" href="/" aria-label="${esc(t('home_label'))}"><span class="brand-mark" aria-hidden="true"></span>FuelWell</a>`;
 
@@ -25,9 +26,9 @@ function displayNameFor(user, demo, profile) {
   return local.charAt(0).toUpperCase() + local.slice(1).toLowerCase();
 }
 
-function navLinks(page, cls) {
+function navLinks(page, cls, isDemo) {
   const bottom = cls === 'bottom-link';
-  return NAV.map((item) => {
+  return NAV.filter((item) => isDemo || !item.demoOnly).map((item) => {
     const label = bottom && item.short ? t(item.short) : t(item.label);
     const full = bottom && item.short ? ` aria-label="${esc(t(item.label))}"` : '';
     return `<a class="${cls}" href="${item.href}"${full}${item.key === page ? ' aria-current="page"' : ''}>${icon(item.icon)}<span>${esc(label)}</span></a>`;
@@ -39,11 +40,18 @@ export function langBadge() {
   return `<span class="lang-badge" title="${esc(t('lang_badge_title'))}">${esc(tr(persona.dietitian.languages))}</span>`;
 }
 
-function railHtml(page) {
+function railHtml(page, isDemo) {
   const d = persona.dietitian;
+  // Mei (the dietitian) only exists in the demo. Real accounts get the privacy and terms links instead.
+  if (!isDemo) {
+    return `<div class="rail-inner">
+    <div class="rail-brand">${brand()}</div>
+    <nav class="rail-nav" aria-label="${esc(t('nav_main'))}">${navLinks(page, 'rail-link', isDemo)}</nav>
+    <div class="rail-foot rail-legal"><a href="/privacy.html">${esc(t('privacy_link'))}</a><a href="/terms.html">${esc(t('terms_link'))}</a></div></div>`;
+  }
   return `<div class="rail-inner">
     <div class="rail-brand">${brand()}</div>
-    <nav class="rail-nav" aria-label="${esc(t('nav_main'))}">${navLinks(page, 'rail-link')}</nav>
+    <nav class="rail-nav" aria-label="${esc(t('nav_main'))}">${navLinks(page, 'rail-link', isDemo)}</nav>
     <div class="rail-foot">
       <p class="rail-kicker">${esc(t('your_dietitian'))}</p>
       <a class="rail-dietitian" href="/care-team.html#messages">
@@ -54,12 +62,9 @@ function railHtml(page) {
     </div></div>`;
 }
 
-function topHtml(ctx) {
+function personSwitchHtml(ctx) {
   const { patient } = persona;
-  const name = ctx.displayName;
-  return `<div class="top-row">
-      <div class="top-brand">${brand()}</div>
-      <div class="person-switch">
+  return `<div class="person-switch">
         <button class="person-button" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="person-menu" data-person-button>
           <span class="avatar avatar--teal" aria-hidden="true">F</span>
           <span class="person-text"><span class="sr-only">${esc(t('viewing'))}: </span><strong>${esc(tr(patient.relation))}</strong><span class="person-name"> · ${esc(patient.name)}</span></span>
@@ -77,7 +82,14 @@ function topHtml(ctx) {
             <span>${esc(t('add_member'))}</span>
           </button>
         </div>
-      </div>
+      </div>`;
+}
+
+function topHtml(ctx) {
+  const name = ctx.displayName;
+  return `<div class="top-row">
+      <div class="top-brand">${brand()}</div>
+      ${ctx.isDemo ? personSwitchHtml(ctx) : '<div class="person-switch"></div>'}
       <div class="top-actions">
         ${ctx.isDemo ? `<a class="button top-join" href="${joinHref}" data-join-link="top">${icon('heart')}<span>${esc(t('join_top'))}</span></a>` : ''}
         ${langToggleHtml()}
@@ -136,21 +148,25 @@ function buildShell(frame, page, ctx) {
   const render = () => {
     closers.length = 0;
     rail.setAttribute('aria-label', t('app_label'));
-    rail.innerHTML = railHtml(page);
+    rail.innerHTML = railHtml(page, ctx.isDemo);
     if (ctx.isDemo) rail.querySelector('.rail-foot')?.insertAdjacentHTML('afterbegin', railJoinHtml());
     top.innerHTML = topHtml(ctx);
     bottom.setAttribute('aria-label', t('nav_main'));
-    bottom.innerHTML = navLinks(page, 'bottom-link');
+    bottom.innerHTML = navLinks(page, 'bottom-link', ctx.isDemo);
     wireLangToggle(top);
 
+    // The family switcher shows the demo's Mom (Fung); real accounts don't have it yet.
     const personMenu = top.querySelector('#person-menu');
-    const personItems = [...personMenu.querySelectorAll('[data-person-item]')];
-    const closePerson = wireMenu(top.querySelector('[data-person-button]'), personMenu, personItems);
-    personItems[0].addEventListener('click', () => closePerson(false, true));
-    personMenu.querySelector('[data-add-person]').addEventListener('click', () => {
-      closePerson(false, true);
-      toast(t('add_member_toast'));
-    });
+    let closePerson = () => {};
+    if (personMenu) {
+      const personItems = [...personMenu.querySelectorAll('[data-person-item]')];
+      closePerson = wireMenu(top.querySelector('[data-person-button]'), personMenu, personItems);
+      personItems[0].addEventListener('click', () => closePerson(false, true));
+      personMenu.querySelector('[data-add-person]').addEventListener('click', () => {
+        closePerson(false, true);
+        toast(t('add_member_toast'));
+      });
+    }
     const accountMenu = top.querySelector('#account-menu');
     const closeAccount = wireMenu(top.querySelector('[data-account-button]'), accountMenu, [...accountMenu.querySelectorAll('[role="menuitem"]')]);
     closers.push(closePerson, closeAccount);
