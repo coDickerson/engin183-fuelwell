@@ -6,6 +6,7 @@ import { esc, icon, toast } from './app-ui.js';
 import { persona } from '../data/fung.js';
 import { tr } from './i18n.js';
 import { t } from './app-strings.js';
+import { whoVars } from './who.js';
 import { track } from './track.js';
 import { inlineJoinHtml, offerJoin } from './signup-nudge.js';
 import { photoUrl, swapPhotos } from '../data/swap-photos.js';
@@ -39,7 +40,7 @@ const NUTRIENT_KEY = { Na: 'sodium', K: 'potassium', P: 'phosphorus' };
 
 // The demo tailors to its sample patient (Fung, CKD G3b, Cantonese home cooking).
 // Real accounts tailor to their own profile from Today; no profile means general advice.
-const DEMO_PROFILE = { for_whom: 'family', stage: 'stage3', egfr: 38, cuisines: ['Chinese'], usually: 'home', limits: { potassium: 'limit', phosphorus: 'unsure', sodium: 'limit', fluid: 'no_limit' }, notes: 'Cantonese home cooking; age 78' };
+const DEMO_PROFILE = { for_whom: 'family', care_for: 'mom', stage: 'stage3', egfr: 38, cuisines: ['Chinese'], usually: 'home', limits: { potassium: 'limit', phosphorus: 'unsure', sodium: 'limit', fluid: 'no_limit' }, notes: 'Cantonese home cooking; age 78' };
 const STAGE_FOR_API = { g1: 'early', g2: 'early', g3: 'stage3', g3a: 'stage3', g3b: 'stage3', g4: 'stage4', g5: 'stage5', g5d: 'dialysis', unsure: 'not_sure' };
 let PROFILE = DEMO_PROFILE;
 let account = { isDemo: true, profile: null };
@@ -58,6 +59,8 @@ export function apiProfile(p) {
     ...(also.length ? { also } : {}),
     ...(p.cuisine ? { cuisines: [p.cuisine] } : {}),
     ...(p.forWhom ? { for_whom: p.forWhom } : {}),
+    ...(p.forWhom === 'family' && p.careFor ? { care_for: p.careFor } : {}),
+    ...(p.forWhom === 'family' && p.careForName ? { care_for_name: p.careForName } : {}),
     ...(p.usually ? { usually: p.usually } : {}),
     ...(Number.isInteger(p.egfr) ? { egfr: p.egfr } : {}),
     ...(limitsFor(p) ? { limits: limitsFor(p) } : {}),
@@ -89,7 +92,8 @@ function forLine() {
     p.highBloodPressure && t('cond_hbp'),
     p.cuisine,
   ].filter(Boolean) : [];
-  const lead = facts.length ? t('sw_for_you', { facts: facts.join(', ') }) : t('sw_for_none');
+  const who = whoVars(p, false);
+  const lead = facts.length ? t(who.isMe || p?.forWhom !== 'family' ? 'sw_for_you' : 'sw_for_them', { ...who, facts: facts.join(', ') }) : t('sw_for_none');
   const n = memoryForPrompt().length;
   const remembers = n ? ` ${esc(n === 1 ? t('sw_remembers_one') : t('sw_remembers', { n }))}` : '';
   return `${esc(lead)}${remembers} <a href="/personalize.html">${esc(t('sw_for_edit'))}</a> ${esc(t('sw_english_note'))}`;

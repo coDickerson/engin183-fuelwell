@@ -22,6 +22,7 @@ export const portalStrings = {
   notes_title: s('Notes | FuelWell', '筆記 | FuelWell', 'Notas | FuelWell'),
   notes_h1: s('Notes', '筆記', 'Notas'),
   notes_sub: s('Weekly guides, meal plans and notes from Mom’s care team.', '醫療團隊為媽媽寫的每週指南、餐單和筆記。', 'Guías semanales, planes de comidas y notas del equipo de salud de mamá.'),
+  notes_sub_real: s('Swaps you saved and notes for your family’s meals.', '你儲存的替換建議和家人飲食筆記。', 'Los cambios que guardaste y notas para las comidas de tu familia.'),
   notes_filters: s('Show notes', '顯示筆記', 'Mostrar notas'),
   filter_all: s('All', '全部', 'Todas'),
   filter_food: s('Meal plans & guides', '餐單與指南', 'Planes y guías'),

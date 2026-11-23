@@ -7,6 +7,16 @@ import { z } from 'zod';
 export const ProfileSchema = z
   .object({
     for_whom: z.enum(['me', 'family']).optional(),
+    // Who a caregiver cooks for, and what they call them ("Ma"). Unknown values are dropped, never
+    // costing the rest of the profile. The name is cleaned to letters, spaces and a few marks.
+    care_for: z.preprocess(
+      (v) => (['mom', 'dad', 'grandma', 'grandpa', 'partner', 'child', 'other'].includes(v as string) ? v : undefined),
+      z.enum(['mom', 'dad', 'grandma', 'grandpa', 'partner', 'child', 'other']).optional(),
+    ),
+    care_for_name: z.preprocess(
+      (v) => (typeof v === 'string' ? v.replace(/[^\p{L}\p{M}\s'’.\-]/gu, '').replace(/\s+/g, ' ').trim().slice(0, 40) || undefined : undefined),
+      z.string().optional(),
+    ),
     stage: z.enum(['early', 'stage3', 'stage4', 'stage5', 'dialysis', 'not_sure']).optional(),
     also: z.array(z.enum(['diabetes', 'high_blood_pressure'])).max(2).optional(),
     cuisines: z.array(z.string().trim().min(1).max(40)).max(8).optional(),

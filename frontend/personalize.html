@@ -90,10 +90,34 @@
             </section>
 
             <section class="card pz-section" aria-labelledby="pz-food-h">
-              <h2 id="pz-food-h" class="pz-h"><span class="pz-step">3</span><span data-i18n="pz_food_h">Your food</span></h2>
+              <h2 id="pz-food-h" class="pz-h"><span class="pz-step">3</span><span data-i18n="pz_food_h">Who and what you cook</span></h2>
+              <div class="field">
+                <label for="pz-name" data-i18n="pz_name"></label>
+                <input id="pz-name" name="full_name" maxlength="80" autocomplete="given-name" data-i18n-placeholder="pz_name_ph" />
+              </div>
               <div class="field">
                 <p class="pz-label" id="for_whom-label" data-i18n="pz_for"></p>
                 <div class="pz-seg" role="radiogroup" aria-labelledby="for_whom-label"><label class="pz-seg-opt"><input type="radio" name="for_whom" value="me" /><span data-i18n="pz_for_me"></span></label><label class="pz-seg-opt"><input type="radio" name="for_whom" value="family" /><span data-i18n="pz_for_family"></span></label></div>
+              </div>
+              <div class="pz-care" data-pz-care hidden>
+                <div class="field">
+                  <label for="pz-care-for" data-i18n="pz_care_for"></label>
+                  <select id="pz-care-for" name="care_for">
+                    <option value="" data-i18n="pz_care_pick"></option>
+                    <option value="mom" data-i18n="pz_care_mom"></option>
+                    <option value="dad" data-i18n="pz_care_dad"></option>
+                    <option value="grandma" data-i18n="pz_care_grandma"></option>
+                    <option value="grandpa" data-i18n="pz_care_grandpa"></option>
+                    <option value="partner" data-i18n="pz_care_partner"></option>
+                    <option value="child" data-i18n="pz_care_child"></option>
+                    <option value="other" data-i18n="pz_care_other"></option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="pz-care-name"><span data-i18n="pz_care_name"></span> <span class="muted" data-i18n="pz_optional"></span></label>
+                  <input id="pz-care-name" name="care_for_name" maxlength="40" autocomplete="off" aria-describedby="pz-care-name-hint" data-i18n-placeholder="pz_care_name_ph" />
+                  <p class="hint" id="pz-care-name-hint" data-i18n="pz_care_name_hint"></p>
+                </div>
               </div>
               <div class="field">
                 <label for="pz-cuisine" data-i18n="pz_cuisine"></label>

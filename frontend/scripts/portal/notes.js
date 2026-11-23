@@ -140,6 +140,7 @@ initShell({
   render() {
     document.title = pt('notes_title');
     fillPortalText();
+    if (!isDemoSession()) document.querySelector('[data-pt="notes_sub"]').textContent = pt('notes_sub_real');
     renderFilters();
     renderNotes();
     if (!wired) {
