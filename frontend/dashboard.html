@@ -34,17 +34,17 @@
           <div>
             <p class="eyebrow" data-today-date></p>
             <h1 data-greeting></h1>
-            <p class="page-sub" data-i18n="today_sub">Here’s Mom’s day at a glance.</p>
+            <p class="page-sub" data-today-sub>Here’s Mom’s day at a glance.</p>
           </div>
         </div>
-        <section class="card ai-preview" aria-labelledby="ai-preview-title" data-ai-preview></section>
-        <section class="kpi-section" aria-labelledby="kpi-title">
+        <section class="kpi-section" aria-labelledby="kpi-title" data-sample>
           <div class="section-head"><h2 id="kpi-title" data-i18n="nutrients_title">Today’s nutrients</h2><p class="muted" data-i18n="planned_menu"></p></div>
           <div class="kpi-grid" data-kpis></div>
         </section>
         <div class="today-grid">
           <div class="today-left">
-          <section class="card today-meals" aria-labelledby="meals-title">
+          <section class="card get-started" aria-labelledby="gs-title" data-get-started hidden></section>
+          <section class="card today-meals" aria-labelledby="meals-title" data-sample>
             <div class="panel-title"><h2 id="meals-title" data-i18n="meals_today">Mom’s meals today</h2><a class="link-arrow" href="/meals.html#week"><span data-i18n="see_week">See the week</span> <span data-icon="arrow"></span></a></div>
             <div class="meal-progress" data-daily-progress></div>
             <ol class="meal-list" data-today-meals></ol>
@@ -53,7 +53,7 @@
           </div>
           <div class="today-side">
             <section class="card profile-card" aria-labelledby="profile-title" data-profile hidden></section>
-            <section class="card appt-card care-summary" aria-labelledby="appt-title">
+            <section class="card appt-card care-summary" aria-labelledby="appt-title" data-sample>
               <div data-next-appt></div>
               <div class="calendar-compact" data-care-calendar></div>
             </section>

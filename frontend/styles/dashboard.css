@@ -1186,3 +1186,26 @@
 .recipe-nutrition { max-width: 420px; }
 .recipe-credit { margin: var(--space-4) 0; font-size: var(--text-sm); color: var(--ink-3); }
 .recipe-dialog .recipe-actions .button { flex: 0 1 auto; }
+
+/* Today, real accounts: "Get started" (three first steps) instead of the demo family's sample day. */
+.get-started .panel-title { align-items: flex-start; }
+.get-started h2 { font-size: var(--text-lg); }
+.gs-count { margin: 0; color: var(--ink-2); font-size: var(--text-sm); font-weight: 600; white-space: nowrap; }
+.gs-list { display: grid; gap: var(--space-3); margin: var(--space-4) 0 0; padding: 0; list-style: none; }
+.gs-step { display: grid; grid-template-columns: auto 1fr auto; gap: var(--space-3); align-items: center; padding: var(--space-3) var(--space-4); border: 1px solid var(--line); border-radius: var(--radius-lg); }
+.gs-step.is-done { background: var(--green-50); border-color: transparent; }
+.gs-mark { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--ground-alt); color: var(--ink); font-weight: 700; }
+.gs-mark svg { width: 18px; height: 18px; }
+.is-done .gs-mark { background: var(--primary); color: var(--white); }
+.gs-text { display: grid; gap: 2px; min-width: 0; }
+.gs-text span { color: var(--ink-2); font-size: var(--text-sm); line-height: 1.45; }
+.is-done .gs-text strong { text-decoration: line-through; text-decoration-color: rgb(0 0 0 / .25); }
+.gs-done { color: var(--primary-strong); font-size: var(--text-sm); font-weight: 700; }
+.gs-step .button { white-space: nowrap; }
+@media (max-width: 560px) {
+  .gs-step { grid-template-columns: auto 1fr; }
+  .gs-step .button, .gs-done { grid-column: 2; justify-self: start; }
+}
+.rail-legal { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); font-size: var(--text-sm); }
+.rail-legal a { color: var(--ink-2); }
+.reviewed--sample { color: var(--ink-2); }

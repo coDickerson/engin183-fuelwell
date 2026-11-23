@@ -96,9 +96,9 @@ export const landingStrings = {
   footer_built: s('How it was built', '開發過程', 'Cómo se construyó'),
   footer_emergency: s('In an emergency, call 911.', '如遇緊急情況，請撥打 911。', 'En caso de emergencia, llama al 911.'),
   footer_disclaimer: s(
-    'FuelWell is a student project (ENGIN 183), not a medical service, and does not give medical advice. Please don’t enter real health information.',
-    'FuelWell 是學生專題（ENGIN 183），不是醫療服務，也不提供醫療建議。請勿輸入真實的健康資料。',
-    'FuelWell es un proyecto estudiantil (ENGIN 183), no un servicio médico, y no da consejos médicos. No ingreses información de salud real.'),
+    'FuelWell is a student project (ENGIN 183), not a medical service, and does not give medical advice. Always follow your care team’s diet plan.',
+    'FuelWell 是學生專題（ENGIN 183），不是醫療服務，也不提供醫療建議。請始終遵循醫療團隊的飲食計畫。',
+    'FuelWell es un proyecto estudiantil (ENGIN 183), no un servicio médico, y no da consejos médicos. Sigue siempre el plan de alimentación de tu equipo médico.'),
 };
 
 export const arrowSvg = arrow;

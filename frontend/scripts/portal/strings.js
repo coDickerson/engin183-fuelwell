@@ -6,13 +6,14 @@ import { makeT } from '../i18n.js';
 const s = (en, zh, es) => ({ en, zh, es });
 
 export const portalStrings = {
+  ai_note_real: s('FuelWell AI gives ideas, not medical advice. Check changes with your doctor or dietitian.', 'FuelWell AI 只提供建議，並非醫療意見。任何改變請先問醫生或營養師。', 'FuelWell AI da ideas, no consejos médicos. Consulta cualquier cambio con tu médico o dietista.'),
+  ai_note_short_real: s('Ideas, not medical advice. Check with your care team.', '只提供建議，並非醫療意見。請先問醫療團隊。', 'Ideas, no consejos médicos. Consulta a tu equipo médico.'),
   // Shared AI note
   ai_note: s('FuelWell AI gives ideas, not medical advice. It doesn’t replace Mei, your dietitian.', 'FuelWell AI 只提供建議，並非醫療意見，也不能取代你的營養師 Mei。', 'FuelWell AI da ideas, no consejos médicos. No reemplaza a Mei, tu dietista.'),
   ai_note_link: s('Book a visit with Mei', '預約 Mei 覆診', 'Reservar cita con Mei'),
   ai_name: s('FuelWell AI', 'FuelWell AI', 'FuelWell AI'),
   ai_tag: s('AI · not your dietitian', 'AI · 並非營養師', 'IA · no es tu dietista'),
 
-  preview_label: s('Your question for FuelWell AI', '你想問 FuelWell AI 的問題', 'Tu pregunta para FuelWell AI'),
   plan_save: s('Save to my notes', '儲存到我的筆記', 'Guardar en mis notas'),
   plan_saved: s('Saved to Notes', '已儲存到筆記', 'Guardado en Notas'),
   plan_view: s('View in Notes', '在筆記中查看', 'Ver en Notas'),
@@ -52,13 +53,8 @@ export const portalStrings = {
   saved_on: s('Saved {date}', '{date} 儲存', 'Guardado el {date}'),
   notes_empty: s('No notes here yet.', '暫時未有筆記。', 'Todavía no hay notas aquí.'),
   // Today: AI preview
-  preview_title: s('Ask FuelWell AI', '問 FuelWell AI', 'Pregunta a FuelWell AI'),
   ai_short: s('AI', 'AI', 'IA'),
-  preview_sub: s('Ideas for Mom’s own dishes, sauces and meal plans.', '為媽媽愛吃的菜、醬料和餐單提供建議。', 'Ideas para los platos, salsas y planes de comidas de mamá.'),
-  preview_open: s('Open Swap a meal', '開啟替換一餐', 'Abrir Cambiar una comida'),
   ai_note_short: s('Ideas, not medical advice. It doesn’t replace Mei.', '只提供建議，並非醫療意見，不能取代 Mei。', 'Ideas, no consejos médicos. No reemplaza a Mei.'),
-  preview_placeholder: s('Ask about a dish…', '問問某道菜…', 'Pregunta por un plato…'),
-  preview_ask: s('Ask', '發問', 'Preguntar'),
   // Appointments: real dietitian banner
   split_real: s('You’re messaging {name}, a real person.', '你正在傳訊息給 {name}，她是真人營養師。', 'Estás escribiendo a {name}, una persona real.'),
   split_not_ai: s('Her replies are not from the AI.', '她的回覆並非來自 AI。', 'Sus respuestas no vienen de la IA.'),

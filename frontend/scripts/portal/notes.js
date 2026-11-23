@@ -8,6 +8,7 @@ import { careNotes, noteAuthors } from '../../data/portal.js';
 import { removeSwap, savedSwaps } from '../swap-store.js';
 import { photoUrl, swapPhotos } from '../../data/swap-photos.js';
 import { fillPortalText, pt } from './strings.js';
+import { isDemoSession } from '../track.js';
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -39,7 +40,8 @@ function carePlanDays(note) {
 }
 
 function allNotes() {
-  const team = careNotes.map((n) => ({ ...n, at: dateFromOffset(-n.daysAgo, n.h, n.m) }));
+  // The care-team notes are the demo family's (from Mei, the demo dietitian). Real accounts see only their own saved swaps.
+  const team = isDemoSession() ? careNotes.map((n) => ({ ...n, at: dateFromOffset(-n.daysAgo, n.h, n.m) })) : [];
   const swaps = savedSwaps().map((w) => ({ id: `swap-${w.id}`, type: 'swap', at: new Date(w.savedAt), title: w.meal, swap: w }));
   return [...team, ...swaps].sort((a, b) => b.at - a.at);
 }

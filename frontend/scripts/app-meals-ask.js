@@ -280,6 +280,7 @@ function recipeBody(data) {
 const BODY = { swap: swapBody, eatout: eatoutBody, recipe: recipeBody };
 
 function renderResult(data, focus = true) {
+  try { localStorage.setItem('fuelwell.started.ask', 'true'); } catch { /* storage unavailable */ } // Today's "Get started"
   result().dataset.state = 'result';
   result().setAttribute('aria-busy', 'false');
   const part = BODY[data.mode](data);
