@@ -9,10 +9,12 @@ import { initBrowse, renderBrowse } from './app-meals-browse.js';
 import { initRecipes, renderRecipes } from './app-meals-recipes.js';
 import { lang, tr } from './i18n.js';
 import { t } from './app-strings.js';
+import { whoVars } from './who.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const todayIndex = (new Date().getDay() + 6) % 7;
 let selectedDay = todayIndex;
+let isDemoAccount = true;
 
 /* ---------- This week ---------- */
 function weekDates() {
@@ -56,7 +58,8 @@ const total = grocery.reduce((sum, a) => sum + a.items.length, 0);
 
 function updateCount() {
   const n = document.querySelectorAll('[data-grocery] input:checked').length;
-  $('[data-grocery-sub]').textContent = t('grocery_sub', { count: t('grocery_count', { n, total }) });
+  // The grocery list belongs to the sample week; only the demo family calls it Mom’s.
+  $('[data-grocery-sub]').textContent = t(isDemoAccount ? 'grocery_sub' : 'grocery_sub_sample', { count: t('grocery_count', { n, total }) });
 }
 
 function renderGrocery() {
@@ -99,6 +102,12 @@ initShell({
   page: 'meals',
   title: 'title_meals',
   render(ctx) {
+    isDemoAccount = ctx.isDemo;
+    // Say who this account cooks for ("Dad", "Ma", "you") instead of the demo's "Mom".
+    const who = whoVars(ctx.profile, ctx.isDemo);
+    if (!ctx.isDemo) $('[data-i18n="meals_sub"]').textContent = t('meals_sub_real', who);
+    $('[data-i18n="br_intro"]').textContent = t('br_intro', who);
+    $('label[for="ask-meal"]').textContent = t(who.isMe ? 'sw_meal_label_me' : 'sw_meal_label_them', who);
     setAskAccount(ctx);
     renderWeek(ctx.isDemo);
     renderGrocery();

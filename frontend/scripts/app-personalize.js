@@ -29,7 +29,7 @@ const NUTRIENT_NAME = { sodium: 'sodium', potassium: 'potassium', phosphorus: 'p
 
 // Fung, the demo patient: eGFR 38 (G3b), Cantonese home cooking, potassium limited after a high result.
 const DEMO = {
-  egfr: 38, dialysis: false, stage: '', diabetes: false, bp: true, forWhom: 'family', cuisine: 'Cantonese', usually: 'home',
+  egfr: 38, dialysis: false, stage: '', diabetes: false, bp: true, fullName: 'Heidi', forWhom: 'family', careFor: 'mom', careForName: '', cuisine: 'Cantonese', usually: 'home',
   limits: { sodium: 'limit', potassium: 'limit', phosphorus: 'unsure', fluid: 'no_limit' },
 };
 
@@ -50,7 +50,10 @@ function values() {
     stage: f.stage.value,
     diabetes: f.diabetes.checked,
     bp: f.bp.checked,
+    fullName: f.full_name.value.trim().replace(/\s+/g, ' '),
     forWhom: radio('for_whom'),
+    careFor: f.care_for.value || null,
+    careForName: f.care_for_name.value.trim().replace(/\s+/g, ' '),
     cuisine: f.cuisine.value.trim(),
     usually: radio('usually'),
     limits,
@@ -71,6 +74,9 @@ function fill(v) {
   f.diabetes.checked = Boolean(v.diabetes);
   f.bp.checked = Boolean(v.bp);
   f.cuisine.value = v.cuisine || '';
+  f.full_name.value = v.fullName || '';
+  f.care_for.value = v.careFor || '';
+  f.care_for_name.value = v.careForName || '';
   const check = (name, value) => { const el = value && f.querySelector(`input[name="${name}"][value="${value}"]`); if (el) el.checked = true; };
   check('for_whom', v.forWhom);
   check('usually', v.usually);
@@ -87,7 +93,10 @@ function fromProfile(p) {
     stage: p.egfr == null && p.stage && !['g5d', 'unsure'].includes(p.stage) ? p.stage : '',
     diabetes: p.diabetes,
     bp: p.highBloodPressure,
+    fullName: p.fullName,
     forWhom: p.forWhom,
+    careFor: p.careFor,
+    careForName: p.careForName,
     cuisine: p.cuisine,
     usually: p.usually,
     limits: p.limits,
@@ -194,7 +203,13 @@ function paintPlan() {
     <p class="notice pz-numbers">${icon('info')}<span>${esc(t('pz_numbers_note'))}</span></p>`;
 }
 
+/** "Who do you cook for?" and their name only apply when the swaps are for a family member. */
+function paintCare() {
+  $('[data-pz-care]').hidden = values().forWhom !== 'family';
+}
+
 function paintStatic() {
+  paintCare();
   document.querySelectorAll('[data-limit-badge]').forEach((el) => { el.innerHTML = elementBadge(el.dataset.limitBadge); });
   const cuisines = [...new Set((catalog || []).map((r) => String(r.cuisine || '').split(/\s*[/-]\s*/)[0].trim()).filter((c) => c && c !== 'Any'))].sort();
   $('[data-pz-cuisines]').innerHTML = cuisines.map((c) => `<option value="${esc(c)}"></option>`).join('');
@@ -229,7 +244,7 @@ async function save(e) {
     const meta = ctx.user.user_metadata || {};
     ctx.profile = await saveProfile(ctx.user, {
       ...p,
-      fullName: p.fullName || meta.full_name || String(ctx.user.email || '').split('@')[0] || 'Me',
+      fullName: v.fullName || p.fullName || meta.full_name || String(ctx.user.email || '').split('@')[0] || 'Me',
       cuisine: v.cuisine || null,
       // A stage means kidney disease; keep what they ticked before otherwise.
       kidneyDisease: Boolean(stage) || Boolean(p.kidneyDisease),
@@ -238,6 +253,8 @@ async function save(e) {
       diabetes: v.diabetes,
       egfr: v.dialysis ? null : v.egfr,
       forWhom: v.forWhom,
+      careFor: v.careFor,
+      careForName: v.careForName,
       usually: v.usually,
       limits: v.limits,
     });
@@ -260,8 +277,10 @@ function wire() {
   const f = form();
   f.addEventListener('input', paintPlan);
   f.addEventListener('change', paintPlan);
+  f.addEventListener('change', paintCare);
   f.addEventListener('submit', save);
-  fill(ctx.isDemo ? DEMO : fromProfile(ctx.profile) || { limits: {} });
+  // A new account starts with the name they signed up with.
+  fill(ctx.isDemo ? DEMO : fromProfile(ctx.profile) || { limits: {}, fullName: ctx.user?.user_metadata?.full_name || '' });
   const params = new URLSearchParams(location.search);
   $('[data-pz-welcome]').hidden = ctx.isDemo || !params.has('welcome');
   $('[data-pz-demo]').hidden = !ctx.isDemo;

@@ -351,6 +351,8 @@ forms.signUp.addEventListener('submit', (event) => {
     stage: quiz.get('stage') || 'unsure',
     highBloodPressure: quiz.has('high_blood_pressure'),
     diabetes: quiz.has('diabetes'),
+    // The first question ("I care for someone" / "This is for me") decides who the app talks about.
+    forWhom: chosenRole === 'patient' ? 'me' : chosenRole === 'caregiver' ? 'family' : null,
   };
   withBusy(form, async () => {
     const { data, error } = await supabase.auth.signUp({

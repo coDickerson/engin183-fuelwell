@@ -11,7 +11,10 @@ const pendingKey = 'fuelwell.profile.v1';
 export const LIMIT_KEYS = ['potassium', 'phosphorus', 'sodium', 'fluid'];
 export const LIMIT_VALUES = ['limit', 'no_limit', 'unsure'];
 const USUALLY = ['home', 'frozen', 'takeout'];
-const columns = 'full_name,cuisine,has_kidney_disease,ckd_stage,has_high_blood_pressure,has_diabetes,egfr,for_whom,usually,limit_potassium,limit_phosphorus,limit_sodium,limit_fluid';
+// Who a caregiver cooks for (profiles.care_for). The app and the AI say "Dad", "Grandma"... instead of the demo's "Mom".
+export const CARE_FOR = ['mom', 'dad', 'grandma', 'grandpa', 'partner', 'child', 'other'];
+export const MAX_CARE_NAME = 40;
+const columns = 'full_name,cuisine,has_kidney_disease,ckd_stage,has_high_blood_pressure,has_diabetes,egfr,for_whom,care_for,care_for_name,usually,limit_potassium,limit_phosphorus,limit_sodium,limit_fluid';
 
 /** KDIGO 2024 eGFR categories. Returns null for a missing or impossible number. */
 export function stageFromEgfr(egfr) {
@@ -47,9 +50,14 @@ function personalization(input) {
   const egfr = stageFromEgfr(input.egfr) ? Math.round(Number(input.egfr)) : null;
   const limits = {};
   for (const k of LIMIT_KEYS) limits[k] = LIMIT_VALUES.includes(input.limits?.[k]) ? input.limits[k] : null;
+  const forWhom = ['me', 'family'].includes(input.forWhom) ? input.forWhom : null;
+  const careName = String(input.careForName || '').trim().replace(/\s+/g, ' ').slice(0, MAX_CARE_NAME);
   return {
     egfr,
-    forWhom: ['me', 'family'].includes(input.forWhom) ? input.forWhom : null,
+    forWhom,
+    // Only meaningful for a family member; cleared when the account is for themself.
+    careFor: forWhom === 'family' && CARE_FOR.includes(input.careFor) ? input.careFor : null,
+    careForName: forWhom === 'family' && careName ? careName : null,
     usually: USUALLY.includes(input.usually) ? input.usually : null,
     limits,
   };
@@ -64,6 +72,8 @@ const fromRow = (row) => row && {
   diabetes: row.has_diabetes,
   egfr: row.egfr ?? null,
   forWhom: row.for_whom ?? null,
+  careFor: row.care_for ?? null,
+  careForName: row.care_for_name ?? null,
   usually: row.usually ?? null,
   limits: { potassium: row.limit_potassium ?? null, phosphorus: row.limit_phosphorus ?? null, sodium: row.limit_sodium ?? null, fluid: row.limit_fluid ?? null },
 };
@@ -78,6 +88,8 @@ const toRow = (userId, p) => ({
   has_diabetes: p.diabetes,
   egfr: p.egfr,
   for_whom: p.forWhom,
+  care_for: p.careFor ?? null,
+  care_for_name: p.careForName ?? null,
   usually: p.usually,
   limit_potassium: p.limits.potassium,
   limit_phosphorus: p.limits.phosphorus,

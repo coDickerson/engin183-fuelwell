@@ -5,6 +5,7 @@ import { mealSlots, persona, targets, week } from '../data/fung.js';
 import { upcomingVisits, downloadIcs } from './app-visits.js';
 import { tr } from './i18n.js';
 import { t } from './app-strings.js';
+import { whoVars } from './who.js';
 import { CKD_STAGES, saveProfile } from '../auth/profile.js';
 
 import { createCalendar, dateKey } from './calendar.js';
@@ -118,12 +119,14 @@ function renderGetStarted(ctx) {
       </li>`).join('')}</ol>`;
 }
 
-function renderNextStep() {
+function renderNextStep(isDemo) {
+  // The demo's example is Mom's lo mein; a real account starts from a blank question.
   const dish = { en: 'Mom’s lo mein with soy sauce, oyster sauce and char siu', zh: '媽媽的叉燒撈麵，用豉油和蠔油', es: 'El lo mein de mamá con salsa de soya, salsa de ostión y char siu' };
+  const href = isDemo ? `/meals.html?dish=${encodeURIComponent(tr(dish))}#ask` : '/meals.html#ask';
   $('[data-next-step]').innerHTML = `
     <h2 id="next-title">${esc(t('recipe_cta_title'))}</h2>
-    <p>${esc(t('recipe_cta_body'))}</p>
-    <a class="link-arrow" href="/meals.html?dish=${encodeURIComponent(tr(dish))}#ask">${icon('sparkle')}${esc(t('recipe_cta_button'))} ${icon('arrow')}</a>`;
+    <p>${esc(t(isDemo ? 'recipe_cta_body' : 'recipe_cta_body_real'))}</p>
+    <a class="link-arrow" href="${href}">${icon('sparkle')}${esc(t(isDemo ? 'recipe_cta_button' : 'recipe_cta_button_real'))} ${icon('arrow')}</a>`;
 }
 
 const goalKey = { 'familiar-meals': 'goal_familiar', 'eat-healthier': 'goal_healthier', 'fuel-performance': 'goal_fuel', 'understand-options': 'goal_understand', 'prepare-conversation': 'goal_prepare' };
@@ -270,7 +273,7 @@ initShell({
     // The nutrients, meals and visits on this page are the demo family's sample plan. Real accounts
     // don't see them (they'd look like their own health data); they get their first steps instead.
     document.querySelectorAll('[data-sample]').forEach((el) => { el.hidden = !ctx.isDemo; });
-    $('[data-today-sub]').textContent = t(ctx.isDemo ? 'today_sub' : 'today_sub_real');
+    $('[data-today-sub]').textContent = t(ctx.isDemo ? 'today_sub' : 'today_sub_real', whoVars(ctx.profile, ctx.isDemo));
     if (ctx.isDemo) {
       renderKpis();
       renderProgress();
@@ -281,7 +284,7 @@ initShell({
     } else {
       renderGetStarted(ctx);
     }
-    renderNextStep();
+    renderNextStep(ctx.isDemo);
     renderProfile(ctx);
   },
 });
