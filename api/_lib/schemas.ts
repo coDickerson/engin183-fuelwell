@@ -13,6 +13,14 @@ export const ProfileSchema = z
     usually: z.enum(['home', 'frozen', 'takeout']).optional(),
     notes: z.string().trim().max(300).optional(),
     egfr: z.number().int().min(0).max(200).optional(),
+    // Family memory (family_memory table): short preference notes from their own feedback, newest first.
+    // e.g. "Not for us: cauliflower rice". Preferences only; never medical facts.
+    // Trimmed rather than rejected, so a bad note never costs the rest of the profile.
+    memory: z
+      .preprocess(
+        (v) => (Array.isArray(v) ? v.filter((x) => typeof x === 'string').map((x) => x.replace(/\s+/g, ' ').trim().slice(0, 160)).filter(Boolean).slice(0, 8) : undefined),
+        z.array(z.string()).max(8).optional(),
+      ),
     // What the care team said to limit (from /personalize). 'unsure' = they haven't said or the person doesn't know.
     limits: z
       .object({
