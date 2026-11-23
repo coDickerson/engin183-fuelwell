@@ -1209,3 +1209,28 @@
 .rail-legal { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); font-size: var(--text-sm); }
 .rail-legal a { color: var(--ink-2); }
 .reviewed--sample { color: var(--ink-2); }
+
+/* Ask FuelWell: "We'll try it" / "Not for us" on swaps, and helpful / not helpful under answers (family-memory.js). */
+.choice-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 6px 12px; border: 1px solid var(--line); border-radius: var(--radius-pill); background: var(--surface); color: var(--ink); font: inherit; font-size: var(--text-sm); font-weight: 600; cursor: pointer; }
+.choice-btn svg { width: 16px; height: 16px; }
+.choice-btn:hover { border-color: var(--primary); }
+.choice-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.choice-btn[aria-pressed="true"] { border-color: var(--primary); background: var(--primary); color: var(--white); }
+.choice-btn--soft[aria-pressed="true"] { background: var(--green-50); color: var(--primary-strong); }
+.swap-choice { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); }
+.ask-feedback { margin-top: var(--space-5); padding-top: var(--space-4); border-top: 1px solid var(--line); }
+.ask-feedback-q { margin: 0 0 var(--space-2); font-weight: 700; }
+.ask-feedback-row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.ask-feedback-row + .ask-feedback-row { margin-top: var(--space-2); }
+.ask-feedback-thanks { margin: var(--space-2) 0 0; }
+.ask-feedback-thanks:empty { display: none; }
+
+/* My plan: "What FuelWell remembers". */
+.pz-memory { margin-top: var(--space-5); }
+.pz-memory h2 { font-size: var(--text-lg); }
+.mem-list { display: grid; gap: var(--space-2); margin: var(--space-4) 0 0; padding: 0; list-style: none; }
+.mem-item { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--space-3); align-items: center; padding: var(--space-2) var(--space-3); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.mem-item:not(.is-used) { opacity: .7; }
+.mem-text { overflow-wrap: anywhere; }
+.mem-item .button { min-height: 36px; padding: 6px 12px; font-size: var(--text-sm); }
+@media (max-width: 560px) { .mem-item { grid-template-columns: minmax(0, 1fr) auto; } .mem-item .chip { grid-column: 1 / -1; justify-self: start; } }

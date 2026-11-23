@@ -9,6 +9,7 @@ import { t } from './app-strings.js';
 import { track } from './track.js';
 import { inlineJoinHtml, offerJoin } from './signup-nudge.js';
 import { photoUrl, swapPhotos } from '../data/swap-photos.js';
+import { forget, loadMemory, memoryForPrompt, remember, sendFeedback, swapChoice } from './family-memory.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 
@@ -67,6 +68,13 @@ export function apiProfile(p) {
 export function setAskAccount(ctx) {
   account = { isDemo: Boolean(ctx?.isDemo), profile: ctx?.profile ?? null };
   PROFILE = account.isDemo ? DEMO_PROFILE : apiProfile(account.profile);
+  loadMemory().then(() => { const el = document.querySelector('[data-ask-for]'); if (el) el.innerHTML = forLine(); });
+}
+
+/** The request profile plus the family's newest memory notes (what they tried, skipped, asked about). */
+function withMemory(body) {
+  const memory = memoryForPrompt();
+  return body.profile && memory.length ? { ...body, profile: { ...body.profile, memory } } : body;
 }
 
 const stageWords = (stage) => (stage === 'g5d' ? t('stage_dialysis') : stage === 'unsure' ? t('stage_unsure') : t('stage', { s: `G${stage.slice(1)}` }));
@@ -82,7 +90,9 @@ function forLine() {
     p.cuisine,
   ].filter(Boolean) : [];
   const lead = facts.length ? t('sw_for_you', { facts: facts.join(', ') }) : t('sw_for_none');
-  return `${esc(lead)} <a href="/personalize.html">${esc(t('sw_for_edit'))}</a> ${esc(t('sw_english_note'))}`;
+  const n = memoryForPrompt().length;
+  const remembers = n ? ` ${esc(n === 1 ? t('sw_remembers_one') : t('sw_remembers', { n }))}` : '';
+  return `${esc(lead)}${remembers} <a href="/personalize.html">${esc(t('sw_for_edit'))}</a> ${esc(t('sw_english_note'))}`;
 }
 
 const state = { mode: 'swap', photo: null, busy: false, view: { state: 'empty' }, last: null };
@@ -230,7 +240,7 @@ const portionNote = (c) => (c.portion ? `<p class="notice ask-tonight">${icon('c
 function swapBody(data) {
   const c = data.card;
   const watch = (c.watch || []).map((w) => `<li>${elementBadge(w.nutrient)}<span>${esc(w.note)}</span></li>`).join('');
-  const swaps = (c.swaps || []).map((s) => `<li>${icon('check')}<span><strong>${esc(s.title)}</strong><br>${esc(s.how)}<br><span class="muted">${esc(s.why)}</span></span></li>`).join('');
+  const swaps = (c.swaps || []).map((s) => `<li>${icon('check')}<span><strong>${esc(s.title)}</strong><br>${esc(s.how)}<br><span class="muted">${esc(s.why)}</span>${swapChoiceHtml(s.title)}</span></li>`).join('');
   return {
     title: c.dish,
     tag: `<span class="chip">${esc(t(`sw_verdict_${c.verdict}`))}</span>`,
@@ -279,6 +289,30 @@ function recipeBody(data) {
 
 const BODY = { swap: swapBody, eatout: eatoutBody, recipe: recipeBody };
 
+/** "We'll try it" / "Not for us" under a swap. Saved to family memory, so later answers build on it. */
+function swapChoiceHtml(title) {
+  const now = swapChoice(title);
+  const btn = (kind, label) => `<button class="choice-btn" type="button" data-swap-choice="${kind}" aria-pressed="${now === kind}">${kind === 'tried' ? icon('check') : icon('x')}${esc(t(label))}</button>`;
+  return `<span class="swap-choice" data-swap-title="${esc(title)}" role="group" aria-label="${esc(t('sw_choice_label', { x: title }))}">${btn('tried', 'sw_will_try')}${btn('not_for_us', 'sw_not_for_us')}</span>`;
+}
+
+const REASONS = ['not_answered', 'not_our_food', 'seems_wrong', 'too_long'];
+
+/** Helpful / not helpful under each answer. Thumbs down asks for one reason. */
+function feedbackHtml() {
+  return `<div class="ask-feedback" data-feedback>
+      <p class="ask-feedback-q" id="fb-q">${esc(t('fb_question'))}</p>
+      <div class="ask-feedback-row" role="group" aria-labelledby="fb-q">
+        <button class="choice-btn" type="button" data-feedback-rating="up" aria-pressed="false">${icon('check')}${esc(t('fb_yes'))}</button>
+        <button class="choice-btn" type="button" data-feedback-rating="down" aria-pressed="false">${icon('x')}${esc(t('fb_no'))}</button>
+      </div>
+      <div class="ask-feedback-row" data-feedback-reasons hidden role="group" aria-label="${esc(t('fb_why'))}">
+        ${REASONS.map((r) => `<button class="choice-btn choice-btn--soft" type="button" data-feedback-reason="${r}">${esc(t(`fb_r_${r}`))}</button>`).join('')}
+      </div>
+      <p class="ask-feedback-thanks muted" data-feedback-thanks role="status"></p>
+    </div>`;
+}
+
 function renderResult(data, focus = true) {
   try { localStorage.setItem('fuelwell.started.ask', 'true'); } catch { /* storage unavailable */ } // Today's "Get started"
   result().dataset.state = 'result';
@@ -296,6 +330,7 @@ function renderResult(data, focus = true) {
     ${part.body}
     ${data.card.heads_up ? `<p class="notice ask-headsup">${icon('alert')}<span><strong>${esc(t('sw_heads_up'))}:</strong> ${esc(data.card.heads_up)}</span></p>` : ''}
     ${sourcesBlock(data)}
+    ${feedbackHtml()}
     <div class="ask-actions"><button class="button button--secondary" type="button" data-ask-copy>${esc(t('sw_copy'))}</button></div>
     ${inlineJoinHtml()}
     <p class="notice">${icon('info')}<span>${esc(t('sw_disclaimer'))}</span></p>`;
@@ -303,6 +338,39 @@ function renderResult(data, focus = true) {
   if (focus) {
     $('.result-title', result()).focus({ preventScroll: true });
     if (stacked()) reveal(result());
+  }
+}
+
+async function onResultClick(e) {
+  const choice = e.target.closest('[data-swap-choice]');
+  if (choice) {
+    const group = choice.closest('[data-swap-title]');
+    const title = group.dataset.swapTitle;
+    const kind = choice.dataset.swapChoice;
+    const on = choice.getAttribute('aria-pressed') !== 'true';
+    group.querySelectorAll('[data-swap-choice]').forEach((b) => b.setAttribute('aria-pressed', String(on && b === choice)));
+    if (on) await remember(kind, title);
+    else { const m = (await loadMemory()).find((x) => x.text === title && x.kind === kind); if (m) await forget(m.id); }
+    toast(t(on ? (kind === 'tried' ? 'sw_saved_try' : 'sw_saved_not') : 'sw_choice_cleared'));
+    $('[data-ask-for]').innerHTML = forLine();
+    return;
+  }
+  const box = e.target.closest('[data-feedback]');
+  if (!box || !state.view?.data) return;
+  const data = state.view.data;
+  const base = { mode: data.mode, question: state.last?.what, answerTitle: data.card.dish || data.card.restaurant || data.card.title };
+  const rating = e.target.closest('[data-feedback-rating]')?.dataset.feedbackRating;
+  const reason = e.target.closest('[data-feedback-reason]')?.dataset.feedbackReason;
+  const thanks = $('[data-feedback-thanks]', box);
+  if (rating) {
+    box.querySelectorAll('[data-feedback-rating]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.feedbackRating === rating)));
+    $('[data-feedback-reasons]', box).hidden = rating !== 'down';
+    if (rating === 'up') { await sendFeedback({ ...base, rating }); thanks.textContent = t('fb_thanks'); }
+    else thanks.textContent = '';
+  } else if (reason) {
+    box.querySelectorAll('[data-feedback-reason]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.feedbackReason === reason)));
+    await sendFeedback({ ...base, rating: 'down', reason });
+    thanks.textContent = t('fb_thanks_down');
   }
 }
 
@@ -358,13 +426,16 @@ async function request(mode, body, what) {
   paintResult();
   if (stacked()) reveal(result());
   try {
-    const res = await fetch(MODES[mode].endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    await loadMemory();
+    const res = await fetch(MODES[mode].endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(withMemory(body)) });
     let data = null;
     try { data = await res.json(); } catch { data = null; }
     if (!res.ok || !data?.card) throw new Error(data?.error || 'FuelWell could not answer just now. Please try again.');
     state.view = { state: 'result', data };
     renderResult(data);
     track('try_finished', mode);
+    const asked = data.card.dish || data.card.restaurant || data.card.title;
+    if (asked) remember('asked', asked).then(() => { $('[data-ask-for]').innerHTML = forLine(); });
     offerJoin('answer');
   } catch (err) {
     state.view = { state: 'error', message: navigator.onLine === false ? 'You seem to be offline.' : err.message };
@@ -403,6 +474,7 @@ let wired = false;
 export function initAsk() {
   if (wired) return;
   wired = true;
+  result().addEventListener('click', onResultClick);
   $('[data-ask-modes]').addEventListener('click', (e) => {
     const b = e.target.closest('[data-ask-mode]');
     if (!b) return;

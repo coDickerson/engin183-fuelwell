@@ -9,6 +9,7 @@ import { t } from './app-strings.js';
 import { elementBadge } from './app-meals-ask.js';
 import { LIMIT_KEYS, saveProfile, stageFromEgfr } from '../auth/profile.js';
 import { photoUrl, swapPhotos } from '../data/swap-photos.js';
+import { forget, loadMemory } from './family-memory.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const form = () => $('[data-pz-form]');
@@ -270,6 +271,37 @@ function wire() {
     .catch(() => { catalog = []; });
 }
 
+// "What FuelWell remembers": the family's memory notes (family-memory.js), each with Forget.
+async function paintMemory() {
+  const box = document.querySelector('[data-pz-memory]');
+  if (!box) return;
+  const notes = await loadMemory();
+  box.innerHTML = `<h2 id="mem-title">${esc(t('mem_title'))}</h2>
+    <p class="muted">${esc(t('mem_sub'))}</p>
+    ${notes.length ? `<ul class="mem-list">${notes.map((m, i) => `<li class="mem-item${i < 8 ? ' is-used' : ''}">
+        <span class="chip chip--plain">${esc(t(`mem_kind_${m.kind}`))}</span>
+        <span class="mem-text">${esc(m.text)}</span>
+        <button class="button button--ghost button--small" type="button" data-forget="${esc(String(m.id))}" aria-label="${esc(t('mem_forget_label', { x: m.text }))}">${esc(t('mem_forget'))}</button>
+      </li>`).join('')}</ul>` : `<p class="empty">${esc(t('mem_empty'))}</p>`}`;
+}
+
+let memoryWired = false;
+function wireMemory() {
+  if (memoryWired) return;
+  memoryWired = true;
+  document.querySelector('[data-pz-memory]')?.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-forget]');
+    if (!b) return;
+    b.disabled = true;
+    const id = /^\d+$/.test(b.dataset.forget) ? Number(b.dataset.forget) : b.dataset.forget;
+    await forget(id);
+    await paintMemory();
+    toast(t('mem_forgotten'));
+    document.querySelector('[data-pz-memory] h2')?.setAttribute('tabindex', '-1');
+    document.querySelector('[data-pz-memory] h2')?.focus();
+  });
+}
+
 initShell({
   page: 'personalize',
   title: 'title_personalize',
@@ -278,5 +310,7 @@ initShell({
     wire();
     paintStatic();
     paintPlan();
+    wireMemory();
+    paintMemory();
   },
 });
